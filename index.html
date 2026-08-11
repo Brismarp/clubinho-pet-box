@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clubinho Pet Box - Assinatura premium de produtos selecionados para o seu pet. Curadoria exclusiva, qualidade superior.">
+    <title>Clubinho Pet Box | Assinatura Premium para Pets</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- CSS Inline Mobile Fix -->
+    <style>
+    html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+    * { max-width: 100% !important; }
+    img { max-width: 100% !important; height: auto !important; width: auto !important; display: block !important; }
+    @media (max-width: 768px) {
+        .container, .hero-content, .about-content { max-width: 100% !important; padding-left: 20px !important; padding-right: 20px !important; }
+        .hero, .about { flex-direction: column !important; padding: 40px 20px !important; }
+        .hero-content, .hero-image-container, .hero-image, .about-content, .about-image-container, .about-image { width: 100% !important; max-width: 100% !important; height: auto !important; }
+        .plans-grid { grid-template-columns: 1fr !important; gap: 30px !important; padding: 0 20px !important; }
+        .btn, .cta-button, button[type="submit"] { width: 100% !important; display: block !important; }
+        h1 { font-size: 36px !important; }
+        h2 { font-size: 28px !important; }
+    }
+    </style>
+<style>header,.header{height:70px!important;max-height:70px!important;min-height:auto!important;padding:.75rem 0!important;display:flex!important;align-items:center!important}header img,.header img,.logo,img[alt*="logo"],img[alt*="Logo"],img[src*="logo"]{max-height:48px!important;height:auto!important;width:auto!important;max-width:200px!important}header .container,.header .container{display:flex!important;align-items:center!important;justify-content:space-between!important;height:100%!important}@media (max-width:768px){header,.header{height:50px!important;padding:.5rem 0!important}header img,.header img,.logo{max-height:40px!important;max-width:150px!important}}@media (max-width:480px){header,.header{height:45px!important}header img,.header img,.logo{max-height:35px!important;max-width:120px!important}}</style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html">
+                <img src="assets/images/logo/logo.jpg" alt="Clubinho Pet Box" class="logo">
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Início</a>
+                <a href="planos.html" class="nav-link">Planos</a>
+                <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="contato.html" class="nav-link">Contato</a>
+                <a href="planos.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Assinar Agora</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text fade-in">
+                <p class="hero-subtitle">Curadoria Premium para Pets</p>
+                <h1 class="hero-title">Momentos especiais merecem produtos especiais</h1>
+                <p class="hero-description">
+                    Uma seleção exclusiva de produtos premium entregue mensalmente na sua casa. 
+                    Cuidado, qualidade e amor em cada detalhe para o seu melhor amigo.
+                </p>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <a href="planos.html" class="btn btn-primary">Conhecer Planos</a>
+                    <a href="#cadastro-lead" class="btn btn-gold" onclick="document.getElementById('modal-lead').style.display='flex'; return false;">Cadastrar Perfil</a>
+                    <a href="sobre.html" class="btn btn-secondary">Saiba Mais</a>
+                </div>
+            </div>
+            <div class="hero-image-container fade-in">
+                <img src="assets/images/boxes/box-deluxe.jpg" alt="Clubinho Pet Box Premium" class="hero-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="section bg-white">
+        <div class="container">
+            <div class="text-center mb-lg">
+                <p class="text-uppercase text-gold">Simples e Exclusivo</p>
+                <h2>Como funciona</h2>
+                <p class="text-large" style="max-width: 600px; margin: 1rem auto 0;">
+                    Três passos para transformar a rotina do seu pet em momentos extraordinários
+                </p>
+            </div>
+            
+            <div class="grid grid-3">
+                <div class="text-center fade-in">
+                    <div style="width: 80px; height: 80px; background-color: var(--color-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; color: var(--color-gold);">1</div>
+                    <h4>Escolha seu plano</h4>
+                    <p>Selecione a box ideal para o perfil do seu pet. Happy, Love ou Deluxe.</p>
+                </div>
+                
+                <div class="text-center fade-in">
+                    <div style="width: 80px; height: 80px; background-color: var(--color-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; color: var(--color-gold);">2</div>
+                    <h4>Curadoria exclusiva</h4>
+                    <p>Nossa equipe seleciona produtos premium especialmente para o seu pet.</p>
+                </div>
+                
+                <div class="text-center fade-in">
+                    <div style="width: 80px; height: 80px; background-color: var(--color-cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; color: var(--color-gold);">3</div>
+                    <h4>Receba em casa</h4>
+                    <p>Sua box chega todo mês com surpresas e produtos de alta qualidade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANOS DESTAQUE -->
+    <section class="section bg-cream">
+        <div class="container">
+            <div class="text-center mb-lg">
+                <p class="text-uppercase text-gold">Nossos Planos</p>
+                <h2>Escolha a box perfeita</h2>
+                <p class="text-large" style="max-width: 700px; margin: 1rem auto 0;">
+                    Três níveis de curadoria premium, cada um pensado para proporcionar 
+                    experiências únicas e memoráveis para o seu pet
+                </p>
+            </div>
+            
+            <div class="plans-grid">
+                <!-- BOX HAPPY -->
+                <div class="plan-card fade-in">
+                    <img src="assets/images/boxes/box-happy.jpg" alt="Box Happy" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Clubinho Happy</h3>
+                        <div class="card-price">
+                            R$ 101,47
+                            <span class="card-price-period">/mês</span>
+                        </div>
+                        <p style="margin: 1rem 0;">Box essencial com produtos selecionados para alegrar o dia do seu pet.</p>
+                        <ul class="card-features">
+                            <li>4 a 6 produtos essenciais</li>
+                            <li>Brinquedos divertidos</li>
+                            <li>Petiscos saborosos</li>
+                            <li>Produtos de higiene</li>
+                            <li>Ótimo custo-benefício</li>
+                        </ul>
+                        <a href="https://pay.kirvano.com/1e4f4ee0-4e70-41e8-b98f-b26946375d50" class="btn btn-secondary">Assinar Happy</a>
+                    </div>
+                </div>
+
+                <!-- BOX LOVE -->
+                <div class="plan-card featured fade-in">
+                    <img src="assets/images/boxes/box-love.jpg" alt="Box Love" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Clubinho Love</h3>
+                        <div class="card-price">
+                            R$ 164,97
+                            <span class="card-price-period">/mês</span>
+                        </div>
+                        <p style="margin: 1rem 0;">Box premium com produtos exclusivos e de marcas renomadas.</p>
+                        <ul class="card-features">
+                            <li>6 a 8 produtos exclusivos</li>
+                            <li>Brinquedos interativos</li>
+                            <li>Petiscos premium</li>
+                            <li>Acessórios de qualidade</li>
+                            <li>Marcas renomadas</li>
+                        </ul>
+                        <a href="https://pay.kirvano.com/7c365f70-2296-4912-a19f-37d60b309e66" class="btn btn-gold">Assinar Love</a>
+                    </div>
+                </div>
+
+                <!-- BOX DELUXE -->
+                <div class="plan-card fade-in">
+                    <img src="assets/images/boxes/box-deluxe.jpg" alt="Box Deluxe" class="card-image">
+                    <div class="card-content">
+                        <h3 class="card-title">Clubinho Deluxe</h3>
+                        <div class="card-price">
+                            R$ 253,87
+                            <span class="card-price-period">/mês</span>
+                        </div>
+                        <p style="margin: 1rem 0;">Box super premium com o que há de melhor para o seu pet.</p>
+                        <ul class="card-features">
+                            <li>8 a 10 produtos de luxo</li>
+                            <li>Brinquedos importados</li>
+                            <li>Petiscos gourmet</li>
+                            <li>Produtos naturais e orgânicos</li>
+                            <li>Acessórios exclusivos</li>
+                        </ul>
+                        <a href="https://pay.kirvano.com/497c2b01-a5b9-40e7-a023-2e79c24eb322" class="btn btn-secondary">Assinar Deluxe</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POR QUE ESCOLHER -->
+    <section class="section bg-white">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text fade-in">
+                    <p class="text-uppercase text-gold">Diferenciais</p>
+                    <h2>Por que escolher o Clubinho Pet Box</h2>
+                    <p class="text-large">
+                        Somos mais do que uma simples caixa de assinatura. Somos uma experiência 
+                        premium cuidadosamente curada para proporcionar momentos especiais entre 
+                        você e seu pet.
+                    </p>
+                    <ul class="card-features" style="margin-top: 2rem;">
+                        <li>Curadoria especializada por veterinários e especialistas</li>
+                        <li>Produtos de marcas premium e confiáveis</li>
+                        <li>Entrega pontual e embalagem sustentável</li>
+                        <li>Atendimento personalizado e exclusivo</li>
+                        <li>Flexibilidade para pausar ou cancelar</li>
+                    </ul>
+                    <a href="sobre.html" class="btn btn-primary" style="margin-top: 2rem;">Conheça Nossa História</a>
+                </div>
+                <div class="fade-in">
+                    <img src="assets/images/boxes/box-love.jpg" alt="Clubinho Pet Box" class="about-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="section bg-black" style="text-align: center; color: var(--color-white);">
+        <div class="container-narrow">
+            <p class="text-uppercase" style="color: var(--color-gold); margin-bottom: 1rem;">Pronto para começar?</p>
+            <h2 style="color: var(--color-white); margin-bottom: 1.5rem;">Transforme a rotina do seu pet</h2>
+            <p class="text-large" style="color: var(--color-beige); margin-bottom: 2rem;">
+                Assine agora e receba sua primeira box com produtos premium selecionados 
+                especialmente para o seu melhor amigo.
+            </p>
+            <a href="planos.html" class="btn btn-gold">Ver Planos e Assinar</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Clubinho Pet Box</h4>
+                    <p>
+                        Assinatura premium de produtos selecionados para o seu pet. 
+                        Curadoria exclusiva, qualidade superior.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Links Rápidos</h4>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="planos.html">Planos</a></p>
+                    <p><a href="sobre.html">Sobre</a></p>
+                    <p><a href="contato.html">Contato</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <p>E-mail: contato@clubinhopetbox.com.br</p>
+                    <p>Seg a Sex: 9h às 18h</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Redes Sociais</h4>
+                    <p><a href="#">Instagram</a></p>
+                    <p><a href="#">Facebook</a></p>
+                    <p><a href="#">TikTok</a></p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Clubinho Pet Box. Todos os direitos reservados.</p>
+                <p class="footer-company">
+                    Brismarp Tecnologia Ltda | CNPJ: 63.304.598/0001-22
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL CADASTRO DE LEAD -->
+    <div id="modal-lead" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; max-width: 500px; width: 90%; border-radius: 8px; padding: 2rem; position: relative;">
+            <button onclick="document.getElementById('modal-lead').style.display='none'" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-charcoal);">&times;</button>
+            
+            <h2 style="margin-bottom: 0.5rem; font-family: 'Playfair Display', serif;">Cadastre seu Perfil</h2>
+            <p style="color: var(--color-charcoal); margin-bottom: 2rem;">Preencha os dados abaixo para receber ofertas exclusivas e novidades do Clubinho Pet Box.</p>
+            
+            <form id="form-lead" action="save_lead.php" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nome Completo *</label>
+                    <input type="text" name="name" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-beige); border-radius: 4px; font-size: 1rem;">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">E-mail *</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-beige); border-radius: 4px; font-size: 1rem;">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Telefone/WhatsApp *</label>
+                    <input type="tel" name="phone" required placeholder="(00) 00000-0000" style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-beige); border-radius: 4px; font-size: 1rem;">
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tipo de Pet *</label>
+                    <select name="pet_type" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-beige); border-radius: 4px; font-size: 1rem;">
+                        <option value="">Selecione...</option>
+                        <option value="dog">Cachorro</option>
+                        <option value="cat">Gato</option>
+                        <option value="both">Ambos</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Cidade</label>
+                    <input type="text" name="city" style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-beige); border-radius: 4px; font-size: 1rem;">
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="accept_newsletter" id="accept_newsletter" value="1" style="width: 20px; height: 20px;">
+                    <label for="accept_newsletter" style="margin: 0; font-size: 0.875rem;">Aceito receber novidades e ofertas por e-mail</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Cadastrar Perfil</button>
+            </form>
+            
+            <p style="font-size: 0.75rem; color: var(--color-charcoal); margin-top: 1rem; text-align: center;">Seus dados estão seguros e não serão compartilhados com terceiros.</p>
+        </div>
+    </div>
+
+    <script>
+        // Máscara de telefone
+        document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+        
+        // Envio do formulário
+        document.getElementById('form-lead').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('save_lead.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('Perfil cadastrado com sucesso! Em breve entraremos em contato.');
+                    document.getElementById('modal-lead').style.display = 'none';
+                    this.reset();
+                } else {
+                    alert('Erro ao cadastrar. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar. Tente novamente.');
+            }
+        });
+    </script>
+</body>
+</html>

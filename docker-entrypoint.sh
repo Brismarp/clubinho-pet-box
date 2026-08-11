@@ -3,6 +3,15 @@ set -euo pipefail
 
 PORT="${PORT:-80}"
 
+# Ensure a single Apache MPM (php:apache + some hosts enable both event and prefork).
+a2dismod mpm_event >/dev/null 2>&1 || true
+a2dismod mpm_worker >/dev/null 2>&1 || true
+a2enmod mpm_prefork >/dev/null 2>&1 || true
+rm -f /etc/apache2/mods-enabled/mpm_event.load \
+      /etc/apache2/mods-enabled/mpm_event.conf \
+      /etc/apache2/mods-enabled/mpm_worker.load \
+      /etc/apache2/mods-enabled/mpm_worker.conf 2>/dev/null || true
+
 # Railway (and similar) inject PORT; Apache image defaults to 80.
 if [[ -f /etc/apache2/ports.conf ]]; then
   sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf

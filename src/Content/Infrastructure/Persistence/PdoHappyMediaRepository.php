@@ -26,6 +26,15 @@ final class PdoHappyMediaRepository implements HappyMediaRepository
         return array_map(static fn ($r) => HappyMedia::fromRow($r), $stmt->fetchAll() ?: []);
     }
 
+    public function findByStatus(string $status): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM happy_media WHERE status = ? ORDER BY display_order ASC, id DESC'
+        );
+        $stmt->execute([$status]);
+        return array_map(static fn ($r) => HappyMedia::fromRow($r), $stmt->fetchAll() ?: []);
+    }
+
     public function findById(int $id): ?HappyMedia
     {
         $stmt = $this->pdo->prepare('SELECT * FROM happy_media WHERE id = :id LIMIT 1');

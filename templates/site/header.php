@@ -54,6 +54,7 @@ $activeNav = $activeNav ?? null;
                 <a href="/blog" class="nav-link<?= $activeNav === 'blog' ? ' is-active' : '' ?>"<?= $activeNav === 'blog' ? ' aria-current="page"' : '' ?>>Blog</a>
                 <a href="/sobre" class="nav-link<?= $activeNav === 'sobre' ? ' is-active' : '' ?>"<?= $activeNav === 'sobre' ? ' aria-current="page"' : '' ?>>Sobre</a>
                 <a href="/quiz" class="nav-link<?= $activeNav === 'quiz' ? ' is-active' : '' ?>"<?= $activeNav === 'quiz' ? ' aria-current="page"' : '' ?>>Quiz</a>
+                <a href="/enviar-foto" class="nav-link<?= $activeNav === 'enviar-foto' ? ' is-active' : '' ?>"<?= $activeNav === 'enviar-foto' ? ' aria-current="page"' : '' ?>>Enviar foto</a>
                 <a href="/contato" class="nav-link<?= $activeNav === 'contato' ? ' is-active' : '' ?>"<?= $activeNav === 'contato' ? ' aria-current="page"' : '' ?>>Contato</a>
                 <a href="/planos" class="btn btn-primary">Assinar</a>
             </nav>

@@ -40,9 +40,35 @@ final class HomeContentHandlers
     }
 
     /** @return list<array<string, mixed>> */
-    public function allHappyMedia(): array
+    public function allHappyMedia(?string $status = null): array
     {
-        return array_map(static fn ($t) => $t->toArray(), $this->happyMedia->findAll());
+        $items = $status !== null && $status !== ''
+            ? $this->happyMedia->findByStatus($status)
+            : $this->happyMedia->findAll();
+
+        return array_map(static fn ($t) => $t->toArray(), $items);
+    }
+
+    public function setHappyMediaStatus(int $id, string $status): void
+    {
+        if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+            throw new DomainException('Invalid media status.');
+        }
+        $item = $this->happyMedia->findById($id);
+        if ($item === null) {
+            throw new DomainException('Media not found.');
+        }
+        $item->apply(
+            $item->type(),
+            $item->petName(),
+            $status,
+            $item->mediaPath(),
+            $item->mediaUrl(),
+            $item->tutorHandle(),
+            $item->orientation(),
+            $item->displayOrder(),
+        );
+        $this->happyMedia->save($item);
     }
 
     /** @return list<array<string, mixed>> */

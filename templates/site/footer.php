@@ -14,6 +14,7 @@
                     <p><a href="/blog">Blog</a></p>
                     <p><a href="/sobre">Sobre</a></p>
                     <p><a href="/quiz">Quiz</a></p>
+                    <p><a href="/enviar-foto">Enviar foto</a></p>
                     <p><a href="/contato">Contato</a></p>
                     <p><a href="/assinatura">Assinatura</a></p>
                 </div>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ClubinhoPet\Quiz\Domain;
 
-final class MockRecommendationEngine
+final class MockRecommendationEngine implements RecommendationEngine
 {
     /**
      * @param array<string, string> $attrs
@@ -115,6 +115,25 @@ final class MockRecommendationEngine
                 $score += 2;
             }
 
+            if (($attrs['ambiente'] ?? '') !== '' && in_array((string) $attrs['ambiente'], $tags['ambiente'] ?? [], true)) {
+                $reasons[] = 'adequado ao ambiente do pet';
+                $score += 2;
+            }
+            if (($attrs['play_freq'] ?? '') !== '' && in_array((string) $attrs['play_freq'], $tags['play_freq'] ?? [], true)) {
+                $reasons[] = 'combina com a frequência de brincadeiras';
+                $score += 1;
+            }
+            if (($attrs['toy_size'] ?? '') !== '' && in_array((string) $attrs['toy_size'], $tags['toy_size'] ?? [], true)) {
+                $reasons[] = 'tamanho de brinquedo alinhado';
+                $score += 2;
+            }
+            foreach (['rubber', 'fabric', 'rope', 'wood'] as $mat) {
+                if (($attrs['toy_material_' . $mat] ?? '') === 'true' && in_array($mat, $tags['material'] ?? [], true)) {
+                    $reasons[] = 'material preferido: ' . $mat;
+                    $score += 2;
+                }
+            }
+
             if ($score < 2) {
                 // still allow generic matches with base species hit
                 if ($reasons === []) {
@@ -138,6 +157,11 @@ final class MockRecommendationEngine
         $top = array_slice($scored, 0, $limit);
         // diversify categories lightly by keeping order after sort
         return $top;
+    }
+
+    public function ruleSetId(): ?int
+    {
+        return null;
     }
 
     /**

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ClubinhoPet\Quiz\Application;
 
 use ClubinhoPet\Quiz\Domain\AttributeMapper;
-use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
+use ClubinhoPet\Quiz\Domain\RecommendationEngine;
 use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
 use ClubinhoPet\Integrations\Domain\Notifier;
 use ClubinhoPet\Platform\Domain\ActivityLogRepository;
@@ -16,7 +16,7 @@ final class QuizHandlers
     public function __construct(
         private PdoQuizRepository $repo,
         private AttributeMapper $mapper,
-        private MockRecommendationEngine $engine,
+        private RecommendationEngine $engine,
         private ?Notifier $notifier = null,
         private ?ActivityLogRepository $logs = null,
     ) {
@@ -137,7 +137,13 @@ final class QuizHandlers
 
         $products = $this->repo->productsWithTags();
         $items = $this->engine->recommend($attrs, $products, 8);
-        $recId = $this->repo->createRecommendation((int) $session['id'], $petId, $plan, $items);
+        $recId = $this->repo->createRecommendation(
+            (int) $session['id'],
+            $petId,
+            $plan,
+            $items,
+            $this->engine->ruleSetId(),
+        );
 
         $this->logs?->log(null, 'quiz.completed', 'quiz_sessions', (int) $session['id'], null, [
             'customer_id' => $customerId,

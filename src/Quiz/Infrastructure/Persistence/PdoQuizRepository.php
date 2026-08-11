@@ -14,7 +14,13 @@ final class PdoQuizRepository
 
     public function activeVersionId(): int
     {
-        $stmt = $this->pdo->query("SELECT id FROM quiz_versions WHERE is_active = 1 ORDER BY id DESC LIMIT 1");
+        // Prefer quiz v3 when multiple versions are marked active
+        $stmt = $this->pdo->query(
+            "SELECT id FROM quiz_versions
+             WHERE is_active = 1
+             ORDER BY (code = 'v3') DESC, id DESC
+             LIMIT 1"
+        );
         $id = $stmt->fetchColumn();
         if ($id === false) {
             throw new \RuntimeException('No active quiz version.');
@@ -230,13 +236,18 @@ final class PdoQuizRepository
     /**
      * @param list<array{product_id:int,score:int,justification:string,is_selected:bool}> $items
      */
-    public function createRecommendation(int $sessionId, ?int $petId, string $planSlug, array $items): int
-    {
+    public function createRecommendation(
+        int $sessionId,
+        ?int $petId,
+        string $planSlug,
+        array $items,
+        ?int $ruleSetId = null,
+    ): int {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO box_recommendations (session_id, pet_id, status, suggested_plan_slug)
-             VALUES (?, ?, \'pending_review\', ?)'
+            'INSERT INTO box_recommendations (session_id, pet_id, status, suggested_plan_slug, rule_set_id)
+             VALUES (?, ?, \'pending_review\', ?, ?)'
         );
-        $stmt->execute([$sessionId, $petId, $planSlug]);
+        $stmt->execute([$sessionId, $petId, $planSlug, $ruleSetId]);
         $recId = (int) $this->pdo->lastInsertId();
         $itemStmt = $this->pdo->prepare(
             'INSERT INTO box_recommendation_items (recommendation_id, product_id, score, justification, is_selected)

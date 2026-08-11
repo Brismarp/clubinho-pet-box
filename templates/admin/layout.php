@@ -126,6 +126,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 ['/admin/subscriptions', 'Assinaturas', 'subscriptions'],
                 ['/admin/boxes', 'Boxes', 'boxes'],
                 ['/admin/recommendations', 'Recomendações', 'recommendations'],
+                ['/admin/rule-sets', 'Rule sets', ['content', 'recommendations']],
                 ['/admin/products', 'Produtos', 'products'],
                 ['/admin/stock', 'Estoque', 'stock'],
                 ['/admin/payments', 'Pagamentos', 'payments'],
@@ -141,7 +142,10 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 ['/admin/audit', 'Auditoria', 'audit'],
             ];
             foreach ($links as [$href, $label, $perm]):
-                if (!$can($perm)) {
+                $allowed = is_array($perm)
+                    ? array_reduce($perm, static fn (bool $ok, string $p): bool => $ok || $can($p), false)
+                    : $can($perm);
+                if (!$allowed) {
                     continue;
                 }
                 $active = str_starts_with($currentPath, $href);

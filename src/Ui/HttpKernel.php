@@ -45,6 +45,10 @@ final class HttpKernel
                 $method === 'GET' && preg_match('#^/blog/([a-z0-9\-]+)$#', $path, $m) === 1
                     => $this->blogShow($m[1]),
                 $method === 'GET' && $path === '/quiz' => $this->quizPage(),
+                $method === 'GET' && $path === '/planos' => $this->marketingPage('planos'),
+                $method === 'GET' && $path === '/sobre' => $this->marketingPage('sobre'),
+                $method === 'GET' && $path === '/contato' => $this->marketingPage('contato'),
+                $method === 'GET' && $path === '/assinatura' => $this->marketingPage('assinatura'),
                 $method === 'POST' && $path === '/api/v1/quiz/sessions' => $this->quizStart(),
                 $method === 'GET' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)$#', $path, $m) === 1
                     => $this->json($this->app->quiz()->getSession($m[1])),
@@ -202,15 +206,14 @@ final class HttpKernel
 
         $urls = [
             ['loc' => $base . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
-            ['loc' => $base . '/planos.html', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $base . '/planos', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => $base . '/blog', 'priority' => '0.85', 'changefreq' => 'weekly'],
-            ['loc' => $base . '/sobre.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['loc' => $base . '/contato.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/sobre', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/contato', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => $base . '/quiz', 'priority' => '0.8', 'changefreq' => 'monthly'],
-            ['loc' => $base . '/assinatura.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/assinatura', 'priority' => '0.8', 'changefreq' => 'monthly'],
         ];
 
-        // keep legacy quiz.html out of sitemap
         try {
             foreach ($this->app->listPlans()->handle() as $plan) {
                 $slug = (string) ($plan['slug'] ?? '');
@@ -218,7 +221,7 @@ final class HttpKernel
                     continue;
                 }
                 $urls[] = [
-                    'loc' => $base . '/assinatura.html?plan=' . rawurlencode($slug),
+                    'loc' => $base . '/assinatura?plan=' . rawurlencode($slug),
                     'priority' => '0.6',
                     'changefreq' => 'weekly',
                 ];
@@ -325,7 +328,7 @@ final class HttpKernel
             return;
         }
 
-        header('Location: /contato.html?sent=1');
+        header('Location: /contato?sent=1');
         exit;
     }
 
@@ -544,6 +547,20 @@ final class HttpKernel
             echo '404 Post não encontrado';
             return;
         }
+        $related = [];
+        try {
+            foreach ($this->app->listPublishedPosts()->handle(12) as $row) {
+                if ((string) ($row['slug'] ?? '') === $slug) {
+                    continue;
+                }
+                $related[] = $row;
+                if (count($related) >= 3) {
+                    break;
+                }
+            }
+        } catch (\Throwable) {
+            $related = [];
+        }
         require BASE_PATH . '/templates/blog/show.php';
     }
 
@@ -602,6 +619,16 @@ final class HttpKernel
         $metaDescription = 'Quiz inteligente: responda sobre o perfil do pet e descubra a box ideal.';
         $canonicalPath = '/quiz';
         require BASE_PATH . '/templates/site/quiz.php';
+    }
+
+    private function marketingPage(string $name): void
+    {
+        $file = BASE_PATH . '/templates/site/' . $name . '.php';
+        if (!is_file($file)) {
+            $this->notFound();
+            return;
+        }
+        require $file;
     }
 
     private function quizStart(): void

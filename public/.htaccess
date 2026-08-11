@@ -2,11 +2,13 @@ DirectoryIndex index.php index.html
 
 RewriteEngine On
 
-# Legacy static home → PHP home
+# Legacy static pages → clean PHP routes
 RewriteRule ^index\.html$ / [R=301,L]
-
-# Legacy quiz → PHP quiz
 RewriteRule ^quiz\.html$ /quiz [R=301,L]
+RewriteRule ^planos\.html$ /planos [R=301,L]
+RewriteRule ^sobre\.html$ /sobre [R=301,L]
+RewriteRule ^contato\.html$ /contato [R=301,L]
+RewriteRule ^assinatura\.html$ /assinatura [R=301,L]
 
 # Serve existing files/directories as-is
 RewriteCond %{REQUEST_FILENAME} -f [OR]

@@ -49,7 +49,7 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="lead" id="quizResultLead"></p>
             <p class="muted">A equipe revisa a montagem sugerida. Enquanto isso, você pode assinar o plano indicado.</p>
             <div class="hero-actions" style="justify-content:flex-start;margin-top:1.5rem">
-                <a id="quizCheckout" class="btn btn-primary" href="/planos.html">Ver planos</a>
+                <a id="quizCheckout" class="btn btn-primary" href="/planos">Ver planos</a>
                 <a class="btn btn-secondary" href="/">Voltar ao início</a>
             </div>
         </div>

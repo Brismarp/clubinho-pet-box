@@ -16,15 +16,19 @@
   const closeNav = () => {
     if (!nav || !toggle) return;
     nav.classList.remove("is-open");
+    toggle.classList.remove("is-open");
     document.body.classList.remove("nav-open");
     toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Abrir menu");
   };
 
   const openNav = () => {
     if (!nav || !toggle) return;
     nav.classList.add("is-open");
+    toggle.classList.add("is-open");
     document.body.classList.add("nav-open");
     toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Fechar menu");
   };
 
   if (toggle && nav) {

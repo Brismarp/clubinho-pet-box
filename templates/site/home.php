@@ -23,7 +23,7 @@ require BASE_PATH . '/templates/site/header.php';
             </p>
             <div class="hero-actions">
                 <a href="/quiz" class="btn btn-primary">Descobrir a box do meu pet</a>
-                <a href="/planos.html" class="btn btn-secondary">Conhecer os planos</a>
+                <a href="/planos" class="btn btn-secondary">Conhecer os planos</a>
             </div>
         </div>
         <div class="hero-media">
@@ -79,6 +79,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <li>Espaço para revisão humana antes da expedição</li>
                 </ul>
                 <a href="/quiz" class="btn btn-primary mt-xl">Começar pelo quiz</a>
+                <a href="#modal-lead" class="btn btn-ghost mt-xl" data-open-modal="modal-lead">Cadastrar perfil</a>
             </div>
             <div class="reveal">
                 <div class="media-frame media-frame--portrait">
@@ -257,7 +258,7 @@ require BASE_PATH . '/templates/site/header.php';
         <p class="lead">Comece pelo quiz ou escolha um plano — a box chega com cuidado e surpresa.</p>
         <div class="hero-actions" style="justify-content:center">
             <a href="/quiz" class="btn btn-gold">Fazer o quiz</a>
-            <a href="/planos.html" class="btn btn-secondary">Ver planos</a>
+            <a href="/planos" class="btn btn-secondary">Ver planos</a>
         </div>
     </div>
 </section>

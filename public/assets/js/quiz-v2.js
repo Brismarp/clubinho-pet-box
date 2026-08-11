@@ -72,6 +72,11 @@
           { value: 'halfday', label: 'Meio período' },
           { value: 'fullday', label: 'Quase o dia todo' },
         ]},
+        { name: 'ambiente', label: 'Ambiente principal', type: 'choice', options: [
+          { value: 'apartment', label: 'Apartamento' },
+          { value: 'house', label: 'Casa com quintal' },
+          { value: 'outdoor', label: 'Acesso externo' },
+        ]},
       ],
     },
     {
@@ -106,6 +111,17 @@
         { name: 'destroys', label: 'Costuma destruir brinquedos?', type: 'choice', options: [
           { value: 'yes', label: 'Sim' },
           { value: 'no', label: 'Não' },
+        ]},
+        { name: 'materials', label: 'Materiais preferidos', type: 'multi', options: [
+          { value: 'rubber', label: 'Borracha' },
+          { value: 'fabric', label: 'Tecido' },
+          { value: 'rope', label: 'Corda' },
+          { value: 'wood', label: 'Madeira' },
+        ]},
+        { name: 'size', label: 'Tamanho de brinquedo', type: 'choice', options: [
+          { value: 'small', label: 'Pequeno' },
+          { value: 'medium', label: 'Médio' },
+          { value: 'large', label: 'Grande' },
         ]},
       ],
     },

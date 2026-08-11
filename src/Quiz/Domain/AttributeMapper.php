@@ -34,6 +34,14 @@ final class AttributeMapper
         if ($alone !== '') {
             $attrs['alone_time'] = $alone;
         }
+        $ambiente = (string) ($get('routine', 'ambiente') ?? '');
+        if ($ambiente !== '') {
+            $attrs['ambiente'] = $ambiente;
+        }
+        $playFreq = (string) ($get('routine', 'play_freq') ?? '');
+        if ($playFreq !== '') {
+            $attrs['play_freq'] = $playFreq;
+        }
 
         $traits = $get('personality', 'traits', []);
         if (!is_array($traits)) {
@@ -59,6 +67,20 @@ final class AttributeMapper
         }
         if (($get('toys', 'destroys') ?? false) === true || (string) ($get('toys', 'destroys') ?? '') === 'yes') {
             $attrs['destructive'] = 'true';
+        }
+        $materials = $get('toys', 'materials', []);
+        if (!is_array($materials)) {
+            $materials = $materials ? [$materials] : [];
+        }
+        foreach ($materials as $mat) {
+            $m = (string) $mat;
+            if ($m !== '') {
+                $attrs['toy_material_' . $m] = 'true';
+            }
+        }
+        $toySize = (string) ($get('toys', 'size') ?? '');
+        if ($toySize !== '') {
+            $attrs['toy_size'] = $toySize;
         }
 
         $flavors = $get('food', 'flavors', []);

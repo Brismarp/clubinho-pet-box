@@ -41,23 +41,23 @@ require BASE_PATH . '/templates/site/header.php';
             <h2>Do quiz à caixa na porta</h2>
             <p class="lead">Quatro passos claros para uma box realmente adequada.</p>
         </header>
-        <div class="steps">
-            <article class="step reveal">
+        <div class="steps reveal-stagger">
+            <article class="step reveal reveal--scale">
                 <div class="step-num">01</div>
                 <h3>Responder o quiz</h3>
                 <p>Contamos com perfil, rotina e preferências do pet e do tutor.</p>
             </article>
-            <article class="step reveal">
+            <article class="step reveal reveal--scale">
                 <div class="step-num">02</div>
                 <h3>Perfil analisado</h3>
                 <p>As respostas viram critérios para filtrar o que faz sentido — e o que evitar.</p>
             </article>
-            <article class="step reveal">
+            <article class="step reveal reveal--scale">
                 <div class="step-num">03</div>
                 <h3>Montagem da box</h3>
                 <p>A equipe (e o sistema) monta a seleção com produtos compatíveis.</p>
             </article>
-            <article class="step reveal">
+            <article class="step reveal reveal--scale">
                 <div class="step-num">04</div>
                 <h3>Box enviada</h3>
                 <p>Você recebe em casa e acompanha o ritual mês a mês.</p>
@@ -98,7 +98,7 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="lead">Três níveis de curadoria, mensal ou anual.</p>
         </header>
 
-        <div class="billing-toggle-wrap">
+        <div class="billing-toggle-wrap reveal">
             <div class="billing-toggle" data-billing-toggle role="group" aria-label="Ciclo de cobrança">
                 <button type="button" class="billing-toggle__btn is-active" data-billing-value="monthly" aria-pressed="true">Mensal</button>
                 <button type="button" class="billing-toggle__btn" data-billing-value="annual" aria-pressed="false">Anual</button>
@@ -106,8 +106,8 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="billing-toggle__badge">Anual: 2 meses grátis</p>
         </div>
 
-        <div class="plans-grid">
-            <article class="plan-card" data-slug="happy" data-price-monthly="101.47" data-price-annual="1014.70" data-billing="monthly">
+        <div class="plans-grid reveal-stagger">
+            <article class="plan-card reveal reveal--up" data-slug="happy" data-price-monthly="101.47" data-price-annual="1014.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-happy.jpg" alt="Box Happy" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Happy</h3>
@@ -123,7 +123,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <a href="/checkout?plan=happy&billing=monthly" class="btn btn-secondary" data-plan-cta>Assinar Happy</a>
                 </div>
             </article>
-            <article class="plan-card featured" data-slug="love" data-price-monthly="164.97" data-price-annual="1649.70" data-billing="monthly">
+            <article class="plan-card featured reveal reveal--up" data-slug="love" data-price-monthly="164.97" data-price-annual="1649.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-love.jpg" alt="Box Love" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Love</h3>
@@ -139,7 +139,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <a href="/checkout?plan=love&billing=monthly" class="btn btn-gold" data-plan-cta>Assinar Love</a>
                 </div>
             </article>
-            <article class="plan-card" data-slug="deluxe" data-price-monthly="253.87" data-price-annual="2538.70" data-billing="monthly">
+            <article class="plan-card reveal reveal--up" data-slug="deluxe" data-price-monthly="253.87" data-price-annual="2538.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-deluxe.jpg" alt="Box Deluxe" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Deluxe</h3>
@@ -169,7 +169,7 @@ require BASE_PATH . '/templates/site/header.php';
         <?php if ($happyMedia === []): ?>
             <p class="muted" style="text-align:center">Em breve novas fotos. Enquanto isso, faça o <a href="/quiz">quiz</a>.</p>
         <?php else: ?>
-            <div class="happy-gallery">
+            <div class="happy-gallery reveal-stagger">
                 <?php foreach ($happyMedia as $media):
                     $src = (string) ($media['media_path'] ?: $media['media_url'] ?: '');
                     if ($src !== '' && !str_starts_with($src, 'http') && !str_starts_with($src, '/')) {
@@ -177,7 +177,7 @@ require BASE_PATH . '/templates/site/header.php';
                     }
                     $orient = (string) ($media['orientation'] ?? 'landscape');
                     ?>
-                    <figure class="happy-item happy-item--<?= htmlspecialchars($orient, ENT_QUOTES, 'UTF-8') ?> reveal">
+                    <figure class="happy-item happy-item--<?= htmlspecialchars($orient, ENT_QUOTES, 'UTF-8') ?> reveal reveal--scale">
                         <?php if (($media['type'] ?? '') === 'video' && !empty($media['media_url'])): ?>
                             <div class="happy-item__media">
                                 <iframe src="<?= htmlspecialchars((string) $media['media_url'], ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars((string) $media['pet_name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" allowfullscreen></iframe>
@@ -209,7 +209,7 @@ require BASE_PATH . '/templates/site/header.php';
         <?php if ($testimonials === []): ?>
             <p class="muted" style="text-align:center">Depoimentos em breve.</p>
         <?php else: ?>
-            <div class="testimonials-list">
+            <div class="testimonials-list reveal-stagger">
                 <?php foreach ($testimonials as $t):
                     $photo = (string) ($t['photo_path'] ?? '');
                     if ($photo !== '' && !str_starts_with($photo, '/')) {
@@ -231,8 +231,6 @@ require BASE_PATH . '/templates/site/header.php';
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-    </div>
-</section>
 
 <section class="section bg-cream" id="faq">
     <div class="container-narrow">
@@ -240,7 +238,7 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="text-uppercase text-gold">FAQ</p>
             <h2>Perguntas frequentes</h2>
         </header>
-        <div class="faq-list">
+        <div class="faq-list reveal-stagger">
             <?php foreach ($faqs as $faq): ?>
                 <details class="faq-item reveal">
                     <summary><?= htmlspecialchars((string) $faq['question'], ENT_QUOTES, 'UTF-8') ?></summary>

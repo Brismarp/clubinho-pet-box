@@ -29,7 +29,8 @@ require BASE_PATH . '/templates/site/header.php';
         <div class="quiz-stage">
             <aside class="quiz-mood" aria-hidden="false">
                 <div class="quiz-mood-frame" id="quizMoodFrame">
-                    <img id="quizMoodImage" src="/assets/images/mood/q01.jpg" alt="" width="900" height="1100">
+                    <img id="quizMoodImage" class="quiz-mood-frame__img is-active" src="/assets/images/mood/q01.jpg" alt="" width="900" height="1100">
+                    <img id="quizMoodImageNext" class="quiz-mood-frame__img" src="/assets/images/mood/q01.jpg" alt="" width="900" height="1100" aria-hidden="true">
                 </div>
                 <p class="quiz-mood-caption" id="quizMoodCaption">Momento tutor + pet</p>
             </aside>

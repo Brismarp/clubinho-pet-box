@@ -10,9 +10,15 @@
   const progressBar = document.getElementById('progressBar');
   const currentStepEl = document.getElementById('currentStep');
   const moodImg = document.getElementById('quizMoodImage');
+  const moodImgNext = document.getElementById('quizMoodImageNext');
   const moodCaption = document.getElementById('quizMoodCaption');
   const resultEl = document.getElementById('quizResult');
   const panel = root.querySelector('.quiz-stage');
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let moodBusy = false;
+  let moodPending = null;
+  let activeMoodSrc = moodImg ? moodImg.getAttribute('src') : '';
 
   const steps = [
     {
@@ -273,13 +279,96 @@
     answers[stepKey][name] = value;
   }
 
+  function absoluteSrc(src) {
+    try {
+      return new URL(src, window.location.origin).href;
+    } catch (err) {
+      return src;
+    }
+  }
+
+  function activeMoodEl() {
+    if (moodImgNext && moodImgNext.classList.contains('is-active')) return moodImgNext;
+    return moodImg;
+  }
+
+  function setMood(src, caption) {
+    if (!moodImg) {
+      if (moodCaption) moodCaption.textContent = caption;
+      return;
+    }
+    const next = { src, caption };
+    if (moodBusy) {
+      moodPending = next;
+      return;
+    }
+    if (absoluteSrc(activeMoodSrc || '') === absoluteSrc(src)) {
+      if (moodCaption) moodCaption.textContent = caption;
+      return;
+    }
+
+    if (prefersReducedMotion || !moodImgNext) {
+      moodImg.src = src;
+      moodImg.classList.add('is-active');
+      if (moodImgNext) moodImgNext.classList.remove('is-active');
+      activeMoodSrc = src;
+      if (moodCaption) moodCaption.textContent = caption;
+      return;
+    }
+
+    moodBusy = true;
+    const outgoing = activeMoodEl();
+    const incoming = outgoing === moodImg ? moodImgNext : moodImg;
+
+    const done = () => {
+      activeMoodSrc = src;
+      moodBusy = false;
+      if (moodPending) {
+        const pending = moodPending;
+        moodPending = null;
+        setMood(pending.src, pending.caption);
+      }
+    };
+
+    const swapCaption = () => {
+      if (!moodCaption) return;
+      moodCaption.classList.add('is-fading');
+      window.setTimeout(() => {
+        moodCaption.textContent = caption;
+        moodCaption.classList.remove('is-fading');
+      }, 180);
+    };
+
+    const startFade = () => {
+      incoming.classList.add('is-active');
+      outgoing.classList.remove('is-active');
+      swapCaption();
+      window.setTimeout(done, 500);
+    };
+
+    if (incoming.getAttribute('src') === src && incoming.complete && incoming.naturalWidth > 0) {
+      startFade();
+      return;
+    }
+
+    incoming.onload = () => {
+      incoming.onload = null;
+      startFade();
+    };
+    incoming.onerror = () => {
+      incoming.onerror = null;
+      moodBusy = false;
+      if (moodCaption) moodCaption.textContent = caption;
+    };
+    incoming.src = src;
+  }
+
   function render() {
     const step = steps[stepIndex];
     showError('');
     progressBar.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
     currentStepEl.textContent = String(stepIndex + 1);
-    moodImg.src = step.mood;
-    moodCaption.textContent = step.caption;
+    setMood(step.mood, step.caption);
     prevBtn.hidden = stepIndex === 0;
     nextBtn.textContent = stepIndex === steps.length - 1 ? 'Confirmar e enviar' : 'Continuar';
 

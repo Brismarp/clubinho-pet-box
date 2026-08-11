@@ -1462,23 +1462,28 @@ textarea { min-height: 8rem; resize: vertical; }
 .quiz-mood-frame {
   position: relative;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: var(--radius-xl);
   background: var(--color-surface);
   aspect-ratio: 4 / 5;
   min-height: 16rem;
 }
 
+.quiz-mood-frame__img,
 .quiz-mood-frame img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  opacity: 1;
-  transition: opacity 320ms var(--ease-out-soft);
+  opacity: 0;
+  transition: opacity 480ms var(--ease-out-soft);
 }
 
-.quiz-mood-frame.is-fading img {
-  opacity: 0;
+.quiz-mood-frame__img.is-active,
+.quiz-mood-frame img.is-active {
+  opacity: 1;
+  z-index: 1;
 }
 
 .quiz-mood-caption {
@@ -1486,6 +1491,11 @@ textarea { min-height: 8rem; resize: vertical; }
   font-size: var(--text-sm);
   color: var(--color-muted);
   letter-spacing: 0.04em;
+  transition: opacity 280ms var(--ease-out-soft);
+}
+
+.quiz-mood-caption.is-fading {
+  opacity: 0;
 }
 
 .quiz-panel {
@@ -1747,7 +1757,9 @@ textarea { min-height: 8rem; resize: vertical; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .quiz-mood-frame img {
+  .quiz-mood-frame__img,
+  .quiz-mood-frame img,
+  .quiz-mood-caption {
     transition: none;
   }
   .quiz-option {

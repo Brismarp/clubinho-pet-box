@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fale com o Clubinho Pet Box.">
+    <title>Contato | Clubinho Pet Box</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo-link">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="nav" aria-label="Principal">
+                <a href="index.html" class="nav-link">Início</a>
+                <a href="planos.html" class="nav-link">Planos</a>
+                <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="contato.html" class="nav-link">Contato</a>
+                <a href="planos.html" class="btn btn-primary">Assinar</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="container reveal">
+            <p class="text-uppercase text-gold">Fale conosco</p>
+            <h1>Estamos aqui para ajudar</h1>
+            <p class="lead">Dúvidas, sugestões ou suporte — nossa equipe responde com cuidado.</p>
+        </div>
+    </section>
+
+    <section class="section bg-white">
+        <div class="container">
+            <div class="about-content">
+                <div class="stack-lg reveal">
+                    <div>
+                        <h3 class="text-gold">E-mail</h3>
+                        <p>contato@clubinhopetbox.com.br</p>
+                        <p class="lead" style="font-size:var(--text-sm)">Resposta em até 24h úteis</p>
+                    </div>
+                    <div>
+                        <h3 class="text-gold">Horário</h3>
+                        <p>Segunda a sexta, 9h às 18h</p>
+                    </div>
+                </div>
+
+                <div class="form-panel reveal" style="margin:0;max-width:none">
+                    <h3>Envie sua mensagem</h3>
+                    <form action="/contact" method="POST" class="stack mt-lg">
+                        <div class="form-group">
+                            <label for="nome">Nome completo *</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="tel" id="telefone" name="telefone">
+                        </div>
+                        <div class="form-group">
+                            <label for="assunto">Assunto *</label>
+                            <select id="assunto" name="assunto" required>
+                                <option value="">Selecione um assunto</option>
+                                <option value="duvidas">Dúvidas sobre planos</option>
+                                <option value="assinatura">Minha assinatura</option>
+                                <option value="produto">Produtos / Box</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mensagem">Mensagem *</label>
+                            <textarea id="mensagem" name="mensagem" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block-sm">Enviar mensagem</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Clubinho Pet Box</h4>
+                    <p>Estamos à disposição.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="planos.html">Planos</a></p>
+                    <p><a href="sobre.html">Sobre</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>contato@clubinhopetbox.com.br</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Social</h4>
+                    <p><a href="#">Instagram</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Clubinho Pet Box.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="assets/js/motion.js" defer></script>
+</body>
+</html>

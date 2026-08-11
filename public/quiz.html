@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quiz personalizado Clubinho Pet Box">
+    <title>Quiz | Clubinho Pet Box</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo-link">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="nav" aria-label="Principal">
+                <a href="index.html" class="nav-link">Início</a>
+                <a href="planos.html" class="nav-link">Planos</a>
+                <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="contato.html" class="nav-link">Contato</a>
+                <a href="planos.html" class="btn btn-primary">Assinar</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-hero">
+        <div class="container reveal">
+            <p class="text-uppercase text-gold">Descubra a box perfeita</p>
+            <h1>Quiz personalizado</h1>
+            <p class="lead">Dez perguntas rápidas para indicar o plano ideal.</p>
+        </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="section bg-white">
+        <div class="quiz-container">
+            
+            <!-- Progress Bar -->
+            <div class="quiz-progress">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p class="progress-text">
+                    Pergunta <span id="currentQuestion">1</span> de <span id="totalQuestions">10</span>
+                </p>
+            </div>
+
+            <!-- Question 1 -->
+            <div class="quiz-question active" data-question="1">
+                <h2 class="question-title">Qual é o tipo do seu pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="dog"> Cachorro</div>
+                    <div class="quiz-option" data-value="cat"> Gato</div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="quiz-question" data-question="2">
+                <h2 class="question-title">Qual é o porte do seu pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="mini">Mini (até 5kg)</div>
+                    <div class="quiz-option" data-value="small">Pequeno (5-10kg)</div>
+                    <div class="quiz-option" data-value="medium">Médio (10-25kg)</div>
+                    <div class="quiz-option" data-value="large">Grande (25-45kg)</div>
+                    <div class="quiz-option" data-value="giant">Gigante (acima de 45kg)</div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="quiz-question" data-question="3">
+                <h2 class="question-title">Qual é a idade do seu pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="puppy"> Filhote (0-1 ano)</div>
+                    <div class="quiz-option" data-value="adult"> Adulto (1-7 anos)</div>
+                    <div class="quiz-option" data-value="senior"> Idoso (acima de 7 anos)</div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="quiz-question" data-question="4">
+                <h2 class="question-title">Qual é o nível de energia do seu pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="low"> Baixa energia (calmo, dorme muito)</div>
+                    <div class="quiz-option" data-value="moderate"> Energia moderada (equilibrado)</div>
+                    <div class="quiz-option" data-value="high"> Alta energia (muito ativo, brincalhão)</div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="quiz-question" data-question="5">
+                <h2 class="question-title">O que seu pet mais gosta de fazer?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="toys"> Brincar com brinquedos</div>
+                    <div class="quiz-option" data-value="treats"> Comer petiscos</div>
+                    <div class="quiz-option" data-value="comfort"> Relaxar e ter conforto</div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="quiz-question" data-question="6">
+                <h2 class="question-title">Seu pet tem alguma restrição alimentar?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="no"> Não, pode comer tudo</div>
+                    <div class="quiz-option" data-value="allergies"> Sim, tem alergias</div>
+                    <div class="quiz-option" data-value="health"> Sim, problemas de saúde</div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="quiz-question" data-question="7">
+                <h2 class="question-title">Qual é o seu orçamento mensal para o pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="basic"> Até R$ 100</div>
+                    <div class="quiz-option" data-value="standard"> R$ 100-200</div>
+                    <div class="quiz-option" data-value="premium"> Acima de R$ 200</div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="quiz-question" data-question="8">
+                <h2 class="question-title">Você prefere produtos naturais e orgânicos?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="always"> Sim, sempre que possível</div>
+                    <div class="quiz-option" data-value="sometimes"> Às vezes, depende do produto</div>
+                    <div class="quiz-option" data-value="no"> Não necessariamente</div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="quiz-question" data-question="9">
+                <h2 class="question-title">Com que frequência você compra produtos para o pet?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="weekly"> Semanalmente</div>
+                    <div class="quiz-option" data-value="monthly"> Mensalmente</div>
+                    <div class="quiz-option" data-value="occasionally"> Ocasionalmente</div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="quiz-question" data-question="10">
+                <h2 class="question-title">O que é mais importante para você?</h2>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="variety"> Variedade de produtos</div>
+                    <div class="quiz-option" data-value="quality"> Qualidade premium</div>
+                    <div class="quiz-option" data-value="value"> Melhor custo-benefício</div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="quiz-result" id="quizResult">
+                <div class="result-icon"></div>
+                <h2 class="result-title" id="resultTitle"></h2>
+                <p class="result-subtitle" id="resultSubtitle"></p>
+                <p class="result-description" id="resultDescription"></p>
+                
+                <div class="result-box-details" id="resultDetails"></div>
+                
+                <div class="result-price" id="resultPrice"></div>
+                
+                <div class="result-actions">
+                    <button onclick="saveQuizDataAndRedirect(recommendedBox)" class="btn btn-gold">
+                        Criar Conta e Assinar
+                    </button>
+                    <button onclick="restartQuiz()" class="btn btn-secondary">
+                        Refazer Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="quiz-navigation" id="quizNavigation">
+                <button class="btn-quiz btn-back" id="btnBack" onclick="previousQuestion()">
+                    ← Voltar
+                </button>
+                <button class="btn-quiz btn-next" id="btnNext" onclick="nextQuestion()" disabled>
+                    Próxima →
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Clubinho Pet Box.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="assets/js/motion.js" defer></script>
+    <!-- JavaScript -->
+    <script>
+        let currentQuestionIndex = 1;
+        const totalQuestions = 10;
+        let answers = {};
+
+        // Initialize
+        document.getElementById('totalQuestions').textContent = totalQuestions;
+        updateProgress();
+        updateNavigationButtons();
+
+        // Option selection
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.quiz-question');
+                const questionNumber = question.dataset.question;
+                
+                // Remove selected from all options in this question
+                question.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected to clicked option
+                this.classList.add('selected');
+                
+                // Store answer
+                answers[questionNumber] = this.dataset.value;
+                
+                // Enable next button
+                document.getElementById('btnNext').disabled = false;
+            });
+        });
+
+        function updateProgress() {
+            const progress = (currentQuestionIndex / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex;
+        }
+
+        function updateNavigationButtons() {
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+            
+            // Hide back button on first question
+            if (currentQuestionIndex === 1) {
+                btnBack.style.visibility = 'hidden';
+            } else {
+                btnBack.style.visibility = 'visible';
+            }
+            
+            // Change next button text on last question
+            if (currentQuestionIndex === totalQuestions) {
+                btnNext.textContent = 'Ver Resultado →';
+            } else {
+                btnNext.textContent = 'Próxima →';
+            }
+            
+            // Check if current question is answered
+            if (answers[currentQuestionIndex]) {
+                btnNext.disabled = false;
+            } else {
+                btnNext.disabled = true;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < totalQuestions) {
+                // Hide current question
+                document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.remove('active');
+                
+                // Show next question
+                currentQuestionIndex++;
+                document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.add('active');
+                
+                updateProgress();
+                updateNavigationButtons();
+            } else {
+                // Show result
+                showResult();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 1) {
+                // Hide current question
+                document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.remove('active');
+                
+                // Show previous question
+                currentQuestionIndex--;
+                document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.add('active');
+                
+                updateProgress();
+                updateNavigationButtons();
+            }
+        }
+
+        function calculateResult() {
+            let score = {
+                happy: 0,
+                love: 0,
+                deluxe: 0
+            };
+
+            // Question 7 (budget) - most important
+            if (answers['7'] === 'basic') score.happy += 5;
+            if (answers['7'] === 'standard') score.love += 5;
+            if (answers['7'] === 'premium') score.deluxe += 5;
+
+            // Question 10 (priority)
+            if (answers['10'] === 'value') score.happy += 3;
+            if (answers['10'] === 'variety') score.love += 3;
+            if (answers['10'] === 'quality') score.deluxe += 3;
+
+            // Question 8 (natural products)
+            if (answers['8'] === 'always') score.deluxe += 2;
+            if (answers['8'] === 'sometimes') score.love += 2;
+
+            // Question 4 (energy level)
+            if (answers['4'] === 'high') {
+                score.love += 2;
+                score.deluxe += 1;
+            }
+
+            // Question 5 (preferences)
+            if (answers['5'] === 'comfort') score.deluxe += 2;
+            if (answers['5'] === 'toys') score.love += 2;
+
+            // Find highest score
+            let recommended = 'happy';
+            let maxScore = score.happy;
+            
+            if (score.love > maxScore) {
+                recommended = 'love';
+                maxScore = score.love;
+            }
+            if (score.deluxe > maxScore) {
+                recommended = 'deluxe';
+            }
+
+            return recommended;
+        }
+
+        let recommendedBox = 'love'; // Variável global para armazenar a box recomendada
+
+        function showResult() {
+            const result = calculateResult();
+            recommendedBox = result; // Salvar na variável global
+            
+            // Hide quiz navigation
+            document.getElementById('quizNavigation').style.display = 'none';
+            
+            // Hide all questions
+            document.querySelectorAll('.quiz-question').forEach(q => {
+                q.classList.remove('active');
+            });
+            
+            // Show result
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.classList.add('active');
+            
+            // Set result content
+            if (result === 'happy') {
+                document.getElementById('resultTitle').textContent = 'Clubinho Pet Happy';
+                document.getElementById('resultSubtitle').textContent = 'Box Essencial';
+                document.getElementById('resultDescription').textContent = 'Perfeita para você! Uma box completa com produtos de qualidade e excelente custo-benefício. Ideal para tutores que buscam praticidade e economia sem abrir mão da qualidade.';
+                document.getElementById('resultDetails').innerHTML = `
+                    <h3>O que está incluído:</h3>
+                    <ul>
+                        <li>4-6 produtos selecionados</li>
+                        <li>Brinquedos resistentes</li>
+                        <li>Petiscos naturais</li>
+                        <li>Produtos de higiene</li>
+                        <li>Surpresas mensais</li>
+                    </ul>
+                `;
+                document.getElementById('resultPrice').innerHTML = 'R$ 101,47<span class="result-price-period">/mês</span>';
+            } else if (result === 'love') {
+                document.getElementById('resultTitle').textContent = 'Clubinho Pet Love';
+                document.getElementById('resultSubtitle').textContent = 'Box Premium';
+                document.getElementById('resultDescription').textContent = 'Perfeita para você! Nossa box mais popular com produtos exclusivos e variedade premium. Ideal para tutores que querem o melhor para seus pets com ótima relação qualidade-preço.';
+                document.getElementById('resultDetails').innerHTML = `
+                    <h3>O que está incluído:</h3>
+                    <ul>
+                        <li>6-8 produtos exclusivos</li>
+                        <li>Brinquedos premium</li>
+                        <li>Petiscos gourmet</li>
+                        <li>Produtos de higiene premium</li>
+                        <li>Acessórios especiais</li>
+                        <li>Entrega prioritária</li>
+                    </ul>
+                `;
+                document.getElementById('resultPrice').innerHTML = 'R$ 164,97<span class="result-price-period">/mês</span>';
+            } else {
+                document.getElementById('resultTitle').textContent = 'Clubinho Pet Deluxe';
+                document.getElementById('resultSubtitle').textContent = 'Box Super Premium';
+                document.getElementById('resultDescription').textContent = 'Perfeita para você! Nossa box mais completa com produtos de luxo e curadoria especial. Ideal para tutores que não abrem mão do melhor e querem proporcionar experiências únicas para seus pets.';
+                document.getElementById('resultDetails').innerHTML = `
+                    <h3>O que está incluído:</h3>
+                    <ul>
+                        <li>8-10 produtos de luxo</li>
+                        <li>Brinquedos importados</li>
+                        <li>Petiscos gourmet premium</li>
+                        <li>Produtos naturais e orgânicos</li>
+                        <li>Acessórios exclusivos</li>
+                        <li>Itens de conforto premium</li>
+                        <li>Entrega expressa</li>
+                        <li>Atendimento VIP</li>
+                    </ul>
+                `;
+                document.getElementById('resultPrice').innerHTML = 'R$ 253,87<span class="result-price-period">/mês</span>';
+            }
+        }
+
+        function saveQuizDataAndRedirect(boxType) {
+            // Salvar dados do quiz na sessão via PHP
+            const quizData = {
+                answers: answers,
+                recommendedBox: boxType
+            };
+            
+            // Redirecionar para página de pagamento/assinatura
+            window.location.href = '/checkout?plan=' + boxType;
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestionIndex = 1;
+            answers = {};
+            
+            // Hide result
+            document.getElementById('quizResult').classList.remove('active');
+            
+            // Show navigation
+            document.getElementById('quizNavigation').style.display = 'flex';
+            
+            // Remove all selections
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Show first question
+            document.querySelector('.quiz-question[data-question="1"]').classList.add('active');
+            
+            // Update UI
+            updateProgress();
+            updateNavigationButtons();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+/vendor/
+.env
+/logs/
+*.log
+.idea/
+.vscode/
+public_html*.zip

@@ -1,0 +1,13 @@
+{
+    "name": "clubinhopet/brismar",
+    "description": "Clubinho Pet Box - subscription site (plain PHP DDD)",
+    "type": "project",
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "ClubinhoPet\\": "src/"
+        }
+    }
+}

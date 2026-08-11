@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `role` ENUM('admin', 'editor', 'viewer') DEFAULT 'viewer',
+    `role` ENUM('admin', 'operacao', 'montagem', 'atendimento', 'estoque') DEFAULT 'atendimento',
     `is_active` BOOLEAN DEFAULT TRUE,
     `last_login` DATETIME,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
     `pet_name` VARCHAR(255),
     `pet_type` VARCHAR(100),
     `pet_age` INT,
-    `status` ENUM('active', 'paused', 'cancelled', 'expired') DEFAULT 'active',
+    `status` ENUM('pending', 'active', 'paused', 'cancelled', 'expired') DEFAULT 'active',
     `start_date` DATE,
     `next_billing_date` DATE,
     `cancellation_date` DATE,
@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS `pets` (
 CREATE TABLE IF NOT EXISTS `boxes` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `subscription_id` INT NOT NULL,
+    `recommendation_id` INT NULL,
     `box_number` INT,
     `send_date` DATE,
     `estimated_delivery_date` DATE,
@@ -151,7 +152,8 @@ CREATE TABLE IF NOT EXISTS `boxes` (
     FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions`(`id`) ON DELETE CASCADE,
     INDEX `idx_subscription_id` (`subscription_id`),
     INDEX `idx_status` (`status`),
-    INDEX `idx_send_date` (`send_date`)
+    INDEX `idx_send_date` (`send_date`),
+    INDEX `idx_boxes_recommendation` (`recommendation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================================
@@ -168,6 +170,7 @@ CREATE TABLE IF NOT EXISTS `products` (
     `supplier` VARCHAR(255),
     `is_available` BOOLEAN DEFAULT TRUE,
     `stock_qty` INT NOT NULL DEFAULT 0,
+    `stock_min` INT NOT NULL DEFAULT 0,
     `image_url` VARCHAR(500),
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -453,9 +456,15 @@ CREATE TABLE IF NOT EXISTS `customers` (
     `phone` VARCHAR(50) NULL,
     `consent_marketing` TINYINT(1) NOT NULL DEFAULT 0,
     `consent_lgpd_at` DATETIME NULL,
+    `notes` TEXT NULL,
+    `city` VARCHAR(120) NULL,
+    `state` VARCHAR(2) NULL,
+    `address_line` VARCHAR(255) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY `uq_customers_email` (`email`)
+    UNIQUE KEY `uq_customers_email` (`email`),
+    INDEX `idx_customers_name` (`name`),
+    INDEX `idx_customers_phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `pets`
@@ -582,6 +591,64 @@ CREATE TABLE IF NOT EXISTS `notification_outbox` (
     `sent_at` DATETIME NULL,
     INDEX `idx_outbox_status` (`status`, `created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================================
+-- 19. Operational core: box items, stock ledger, payments
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS `box_items` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `box_id` INT NOT NULL,
+    `product_id` INT NOT NULL,
+    `qty` INT NOT NULL DEFAULT 1,
+    `justification` TEXT NULL,
+    `source` ENUM('recommendation', 'manual') NOT NULL DEFAULT 'recommendation',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`box_id`) REFERENCES `boxes`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT,
+    INDEX `idx_box_items_box` (`box_id`),
+    INDEX `idx_box_items_product` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `stock_movements` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `product_id` INT NOT NULL,
+    `delta` INT NOT NULL,
+    `balance_after` INT NOT NULL,
+    `reason` ENUM('receive', 'adjust', 'reserve', 'ship', 'release', 'sale') NOT NULL,
+    `ref_type` VARCHAR(40) NULL,
+    `ref_id` INT NULL,
+    `user_id` INT NULL,
+    `note` VARCHAR(255) NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+    INDEX `idx_stock_movements_product` (`product_id`, `created_at`),
+    INDEX `idx_stock_movements_ref` (`ref_type`, `ref_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `payments` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `subscription_id` INT NULL,
+    `customer_email` VARCHAR(255) NULL,
+    `provider` VARCHAR(40) NOT NULL DEFAULT 'kirvano',
+    `external_id` VARCHAR(120) NULL,
+    `amount_cents` INT NOT NULL DEFAULT 0,
+    `currency` CHAR(3) NOT NULL DEFAULT 'BRL',
+    `status` ENUM('pending', 'paid', 'failed', 'refunded', 'cancelled') NOT NULL DEFAULT 'pending',
+    `paid_at` DATETIME NULL,
+    `payload_json` JSON NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions`(`id`) ON DELETE SET NULL,
+    INDEX `idx_payments_status` (`status`, `created_at`),
+    INDEX `idx_payments_external` (`provider`, `external_id`),
+    INDEX `idx_payments_email` (`customer_email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Link boxes to recommendations (tables exist by this point)
+ALTER TABLE `boxes`
+    ADD CONSTRAINT `fk_boxes_recommendation`
+    FOREIGN KEY (`recommendation_id`) REFERENCES `box_recommendations`(`id`) ON DELETE SET NULL;
 
 -- ============================================================================
 -- FIM DO SCRIPT

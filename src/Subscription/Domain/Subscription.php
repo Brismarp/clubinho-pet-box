@@ -119,4 +119,12 @@ final class Subscription
         }
         $this->status = SubscriptionStatus::Cancelled;
     }
+
+    public function reactivate(): void
+    {
+        if ($this->status !== SubscriptionStatus::Paused) {
+            throw new DomainException('Only paused subscriptions can be reactivated.');
+        }
+        $this->status = SubscriptionStatus::Active;
+    }
 }

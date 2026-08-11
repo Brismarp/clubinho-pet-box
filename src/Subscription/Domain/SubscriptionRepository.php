@@ -8,6 +8,10 @@ interface SubscriptionRepository
 {
     public function save(Subscription $subscription): void;
 
+    public function findById(int $id): ?Subscription;
+
+    public function updateStatus(Subscription $subscription): void;
+
     /** @return list<Subscription> */
     public function findRecent(int $limit = 50): array;
 

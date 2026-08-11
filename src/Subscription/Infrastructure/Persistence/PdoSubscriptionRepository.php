@@ -52,6 +52,46 @@ final class PdoSubscriptionRepository implements SubscriptionRepository
         }
     }
 
+    public function findById(int $id): ?Subscription
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM subscriptions WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+
+        return $row ? Subscription::fromRow($row) : null;
+    }
+
+    public function updateStatus(Subscription $subscription): void
+    {
+        if ($subscription->id() === null) {
+            throw new \ClubinhoPet\Shared\Domain\DomainException('Subscription id required.');
+        }
+        $status = $subscription->status()->value;
+        $stmt = $this->pdo->prepare(
+            'UPDATE subscriptions
+             SET status = :status,
+                 cancellation_date = CASE WHEN :status2 = \'cancelled\' THEN CURDATE() ELSE cancellation_date END,
+                 start_date = CASE
+                    WHEN :status3 = \'active\' AND start_date IS NULL THEN CURDATE()
+                    ELSE start_date
+                 END,
+                 next_billing_date = CASE
+                    WHEN :status4 = \'active\' THEN DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
+                    WHEN :status5 = \'cancelled\' THEN NULL
+                    ELSE next_billing_date
+                 END
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'status' => $status,
+            'status2' => $status,
+            'status3' => $status,
+            'status4' => $status,
+            'status5' => $status,
+            'id' => $subscription->id(),
+        ]);
+    }
+
     public function findRecent(int $limit = 50): array
     {
         $stmt = $this->pdo->prepare(
@@ -93,6 +133,9 @@ final class PdoSubscriptionRepository implements SubscriptionRepository
                 'pet_name' => $row['pet_name'] ?? null,
                 'pet_type' => $row['pet_type'] ?? null,
                 'notes' => $row['notes'] ?? null,
+                'start_date' => $row['start_date'] ?? null,
+                'next_billing_date' => $row['next_billing_date'] ?? null,
+                'cancellation_date' => $row['cancellation_date'] ?? null,
                 'created_at' => (string) ($row['created_at'] ?? ''),
             ];
         }

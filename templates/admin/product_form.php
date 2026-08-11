@@ -21,6 +21,7 @@ if (!empty($item['tags']) && is_array($item['tags'])) {
     <p><label>Descrição<br><textarea name="description" rows="3"><?= htmlspecialchars((string) ($item['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea></label></p>
     <p><label>Preço<br><input name="price" type="number" step="0.01" value="<?= htmlspecialchars((string) ($item['price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label></p>
     <p><label>Estoque<br><input name="stock_qty" type="number" value="<?= (int) ($item['stock_qty'] ?? 0) ?>"></label></p>
+    <p><label>Estoque mínimo<br><input name="stock_min" type="number" value="<?= (int) ($item['stock_min'] ?? 0) ?>"></label></p>
     <p><label><input type="checkbox" name="is_available" value="1" <?= !isset($item['is_available']) || !empty($item['is_available']) ? 'checked' : '' ?> style="width:auto"> Disponível</label></p>
     <p><label>Tags (uma por linha, chave=valor)<br>
         <textarea name="tags_text" rows="8" style="max-width:100%"><?= htmlspecialchars($tagsText, ENT_QUOTES, 'UTF-8') ?></textarea>

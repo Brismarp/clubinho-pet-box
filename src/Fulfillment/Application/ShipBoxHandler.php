@@ -7,8 +7,10 @@ namespace ClubinhoPet\Fulfillment\Application;
 use ClubinhoPet\Fulfillment\Domain\BoxRepository;
 use ClubinhoPet\Integrations\Domain\Notifier;
 use ClubinhoPet\Integrations\Domain\ShipmentProvider;
+use ClubinhoPet\Inventory\Application\StockLedger;
 use ClubinhoPet\Platform\Domain\ActivityLogRepository;
 use ClubinhoPet\Shared\Domain\DomainException;
+use PDO;
 
 final class ShipBoxHandler
 {
@@ -17,6 +19,8 @@ final class ShipBoxHandler
         private ?ShipmentProvider $shipments = null,
         private ?ActivityLogRepository $logs = null,
         private ?Notifier $notifier = null,
+        private ?StockLedger $stock = null,
+        private ?PDO $pdo = null,
     ) {
     }
 
@@ -39,6 +43,37 @@ final class ShipBoxHandler
         $box->markShipped($tracking !== '' ? $tracking : null);
         $this->boxes->save($box);
         $data = $box->toArray();
+
+        if ($this->stock !== null && $this->pdo !== null) {
+            $items = $this->pdo->prepare('SELECT product_id, qty, source FROM box_items WHERE box_id = ?');
+            $items->execute([$boxId]);
+            foreach ($items->fetchAll(PDO::FETCH_ASSOC) ?: [] as $item) {
+                $qty = max(1, (int) $item['qty']);
+                $source = (string) ($item['source'] ?? 'manual');
+                if ($source === 'recommendation') {
+                    // stock already reserved at fulfill — audit conversion
+                    $this->stock->move(
+                        (int) $item['product_id'],
+                        0,
+                        'ship',
+                        $actorUserId,
+                        'boxes',
+                        $boxId,
+                        'ship after reserve',
+                    );
+                } else {
+                    $this->stock->move(
+                        (int) $item['product_id'],
+                        -$qty,
+                        'ship',
+                        $actorUserId,
+                        'boxes',
+                        $boxId,
+                        'ship manual box',
+                    );
+                }
+            }
+        }
 
         $this->logs?->log($actorUserId, 'box.ship', 'boxes', $boxId, null, [
             'tracking_number' => $data['tracking_number'] ?? null,

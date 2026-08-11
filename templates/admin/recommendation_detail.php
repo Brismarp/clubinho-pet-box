@@ -24,6 +24,11 @@ $items = $item['items'] ?? [];
         </select>
         <button type="submit">Atualizar status</button>
     </form>
+    <?php if (($item['status'] ?? '') === 'approved'): ?>
+        <form method="post" action="/admin/recommendations/<?= (int) $item['id'] ?>/fulfill" class="inline" style="margin-top:.75rem" onsubmit="return confirm('Gerar box e reservar estoque?');">
+            <button type="submit">Gerar box (reservar estoque)</button>
+        </form>
+    <?php endif; ?>
 </div>
 
 <div class="card">

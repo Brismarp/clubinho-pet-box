@@ -336,7 +336,7 @@ final class PdoQuizRepository
     {
         if ($id !== null) {
             $stmt = $this->pdo->prepare(
-                'UPDATE products SET name=?, sku=?, description=?, category=?, price=?, stock_qty=?, is_available=? WHERE id=?'
+                'UPDATE products SET name=?, sku=?, description=?, category=?, price=?, stock_qty=?, stock_min=?, is_available=? WHERE id=?'
             );
             $stmt->execute([
                 $data['name'],
@@ -345,14 +345,15 @@ final class PdoQuizRepository
                 $data['category'] ?? '',
                 $data['price'] !== '' ? $data['price'] : null,
                 (int) ($data['stock_qty'] ?? 0),
+                (int) ($data['stock_min'] ?? 0),
                 !empty($data['is_available']) ? 1 : 0,
                 $id,
             ]);
             $productId = $id;
         } else {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO products (name, sku, description, category, price, stock_qty, is_available)
-                 VALUES (?,?,?,?,?,?,?)'
+                'INSERT INTO products (name, sku, description, category, price, stock_qty, stock_min, is_available)
+                 VALUES (?,?,?,?,?,?,?,?)'
             );
             $stmt->execute([
                 $data['name'],
@@ -361,6 +362,7 @@ final class PdoQuizRepository
                 $data['category'] ?? '',
                 $data['price'] !== '' && $data['price'] !== null ? $data['price'] : null,
                 (int) ($data['stock_qty'] ?? 0),
+                (int) ($data['stock_min'] ?? 0),
                 !empty($data['is_available']) ? 1 : 0,
             ]);
             $productId = (int) $this->pdo->lastInsertId();

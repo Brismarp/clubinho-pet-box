@@ -1,7 +1,8 @@
--- 013: Expand existing blog posts + seed 8 roadmap articles
--- Idempotent: UPDATEs by slug; INSERTs guarded by NOT EXISTS.
+-- 013: Expand existing blog posts + seed roadmap articles
+-- Idempotent: UPDATE by slug; INSERT ... WHERE NOT EXISTS for all 13.
 
 UPDATE `blog_posts` SET
+  `title` = 'Por que uma box mensal muda a rotina com o seu cão',
   `excerpt` = 'Uma curadoria mensal tira o peso de escolher o próximo brinquedo ou petisco — e transforma o cuidado em ritual.',
   `body` = '<p>Ter um cão é alegria — e também uma rotina de compras: brinquedos que perdem o graça, petiscos que acabam no meio da semana e itens de higiene que você sempre esquece no mercado.</p>
 <p>Uma <strong>box de assinatura</strong> para cães resolve parte disso com curadoria: a cada mês chega uma seleção pensada para o perfil do pet. Você ganha previsibilidade sem abrir mão da surpresa.</p>
@@ -19,12 +20,33 @@ UPDATE `blog_posts` SET
 <h2>Happy, Love ou Deluxe</h2>
 <p>No Clubinho Pet Box montamos três caminhos. Se ainda não sabe qual escolher, o <a href="/quiz">quiz</a> indica o ponto de partida; depois você pode comparar no <a href="/planos">página de planos</a>.</p>
 <p>Assinar deixa o cuidado mais leve — e o vínculo, mais presente.</p>',
+  `cover_image` = '/assets/images/mood/q09.jpg',
   `seo_title` = 'Box mensal para cães | Clubinho Pet Box',
   `seo_description` = 'Entenda como uma assinatura de box mensal melhora a rotina com seu cão e vira um ritual de carinho.',
   `status` = 'published'
 WHERE `slug` = 'assinatura-box-mensal-caes';
 
+INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
+SELECT 'assinatura-box-mensal-caes', 'Por que uma box mensal muda a rotina com o seu cão', 'Uma curadoria mensal tira o peso de escolher o próximo brinquedo ou petisco — e transforma o cuidado em ritual.', '<p>Ter um cão é alegria — e também uma rotina de compras: brinquedos que perdem o graça, petiscos que acabam no meio da semana e itens de higiene que você sempre esquece no mercado.</p>
+<p>Uma <strong>box de assinatura</strong> para cães resolve parte disso com curadoria: a cada mês chega uma seleção pensada para o perfil do pet. Você ganha previsibilidade sem abrir mão da surpresa.</p>
+<h2>Ritual, não só entrega</h2>
+<p>O melhor da box não é só o produto. É o momento de abrir juntos, observar o que o cão escolhe primeiro e calibrar o ciclo seguinte (mastigação, calma, brincadeira, farejar).</p>
+<h3>O que costuma entrar numa boa curadoria</h3>
+<ul>
+<li>Brinquedo ou desafio mental alinhado ao porte e ao temperamento</li>
+<li>Petisco especial em porção consciente</li>
+<li>Item de conforto ou higiene para o cuidado do dia a dia</li>
+<li>Pequeno “extra” que deixa a abertura memorável</li>
+</ul>
+<h2>Para quem faz sentido assinar</h2>
+<p>Assinatura brilha quando você quer reduzir decisão, manter novidade na rotina e presentear o dog com constância — sem acumular compras por impulso.</p>
+<h2>Happy, Love ou Deluxe</h2>
+<p>No Clubinho Pet Box montamos três caminhos. Se ainda não sabe qual escolher, o <a href="/quiz">quiz</a> indica o ponto de partida; depois você pode comparar no <a href="/planos">página de planos</a>.</p>
+<p>Assinar deixa o cuidado mais leve — e o vínculo, mais presente.</p>', '/assets/images/mood/q09.jpg', 'published', '2026-02-01 10:00:00', 'Box mensal para cães | Clubinho Pet Box', 'Entenda como uma assinatura de box mensal melhora a rotina com seu cão e vira um ritual de carinho.'
+WHERE NOT EXISTS (SELECT 1 FROM `blog_posts` WHERE `slug` = 'assinatura-box-mensal-caes');
+
 UPDATE `blog_posts` SET
+  `title` = 'Petiscos saudáveis para cães: o que observar no rótulo',
   `excerpt` = 'Nem todo petisco “gourmet” é adequado. Veja sinais simples de qualidade e exageros a evitar.',
   `body` = '<p>Petiscos são ferramentas de vínculo e treino — mas também de calorias e ingredientes. Antes de celebrar o que veio na box (ou de colocar no carrinho), vale ler o rótulo com calma.</p>
 <h2>Sinais de cuidado no rótulo</h2>
@@ -44,12 +66,35 @@ UPDATE `blog_posts` SET
 </ul>
 <h2>Na curadoria Clubinho</h2>
 <p>Buscamos equilíbrio entre sabor e cuidado — especialmente para tutores que querem qualidade sem complicar a rotina. Quer calibrar o perfil do seu cão? Faça o <a href="/quiz">quiz</a> ou veja os <a href="/planos">planos</a>.</p>',
+  `cover_image` = '/assets/images/mood/q05.jpg',
   `seo_title` = 'Petiscos saudáveis para cães',
   `seo_description` = 'Como escolher petiscos melhores para o seu cão: rótulo, frequência e boas práticas.',
   `status` = 'published'
 WHERE `slug` = 'petiscos-saudaveis-caes';
 
+INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
+SELECT 'petiscos-saudaveis-caes', 'Petiscos saudáveis para cães: o que observar no rótulo', 'Nem todo petisco “gourmet” é adequado. Veja sinais simples de qualidade e exageros a evitar.', '<p>Petiscos são ferramentas de vínculo e treino — mas também de calorias e ingredientes. Antes de celebrar o que veio na box (ou de colocar no carrinho), vale ler o rótulo com calma.</p>
+<h2>Sinais de cuidado no rótulo</h2>
+<ul>
+<li>Composição clara, com proteína no início da lista</li>
+<li>Poucos aditivos desnecessários e nomes que você reconhece</li>
+<li>Tamanho e textura adequados ao porte e à idade do cão</li>
+<li>Indicação de uso e validade visíveis</li>
+</ul>
+<h2>Quanto e com que frequência</h2>
+<p>Use petiscos como recompensa pontual. Uma regra prática: trate petiscos como uma fatia pequena do “orçamento calórico” do dia. Se o cão engorda fácil, prefira pedacinhos menores ou reduza a ração proporcionalmente (com orientação do veterinário).</p>
+<h3>Erros comuns</h3>
+<ul>
+<li>Dar petisco humano gordo ou temperado “só um pouquinho”</li>
+<li>Deixar o dog associar latido a recompensa automática</li>
+<li>Trocar refeição por pilha de snacks</li>
+</ul>
+<h2>Na curadoria Clubinho</h2>
+<p>Buscamos equilíbrio entre sabor e cuidado — especialmente para tutores que querem qualidade sem complicar a rotina. Quer calibrar o perfil do seu cão? Faça o <a href="/quiz">quiz</a> ou veja os <a href="/planos">planos</a>.</p>', '/assets/images/mood/q05.jpg', 'published', '2026-02-05 10:00:00', 'Petiscos saudáveis para cães', 'Como escolher petiscos melhores para o seu cão: rótulo, frequência e boas práticas.'
+WHERE NOT EXISTS (SELECT 1 FROM `blog_posts` WHERE `slug` = 'petiscos-saudaveis-caes');
+
 UPDATE `blog_posts` SET
+  `title` = 'Ansiedade de separação em cães: sinais e rituais que ajudam',
   `excerpt` = 'Latidos, destruição e agitação na saída podem ser pedido de rotina — não birra.',
   `body` = '<p>Muitos cães sofrem quando o tutor sai. Não é “manha”: é desconforto real. Reconhecer cedo ajuda a montar rituais mais suaves — e evita que o problema escale.</p>
 <h2>Sinais comuns</h2>
@@ -70,12 +115,36 @@ UPDATE `blog_posts` SET
 </ol>
 <h2>Quando buscar ajuda</h2>
 <p>Se houver automutilação, reclamações de vizinhos constantes ou piora rápida, fale com veterinário comportamentalista. Enquanto isso, explorar mais conforto na rotina — por exemplo via <a href="/planos">plano Love</a> — e o <a href="/quiz">quiz</a> pode ajudar a alinhar a box ao perfil do dog.</p>',
+  `cover_image` = '/assets/images/mood/q06.jpg',
   `seo_title` = 'Ansiedade de separação em cães',
   `seo_description` = 'Sinais de ansiedade de separação e rituais práticos para deixar o cão mais seguro.',
   `status` = 'published'
 WHERE `slug` = 'ansiedade-separacao-caes';
 
+INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
+SELECT 'ansiedade-separacao-caes', 'Ansiedade de separação em cães: sinais e rituais que ajudam', 'Latidos, destruição e agitação na saída podem ser pedido de rotina — não birra.', '<p>Muitos cães sofrem quando o tutor sai. Não é “manha”: é desconforto real. Reconhecer cedo ajuda a montar rituais mais suaves — e evita que o problema escale.</p>
+<h2>Sinais comuns</h2>
+<ul>
+<li>Latidos, choro ou uivo logo após a porta fechar</li>
+<li>Destruição perto da saída ou em itens do tutor</li>
+<li>Agitação extrema nas despedidas (e euforia desarrazoada na volta)</li>
+<li>Babação, lambedura excessiva ou recusa de comida só na ausência</li>
+</ul>
+<h2>O que costuma ajudar</h2>
+<p>Saídas curtas e progressivas, enriquecimento ambiental (bruxquedo seguro, farejar, comedouro lento) e rotinas previsíveis reduzem o pico de estresse. Produtos de conforto podem complementar o plano — mas nunca substituem avaliação profissional em casos graves.</p>
+<h3>Ritual de saída mais leve</h3>
+<ol>
+<li>Prepare o ambiente (água, brinquedo, farejar) antes de pegar as chaves</li>
+<li>Despedida curta e neutra — sem drama prolongado</li>
+<li>Volte em janelas curtas no começo e aumente aos poucos</li>
+<li>Recompense calma, não a explosão de ansiedade</li>
+</ol>
+<h2>Quando buscar ajuda</h2>
+<p>Se houver automutilação, reclamações de vizinhos constantes ou piora rápida, fale com veterinário comportamentalista. Enquanto isso, explorar mais conforto na rotina — por exemplo via <a href="/planos">plano Love</a> — e o <a href="/quiz">quiz</a> pode ajudar a alinhar a box ao perfil do dog.</p>', '/assets/images/mood/q06.jpg', 'published', '2026-02-10 10:00:00', 'Ansiedade de separação em cães', 'Sinais de ansiedade de separação e rituais práticos para deixar o cão mais seguro.'
+WHERE NOT EXISTS (SELECT 1 FROM `blog_posts` WHERE `slug` = 'ansiedade-separacao-caes');
+
 UPDATE `blog_posts` SET
+  `title` = 'Ideias de presentes para cães (sem ser só mais um brinquedo)',
   `excerpt` = 'Datas especiais pedem intenção: conforto, cheiro, brincadeira ou cuidado.',
   `body` = '<p>Aniversário do dog, Dia dos Pets, volta de uma viagem — qualquer data pode ser motivo de carinho. O truque é escolher algo alinhado ao jeito do cão, não só ao que está em promoção.</p>
 <h2>Quatro direções de presente</h2>
@@ -90,12 +159,30 @@ UPDATE `blog_posts` SET
 <h2>Box como presente</h2>
 <p>Uma box resolve a dúvida do “o que dar” com curadoria e ainda traz a surpresa da abertura juntos. Ideal para quem quer presentear sem acumular coisas aleatórias.</p>
 <p>Compare <a href="/planos">Happy, Love e Deluxe</a> ou deixe o <a href="/quiz">quiz</a> sugerir o caminho.</p>',
+  `cover_image` = '/assets/images/mood/q07.jpg',
   `seo_title` = 'Presentes para cães com intenção',
   `seo_description` = 'Ideias de presentes para cães além do brinquedo comum — conforto, cuidado e surpresa.',
   `status` = 'published'
 WHERE `slug` = 'presentes-para-caes';
 
+INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
+SELECT 'presentes-para-caes', 'Ideias de presentes para cães (sem ser só mais um brinquedo)', 'Datas especiais pedem intenção: conforto, cheiro, brincadeira ou cuidado.', '<p>Aniversário do dog, Dia dos Pets, volta de uma viagem — qualquer data pode ser motivo de carinho. O truque é escolher algo alinhado ao jeito do cão, não só ao que está em promoção.</p>
+<h2>Quatro direções de presente</h2>
+<ul>
+<li><strong>Brincadeira:</strong> texturas novas e desafios mentais</li>
+<li><strong>Conforto:</strong> itens macios, cheiro familiar, cantinho acolhedor</li>
+<li><strong>Petiscos:</strong> recompensas especiais em porções conscientes</li>
+<li><strong>Cuidado:</strong> higiene e bem-estar no dia a dia</li>
+</ul>
+<h3>Como não errar</h3>
+<p>Observe porte, força de mordida, interesses (farejar × puxar × mastigar) e restrições alimentares. Presente bom é aquele que o cão usa — e que cabe na sua casa.</p>
+<h2>Box como presente</h2>
+<p>Uma box resolve a dúvida do “o que dar” com curadoria e ainda traz a surpresa da abertura juntos. Ideal para quem quer presentear sem acumular coisas aleatórias.</p>
+<p>Compare <a href="/planos">Happy, Love e Deluxe</a> ou deixe o <a href="/quiz">quiz</a> sugerir o caminho.</p>', '/assets/images/mood/q07.jpg', 'published', '2026-02-15 10:00:00', 'Presentes para cães com intenção', 'Ideias de presentes para cães além do brinquedo comum — conforto, cuidado e surpresa.'
+WHERE NOT EXISTS (SELECT 1 FROM `blog_posts` WHERE `slug` = 'presentes-para-caes');
+
 UPDATE `blog_posts` SET
+  `title` = 'Higiene básica do cão: o essencial sem exagero',
   `excerpt` = 'Banho, orelhas e pelos: uma rotina leve protege a pele e o bem-estar.',
   `body` = '<p>Higiene boa não precisa ser ritual diário complexo. O essencial, feito com constância, já muda a pele, o cheiro e o conforto do cão.</p>
 <h2>Checklist leve</h2>
@@ -114,10 +201,31 @@ UPDATE `blog_posts` SET
 <h2>Cuidado sem exagero</h2>
 <p>Mais banho nem sempre é melhor. Respeite a pele: se houver dúvida, o veterinário orienta frequência e produtos. Itens de higiene bem escolhidos evitam irritações.</p>
 <p>Na assinatura Clubinho, a curadoria também olha para esse lado do cuidado. Explore os <a href="/planos">planos</a> ou descubra o encaixe no <a href="/quiz">quiz</a>.</p>',
+  `cover_image` = '/assets/images/mood/q08.jpg',
   `seo_title` = 'Higiene básica do cão',
   `seo_description` = 'Rotina essencial de higiene para cães: banho, orelhas e produtos sem exagero.',
   `status` = 'published'
 WHERE `slug` = 'higiene-basica-caes';
+
+INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
+SELECT 'higiene-basica-caes', 'Higiene básica do cão: o essencial sem exagero', 'Banho, orelhas e pelos: uma rotina leve protege a pele e o bem-estar.', '<p>Higiene boa não precisa ser ritual diário complexo. O essencial, feito com constância, já muda a pele, o cheiro e o conforto do cão.</p>
+<h2>Checklist leve</h2>
+<ul>
+<li>Banho na frequência indicada pelo tipo de pelagem e rotina</li>
+<li>Secagem completa em dobras, axilas e entre dedos</li>
+<li>Atenção a orelhas (cheiro, vermelhidão, coceira) e unhas</li>
+<li>Produtos adequados à pele do dog — evite improvisar com cosmético humano</li>
+</ul>
+<h3>Sinais de que algo está fora</h3>
+<ul>
+<li>Coceira constante, oleosidade excessiva ou odor forte persistente</li>
+<li>Vermelhidão em orelhas ou entre dedos</li>
+<li>Pelos quebradiços após banhos muito frequentes</li>
+</ul>
+<h2>Cuidado sem exagero</h2>
+<p>Mais banho nem sempre é melhor. Respeite a pele: se houver dúvida, o veterinário orienta frequência e produtos. Itens de higiene bem escolhidos evitam irritações.</p>
+<p>Na assinatura Clubinho, a curadoria também olha para esse lado do cuidado. Explore os <a href="/planos">planos</a> ou descubra o encaixe no <a href="/quiz">quiz</a>.</p>', '/assets/images/mood/q08.jpg', 'published', '2026-02-20 10:00:00', 'Higiene básica do cão', 'Rotina essencial de higiene para cães: banho, orelhas e produtos sem exagero.'
+WHERE NOT EXISTS (SELECT 1 FROM `blog_posts` WHERE `slug` = 'higiene-basica-caes');
 
 INSERT INTO `blog_posts` (`slug`, `title`, `excerpt`, `body`, `cover_image`, `status`, `published_at`, `seo_title`, `seo_description`)
 SELECT 'enriquecimento-ambiental-apartamento', 'Enriquecimento ambiental para cães em apartamento', 'Espaço pequeno não precisa ser vida monótona: farejar, mastigar e desafios curtos mudam o humor do dog.', '<p>Apartamento não é sentença de tédio. Cães precisam gastar corpo <em>e</em> mente — e o enriquecimento ambiental é o atalho mais gentil quando o parque fica longe ou o dia chove.</p>

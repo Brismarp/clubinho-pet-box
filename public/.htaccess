@@ -1,6 +1,9 @@
-DirectoryIndex index.html index.php
+DirectoryIndex index.php index.html
 
 RewriteEngine On
+
+# Legacy static home → PHP home
+RewriteRule ^index\.html$ / [R=301,L]
 
 # Serve existing files/directories as-is
 RewriteCond %{REQUEST_FILENAME} -f [OR]

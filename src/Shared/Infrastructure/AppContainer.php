@@ -17,10 +17,14 @@ use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoAnalyticsEventRepository
 use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoLeadRepository;
 use ClubinhoPet\Content\Application\GetAdminPostHandler;
 use ClubinhoPet\Content\Application\GetPublishedPostBySlugHandler;
+use ClubinhoPet\Content\Application\HomeContentHandlers;
 use ClubinhoPet\Content\Application\ListAdminPostsHandler;
 use ClubinhoPet\Content\Application\ListPublishedPostsHandler;
 use ClubinhoPet\Content\Application\SavePostHandler;
+use ClubinhoPet\Content\Infrastructure\Persistence\PdoFaqItemRepository;
+use ClubinhoPet\Content\Infrastructure\Persistence\PdoHappyMediaRepository;
 use ClubinhoPet\Content\Infrastructure\Persistence\PdoPostRepository;
+use ClubinhoPet\Content\Infrastructure\Persistence\PdoTestimonialRepository;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
@@ -260,5 +264,29 @@ final class AppContainer
     public function savePost(): SavePostHandler
     {
         return new SavePostHandler($this->postRepository());
+    }
+
+    public function testimonialRepository(): PdoTestimonialRepository
+    {
+        return new PdoTestimonialRepository($this->pdo);
+    }
+
+    public function happyMediaRepository(): PdoHappyMediaRepository
+    {
+        return new PdoHappyMediaRepository($this->pdo);
+    }
+
+    public function faqItemRepository(): PdoFaqItemRepository
+    {
+        return new PdoFaqItemRepository($this->pdo);
+    }
+
+    public function homeContent(): HomeContentHandlers
+    {
+        return new HomeContentHandlers(
+            $this->testimonialRepository(),
+            $this->happyMediaRepository(),
+            $this->faqItemRepository(),
+        );
     }
 }

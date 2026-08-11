@@ -9,7 +9,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>Links</h4>
-                    <p><a href="/index.html">Início</a></p>
+                    <p><a href="/">Início</a></p>
                     <p><a href="/planos.html">Planos</a></p>
                     <p><a href="/blog">Blog</a></p>
                     <p><a href="/sobre.html">Sobre</a></p>

@@ -114,6 +114,9 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 '/admin/contacts' => 'Contatos',
                 '/admin/leads' => 'Leads',
                 '/admin/blog' => 'Blog',
+                '/admin/testimonials' => 'Depoimentos',
+                '/admin/happy-media' => 'Pets Felizes',
+                '/admin/faq' => 'FAQ',
                 '/admin/settings' => 'Settings',
             ];
             foreach ($links as $href => $label):

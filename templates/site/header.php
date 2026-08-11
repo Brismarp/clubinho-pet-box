@@ -41,14 +41,14 @@ $activeNav = $activeNav ?? null;
     <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <header class="header">
         <div class="header-container">
-            <a href="/index.html" class="logo-link">
+            <a href="/" class="logo-link">
                 <img src="/assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" width="176" height="56" onerror="this.src='/assets/images/logo/logo.jpg'">
             </a>
             <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
                 <span></span><span></span><span></span>
             </button>
             <nav id="primary-nav" class="nav" aria-label="Principal">
-                <a href="/index.html" class="nav-link<?= $activeNav === 'home' ? ' is-active' : '' ?>">Início</a>
+                <a href="/" class="nav-link<?= $activeNav === 'home' ? ' is-active' : '' ?>"<?= $activeNav === 'home' ? ' aria-current="page"' : '' ?>>Início</a>
                 <a href="/planos.html" class="nav-link<?= $activeNav === 'planos' ? ' is-active' : '' ?>">Planos</a>
                 <a href="/blog" class="nav-link<?= $activeNav === 'blog' ? ' is-active' : '' ?>"<?= $activeNav === 'blog' ? ' aria-current="page"' : '' ?>>Blog</a>
                 <a href="/sobre.html" class="nav-link<?= $activeNav === 'sobre' ? ' is-active' : '' ?>">Sobre</a>

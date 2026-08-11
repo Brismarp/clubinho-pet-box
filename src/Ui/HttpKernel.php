@@ -19,8 +19,8 @@ final class HttpKernel
     {
         $path = '/' . trim($path, '/');
         if ($path === '/') {
-            header('Location: /index.html');
-            exit;
+            $this->homePage();
+            return;
         }
 
         try {
@@ -76,6 +76,30 @@ final class HttpKernel
                     => $this->adminBlogForm((int) $m[1]),
                 $method === 'POST' && preg_match('#^/admin/blog/(\d+)$#', $path, $m) === 1
                     => $this->adminBlogSave((int) $m[1]),
+
+                $method === 'GET' && $path === '/admin/testimonials' => $this->adminTestimonials(),
+                $method === 'GET' && $path === '/admin/testimonials/new' => $this->adminTestimonialForm(null),
+                $method === 'POST' && $path === '/admin/testimonials' => $this->adminTestimonialSave(null),
+                $method === 'GET' && preg_match('#^/admin/testimonials/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminTestimonialForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/testimonials/(\d+)$#', $path, $m) === 1
+                    => $this->adminTestimonialSave((int) $m[1]),
+
+                $method === 'GET' && $path === '/admin/happy-media' => $this->adminHappyMedia(),
+                $method === 'GET' && $path === '/admin/happy-media/new' => $this->adminHappyMediaForm(null),
+                $method === 'POST' && $path === '/admin/happy-media' => $this->adminHappyMediaSave(null),
+                $method === 'GET' && preg_match('#^/admin/happy-media/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminHappyMediaForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/happy-media/(\d+)$#', $path, $m) === 1
+                    => $this->adminHappyMediaSave((int) $m[1]),
+
+                $method === 'GET' && $path === '/admin/faq' => $this->adminFaq(),
+                $method === 'GET' && $path === '/admin/faq/new' => $this->adminFaqForm(null),
+                $method === 'POST' && $path === '/admin/faq' => $this->adminFaqSave(null),
+                $method === 'GET' && preg_match('#^/admin/faq/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminFaqForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/faq/(\d+)$#', $path, $m) === 1
+                    => $this->adminFaqSave((int) $m[1]),
 
                 $method === 'GET' && $path === '/api/v1/admin/plans' => $this->apiAuthJson(fn () => $this->app->listPlans()->handle()),
                 $method === 'GET' && $path === '/api/v1/admin/subscriptions' => $this->apiAuthJson(fn () => $this->app->listSubscriptions()->handle()),
@@ -532,6 +556,165 @@ final class HttpKernel
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    private function homePage(): void
+    {
+        $home = $this->app->homeContent();
+        $testimonials = $home->publishedTestimonials();
+        $happyMedia = $home->approvedHappyMedia();
+        $faqs = $home->publishedFaqs();
+        require BASE_PATH . '/templates/site/home.php';
+    }
+
+    private function adminTestimonials(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('testimonials', ['items' => $this->app->homeContent()->allTestimonials()]);
+    }
+
+    private function adminTestimonialForm(?int $id): void
+    {
+        $this->requireAdmin();
+        $item = null;
+        if ($id !== null) {
+            foreach ($this->app->homeContent()->allTestimonials() as $row) {
+                if ((int) $row['id'] === $id) {
+                    $item = $row;
+                    break;
+                }
+            }
+            if ($item === null) {
+                throw new DomainException('Testimonial not found.');
+            }
+        }
+        $this->renderAdmin('testimonial_form', ['item' => $item, 'error' => null]);
+    }
+
+    private function adminTestimonialSave(?int $id): void
+    {
+        $this->requireAdmin();
+        try {
+            $data = $_POST;
+            $uploaded = $this->storeUpload('photo_file', 'testimonials');
+            if ($uploaded !== null) {
+                $data['photo_path'] = $uploaded;
+            }
+            $this->app->homeContent()->saveTestimonial($data, $id);
+            header('Location: /admin/testimonials?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $item = $_POST;
+            $item['id'] = $id;
+            $this->renderAdmin('testimonial_form', ['item' => $item, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function adminHappyMedia(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('happy_media', ['items' => $this->app->homeContent()->allHappyMedia()]);
+    }
+
+    private function adminHappyMediaForm(?int $id): void
+    {
+        $this->requireAdmin();
+        $item = null;
+        if ($id !== null) {
+            foreach ($this->app->homeContent()->allHappyMedia() as $row) {
+                if ((int) $row['id'] === $id) {
+                    $item = $row;
+                    break;
+                }
+            }
+            if ($item === null) {
+                throw new DomainException('Media not found.');
+            }
+        }
+        $this->renderAdmin('happy_media_form', ['item' => $item, 'error' => null]);
+    }
+
+    private function adminHappyMediaSave(?int $id): void
+    {
+        $this->requireAdmin();
+        try {
+            $data = $_POST;
+            $uploaded = $this->storeUpload('media_file', 'happy');
+            if ($uploaded !== null) {
+                $data['media_path'] = $uploaded;
+            }
+            $this->app->homeContent()->saveHappyMedia($data, $id);
+            header('Location: /admin/happy-media?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $item = $_POST;
+            $item['id'] = $id;
+            $this->renderAdmin('happy_media_form', ['item' => $item, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function adminFaq(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('faq', ['items' => $this->app->homeContent()->allFaqs()]);
+    }
+
+    private function adminFaqForm(?int $id): void
+    {
+        $this->requireAdmin();
+        $item = null;
+        if ($id !== null) {
+            foreach ($this->app->homeContent()->allFaqs() as $row) {
+                if ((int) $row['id'] === $id) {
+                    $item = $row;
+                    break;
+                }
+            }
+            if ($item === null) {
+                throw new DomainException('FAQ not found.');
+            }
+        }
+        $this->renderAdmin('faq_form', ['item' => $item, 'error' => null]);
+    }
+
+    private function adminFaqSave(?int $id): void
+    {
+        $this->requireAdmin();
+        try {
+            if (!isset($_POST['is_published'])) {
+                $_POST['is_published'] = '0';
+            }
+            $this->app->homeContent()->saveFaq($_POST, $id);
+            header('Location: /admin/faq?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $item = $_POST;
+            $item['id'] = $id;
+            $this->renderAdmin('faq_form', ['item' => $item, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function storeUpload(string $field, string $subdir): ?string
+    {
+        if (empty($_FILES[$field]['tmp_name']) || !is_uploaded_file($_FILES[$field]['tmp_name'])) {
+            return null;
+        }
+        $name = (string) ($_FILES[$field]['name'] ?? '');
+        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+            throw new DomainException('Invalid upload type.');
+        }
+        $dir = BASE_PATH . '/public/uploads/' . $subdir;
+        if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+            throw new DomainException('Upload directory unavailable.');
+        }
+        $filename = bin2hex(random_bytes(8)) . '.' . $ext;
+        $dest = $dir . '/' . $filename;
+        if (!move_uploaded_file($_FILES[$field]['tmp_name'], $dest)) {
+            throw new DomainException('Upload failed.');
+        }
+
+        return '/uploads/' . $subdir . '/' . $filename;
     }
 
     private function adminMarkContactRead(): void

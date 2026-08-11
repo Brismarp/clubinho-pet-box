@@ -52,7 +52,7 @@ $activeNav = $activeNav ?? null;
                 <a href="/planos.html" class="nav-link<?= $activeNav === 'planos' ? ' is-active' : '' ?>">Planos</a>
                 <a href="/blog" class="nav-link<?= $activeNav === 'blog' ? ' is-active' : '' ?>"<?= $activeNav === 'blog' ? ' aria-current="page"' : '' ?>>Blog</a>
                 <a href="/sobre.html" class="nav-link<?= $activeNav === 'sobre' ? ' is-active' : '' ?>">Sobre</a>
-                <a href="/quiz.html" class="nav-link<?= $activeNav === 'quiz' ? ' is-active' : '' ?>">Quiz</a>
+                <a href="/quiz" class="nav-link<?= $activeNav === 'quiz' ? ' is-active' : '' ?>"<?= $activeNav === 'quiz' ? ' aria-current="page"' : '' ?>>Quiz</a>
                 <a href="/contato.html" class="nav-link<?= $activeNav === 'contato' ? ' is-active' : '' ?>">Contato</a>
                 <a href="/planos.html" class="btn btn-primary">Assinar</a>
             </nav>

@@ -25,6 +25,10 @@ use ClubinhoPet\Content\Infrastructure\Persistence\PdoFaqItemRepository;
 use ClubinhoPet\Content\Infrastructure\Persistence\PdoHappyMediaRepository;
 use ClubinhoPet\Content\Infrastructure\Persistence\PdoPostRepository;
 use ClubinhoPet\Content\Infrastructure\Persistence\PdoTestimonialRepository;
+use ClubinhoPet\Quiz\Application\QuizHandlers;
+use ClubinhoPet\Quiz\Domain\AttributeMapper;
+use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
+use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
@@ -287,6 +291,20 @@ final class AppContainer
             $this->testimonialRepository(),
             $this->happyMediaRepository(),
             $this->faqItemRepository(),
+        );
+    }
+
+    public function quizRepository(): PdoQuizRepository
+    {
+        return new PdoQuizRepository($this->pdo);
+    }
+
+    public function quiz(): QuizHandlers
+    {
+        return new QuizHandlers(
+            $this->quizRepository(),
+            new AttributeMapper(),
+            new MockRecommendationEngine(),
         );
     }
 }

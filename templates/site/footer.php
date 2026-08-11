@@ -13,7 +13,7 @@
                     <p><a href="/planos.html">Planos</a></p>
                     <p><a href="/blog">Blog</a></p>
                     <p><a href="/sobre.html">Sobre</a></p>
-                    <p><a href="/quiz.html">Quiz</a></p>
+                    <p><a href="/quiz">Quiz</a></p>
                     <p><a href="/contato.html">Contato</a></p>
                     <p><a href="/assinatura.html">Assinatura</a></p>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="footer-section">
                     <h4>Assine</h4>
                     <p><a href="/planos.html">Ver planos</a></p>
-                    <p><a href="/quiz.html">Descobrir no quiz</a></p>
+                    <p><a href="/quiz">Descobrir no quiz</a></p>
                 </div>
             </div>
             <div class="footer-bottom">

@@ -1156,6 +1156,30 @@ textarea { min-height: 8rem; resize: vertical; }
 .quiz-question { display: none; }
 .quiz-question.active { display: block; }
 
+.quiz-error {
+  background: #fdecec;
+  border: 1px solid #e2a0a0;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  color: #5c1f1f;
+}
+
+.quiz-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.quiz-input {
+  width: 100%;
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+}
+
 .question-title {
   font-size: clamp(1.35rem, 2.4vw, 1.85rem);
   margin-block-end: var(--space-5);

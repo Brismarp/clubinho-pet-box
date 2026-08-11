@@ -32,7 +32,7 @@ require BASE_PATH . '/templates/site/header.php';
             <?= $post['body'] /* trusted admin HTML */ ?>
         </div>
         <div style="margin-top:var(--space-8);text-align:center">
-            <a class="btn btn-gold" href="/quiz.html">Encontrar minha box</a>
+            <a class="btn btn-gold" href="/quiz">Encontrar minha box</a>
             <a class="btn btn-secondary" href="/blog">Voltar ao blog</a>
         </div>
     </div>

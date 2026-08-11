@@ -22,7 +22,7 @@ require BASE_PATH . '/templates/site/header.php';
                 Responda o quiz, a gente analisa e monta uma seleção pensada para a rotina, o porte e as preferências do seu dog — todo mês.
             </p>
             <div class="hero-actions">
-                <a href="/quiz.html" class="btn btn-primary">Descobrir a box do meu pet</a>
+                <a href="/quiz" class="btn btn-primary">Descobrir a box do meu pet</a>
                 <a href="/planos.html" class="btn btn-secondary">Conhecer os planos</a>
             </div>
         </div>
@@ -78,7 +78,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <li>Curadoria alinhada ao nível de energia e ao que o tutor não quer receber</li>
                     <li>Espaço para revisão humana antes da expedição</li>
                 </ul>
-                <a href="/quiz.html" class="btn btn-primary mt-xl">Começar pelo quiz</a>
+                <a href="/quiz" class="btn btn-primary mt-xl">Começar pelo quiz</a>
             </div>
             <div class="reveal">
                 <div class="media-frame media-frame--portrait">
@@ -166,7 +166,7 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="lead">Momentos reais de tutores e pets com a curadoria Clubinho.</p>
         </header>
         <?php if ($happyMedia === []): ?>
-            <p class="muted" style="text-align:center">Em breve novas fotos. Enquanto isso, faça o <a href="/quiz.html">quiz</a>.</p>
+            <p class="muted" style="text-align:center">Em breve novas fotos. Enquanto isso, faça o <a href="/quiz">quiz</a>.</p>
         <?php else: ?>
             <div class="happy-gallery">
                 <?php foreach ($happyMedia as $media):
@@ -256,7 +256,7 @@ require BASE_PATH . '/templates/site/header.php';
         <h2>Descubra a experiência ideal para o seu pet</h2>
         <p class="lead">Comece pelo quiz ou escolha um plano — a box chega com cuidado e surpresa.</p>
         <div class="hero-actions" style="justify-content:center">
-            <a href="/quiz.html" class="btn btn-gold">Fazer o quiz</a>
+            <a href="/quiz" class="btn btn-gold">Fazer o quiz</a>
             <a href="/planos.html" class="btn btn-secondary">Ver planos</a>
         </div>
     </div>

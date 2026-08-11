@@ -44,6 +44,16 @@ final class HttpKernel
                 $method === 'GET' && $path === '/blog' => $this->blogIndex(),
                 $method === 'GET' && preg_match('#^/blog/([a-z0-9\-]+)$#', $path, $m) === 1
                     => $this->blogShow($m[1]),
+                $method === 'GET' && $path === '/quiz' => $this->quizPage(),
+                $method === 'POST' && $path === '/api/v1/quiz/sessions' => $this->quizStart(),
+                $method === 'GET' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)$#', $path, $m) === 1
+                    => $this->json($this->app->quiz()->getSession($m[1])),
+                $method === 'PATCH' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)$#', $path, $m) === 1
+                    => $this->json($this->app->quiz()->saveStep($m[1], $this->jsonBody())),
+                $method === 'POST' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)/save$#', $path, $m) === 1
+                    => $this->json($this->app->quiz()->saveStep($m[1], $this->jsonBody())),
+                $method === 'POST' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)/complete$#', $path, $m) === 1
+                    => $this->json($this->app->quiz()->complete($m[1], $this->jsonBody())),
                 $method === 'POST' && $path === '/api/v1/events' => $this->ingestEvents(),
                 $method === 'POST' && $path === '/subscribe' => $this->subscribe(),
                 $method === 'POST' && $path === '/contact' => $this->contact(),
@@ -100,6 +110,23 @@ final class HttpKernel
                     => $this->adminFaqForm((int) $m[1]),
                 $method === 'POST' && preg_match('#^/admin/faq/(\d+)$#', $path, $m) === 1
                     => $this->adminFaqSave((int) $m[1]),
+
+                $method === 'GET' && $path === '/admin/quizzes' => $this->adminQuizzes(),
+                $method === 'GET' && preg_match('#^/admin/quizzes/(\d+)$#', $path, $m) === 1
+                    => $this->adminQuizDetail((int) $m[1]),
+                $method === 'GET' && $path === '/admin/products' => $this->adminProducts(),
+                $method === 'GET' && $path === '/admin/products/new' => $this->adminProductForm(null),
+                $method === 'POST' && $path === '/admin/products' => $this->adminProductSave(null),
+                $method === 'GET' && preg_match('#^/admin/products/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminProductForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/products/(\d+)$#', $path, $m) === 1
+                    => $this->adminProductSave((int) $m[1]),
+                $method === 'GET' && $path === '/admin/recommendations' => $this->adminRecommendations(),
+                $method === 'GET' && preg_match('#^/admin/recommendations/(\d+)$#', $path, $m) === 1
+                    => $this->adminRecommendationDetail((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/recommendations/(\d+)/status$#', $path, $m) === 1
+                    => $this->adminRecommendationStatus((int) $m[1]),
+                $method === 'POST' && $path === '/admin/recommendations/item' => $this->adminRecommendationItemToggle(),
 
                 $method === 'GET' && $path === '/api/v1/admin/plans' => $this->apiAuthJson(fn () => $this->app->listPlans()->handle()),
                 $method === 'GET' && $path === '/api/v1/admin/subscriptions' => $this->apiAuthJson(fn () => $this->app->listSubscriptions()->handle()),
@@ -179,10 +206,11 @@ final class HttpKernel
             ['loc' => $base . '/blog', 'priority' => '0.85', 'changefreq' => 'weekly'],
             ['loc' => $base . '/sobre.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => $base . '/contato.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['loc' => $base . '/quiz.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/quiz', 'priority' => '0.8', 'changefreq' => 'monthly'],
             ['loc' => $base . '/assinatura.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
         ];
 
+        // keep legacy quiz.html out of sitemap
         try {
             foreach ($this->app->listPlans()->handle() as $plan) {
                 $slug = (string) ($plan['slug'] ?? '');
@@ -565,6 +593,108 @@ final class HttpKernel
         $happyMedia = $home->approvedHappyMedia();
         $faqs = $home->publishedFaqs();
         require BASE_PATH . '/templates/site/home.php';
+    }
+
+    private function quizPage(): void
+    {
+        $activeNav = 'quiz';
+        $pageTitle = 'Quiz | Clubinho Pet Box';
+        $metaDescription = 'Quiz inteligente: responda sobre o perfil do pet e descubra a box ideal.';
+        $canonicalPath = '/quiz';
+        require BASE_PATH . '/templates/site/quiz.php';
+    }
+
+    private function quizStart(): void
+    {
+        $body = $this->jsonBody();
+        $token = isset($body['token']) ? (string) $body['token'] : null;
+        $this->json($this->app->quiz()->start($token ?: null), 201);
+    }
+
+    private function adminQuizzes(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('quizzes', ['items' => $this->app->quiz()->adminListSessions()]);
+    }
+
+    private function adminQuizDetail(int $id): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('quiz_detail', ['item' => $this->app->quiz()->adminSessionDetail($id)]);
+    }
+
+    private function adminProducts(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('products', ['items' => $this->app->quiz()->adminListProducts()]);
+    }
+
+    private function adminProductForm(?int $id): void
+    {
+        $this->requireAdmin();
+        $item = $id !== null ? $this->app->quiz()->adminGetProduct($id) : null;
+        if ($id !== null && $item === null) {
+            throw new DomainException('Product not found.');
+        }
+        $this->renderAdmin('product_form', ['item' => $item, 'error' => null]);
+    }
+
+    private function adminProductSave(?int $id): void
+    {
+        $this->requireAdmin();
+        try {
+            if (!isset($_POST['is_available'])) {
+                $_POST['is_available'] = '0';
+            }
+            $this->app->quiz()->adminSaveProduct($_POST, $id);
+            header('Location: /admin/products?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $item = $_POST;
+            $item['id'] = $id;
+            $this->renderAdmin('product_form', ['item' => $item, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function adminRecommendations(): void
+    {
+        $this->requireAdmin();
+        $status = isset($_GET['status']) ? (string) $_GET['status'] : 'pending_review';
+        if ($status === 'all') {
+            $status = null;
+        }
+        $this->renderAdmin('recommendations', [
+            'items' => $this->app->quiz()->adminListRecommendations($status),
+            'status' => $status ?? 'all',
+        ]);
+    }
+
+    private function adminRecommendationDetail(int $id): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('recommendation_detail', [
+            'item' => $this->app->quiz()->adminRecommendationDetail($id),
+        ]);
+    }
+
+    private function adminRecommendationStatus(int $id): void
+    {
+        $this->requireAdmin();
+        $status = (string) ($_POST['status'] ?? '');
+        $this->app->quiz()->adminSetRecommendationStatus($id, $status);
+        header('Location: /admin/recommendations/' . $id . '?saved=1');
+        exit;
+    }
+
+    private function adminRecommendationItemToggle(): void
+    {
+        $this->requireAdmin();
+        $itemId = (int) ($_POST['item_id'] ?? 0);
+        $selected = ((string) ($_POST['is_selected'] ?? '1')) === '1';
+        $recId = (int) ($_POST['recommendation_id'] ?? 0);
+        $this->app->quiz()->adminToggleItem($itemId, $selected);
+        header('Location: /admin/recommendations/' . $recId . '?saved=1');
+        exit;
     }
 
     private function adminTestimonials(): void

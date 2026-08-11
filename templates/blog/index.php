@@ -19,7 +19,7 @@ require BASE_PATH . '/templates/site/header.php';
 <section class="section bg-white">
     <div class="container">
         <?php if ($posts === []): ?>
-            <p class="empty">Em breve novos artigos. Enquanto isso, faça o <a href="/quiz.html">quiz</a> ou veja os <a href="/planos.html">planos</a>.</p>
+            <p class="empty">Em breve novos artigos. Enquanto isso, faça o <a href="/quiz">quiz</a> ou veja os <a href="/planos.html">planos</a>.</p>
         <?php else: ?>
             <div class="blog-list">
                 <?php foreach ($posts as $post):
@@ -55,7 +55,7 @@ require BASE_PATH . '/templates/site/header.php';
             <h2>Descubra a box ideal</h2>
             <p class="lead">Responda o quiz ou escolha um plano.</p>
             <div class="hero-actions" style="justify-content:center">
-                <a class="btn btn-gold" href="/quiz.html">Fazer quiz</a>
+                <a class="btn btn-gold" href="/quiz">Fazer quiz</a>
                 <a class="btn btn-secondary" href="/planos.html">Ver planos</a>
             </div>
         </div>

@@ -33,7 +33,7 @@ require BASE_PATH . '/templates/site/header.php';
             <h2>Compartilhamento</h2>
             <p>Podemos compartilhar dados com processadores necessários (pagamento, hospedagem, logística), sob contrato e finalidade limitada. Não vendemos dados pessoais.</p>
             <h2>Retenção e direitos</h2>
-            <p>Mantemos dados pelo tempo necessário às finalidades e à legislação. Você pode solicitar acesso, correção, eliminação ou oposição pelo e-mail <a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a>.</p>
+            <p>Mantemos dados pelo tempo necessário às finalidades e à legislação. Você pode solicitar acesso, correção, eliminação ou oposição pelo e-mail <a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a>. Pedidos de exportação ou exclusão (DSAR) também podem ser atendidos pelo time de atendimento via CRM administrativo, com registro de auditoria.</p>
             <h2>Segurança</h2>
             <p>Adotamos controles de acesso ao painel administrativo, sessões autenticadas e registro de alterações relevantes. Integrações externas em ambiente de desenvolvimento podem operar em modo mock sem envio real.</p>
             <p class="muted">Última atualização: agosto/2026.</p>

@@ -8,6 +8,10 @@ declare(strict_types=1);
 /** @var list<array<string,mixed>> $payments */
 ?>
 <p><a href="/admin/customers">← Clientes</a></p>
+<?php if (isset($_GET['erased'])): ?><div class="flash">Dados do cliente anonimizados/apagados (DSAR).</div><?php endif; ?>
+<?php if (isset($_GET['erase_error'])): ?><div class="flash" style="background:#ffe8e8;border-color:#f5c2c2">
+    <?= htmlspecialchars((string) $_GET['erase_error'], ENT_QUOTES, 'UTF-8') ?>
+</div><?php endif; ?>
 <h1><?= htmlspecialchars((string) $customer['name'], ENT_QUOTES, 'UTF-8') ?></h1>
 <div class="card">
     <p><strong>E-mail:</strong> <?= htmlspecialchars((string) $customer['email'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -16,6 +20,19 @@ declare(strict_types=1);
         <?= htmlspecialchars((string) ($customer['state'] ?? ''), ENT_QUOTES, 'UTF-8') ?></p>
     <p><strong>LGPD:</strong> <?= htmlspecialchars((string) ($customer['consent_lgpd_at'] ?? '—'), ENT_QUOTES, 'UTF-8') ?></p>
     <p class="muted"><?= htmlspecialchars((string) ($customer['notes'] ?? ''), ENT_QUOTES, 'UTF-8') ?></p>
+    <p>
+        <a href="/admin/customers/<?= (int) $customer['id'] ?>/export">Exportar JSON</a>
+    </p>
+</div>
+
+<div class="card">
+    <h2>Excluir dados (DSAR)</h2>
+    <p class="muted">Digite <strong>EXCLUIR</strong> para anonimizar/apagar dados pessoais deste cliente.</p>
+    <form method="post" action="/admin/customers/<?= (int) $customer['id'] ?>/erase" class="inline"
+          onsubmit="return confirm('Confirma exclusão/anonymização LGPD deste cliente?');">
+        <input type="text" name="confirm" placeholder="EXCLUIR" required autocomplete="off" style="max-width:10rem">
+        <button type="submit">Apagar dados</button>
+    </form>
 </div>
 
 <div class="card">

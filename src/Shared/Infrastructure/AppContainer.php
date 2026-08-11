@@ -27,7 +27,9 @@ use ClubinhoPet\Content\Infrastructure\Persistence\PdoPostRepository;
 use ClubinhoPet\Content\Infrastructure\Persistence\PdoTestimonialRepository;
 use ClubinhoPet\Quiz\Application\QuizHandlers;
 use ClubinhoPet\Quiz\Domain\AttributeMapper;
+use ClubinhoPet\Quiz\Domain\JsonRuleRecommendationEngine;
 use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
+use ClubinhoPet\Quiz\Domain\RecommendationEngine;
 use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
 use ClubinhoPet\Integrations\Application\KirvanoWebhookHandler;
 use ClubinhoPet\Integrations\Application\ListNotificationOutboxHandler;
@@ -40,6 +42,8 @@ use ClubinhoPet\Integrations\Infrastructure\MockShipmentProvider;
 use ClubinhoPet\Billing\Application\ConfirmMockPaymentHandler;
 use ClubinhoPet\Billing\Application\ListPaymentsHandler;
 use ClubinhoPet\Crm\Application\CustomerCrmHandlers;
+use ClubinhoPet\Crm\Application\EraseCustomerDataHandler;
+use ClubinhoPet\Crm\Application\ExportCustomerDataHandler;
 use ClubinhoPet\Fulfillment\Application\AdvanceShipmentHandler;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\FulfillRecommendationHandler;
@@ -316,6 +320,16 @@ final class AppContainer
         return new CustomerCrmHandlers($this->pdo);
     }
 
+    public function exportCustomerData(): ExportCustomerDataHandler
+    {
+        return new ExportCustomerDataHandler($this->pdo);
+    }
+
+    public function eraseCustomerData(): EraseCustomerDataHandler
+    {
+        return new EraseCustomerDataHandler($this->pdo, $this->activityLogRepository());
+    }
+
     public function listPayments(): ListPaymentsHandler
     {
         return new ListPaymentsHandler($this->pdo);
@@ -399,12 +413,28 @@ final class AppContainer
         return new PdoQuizRepository($this->pdo);
     }
 
+    public function recommendationEngine(): RecommendationEngine
+    {
+        $json = new JsonRuleRecommendationEngine($this->pdo);
+        if ($json->activeRuleset() === null) {
+            return new MockRecommendationEngine();
+        }
+
+        return $json;
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function listRecommendationRuleSets(): array
+    {
+        return (new JsonRuleRecommendationEngine($this->pdo))->listRuleSets();
+    }
+
     public function quiz(): QuizHandlers
     {
         return new QuizHandlers(
             $this->quizRepository(),
             new AttributeMapper(),
-            new MockRecommendationEngine(),
+            $this->recommendationEngine(),
             $this->notifier(),
             $this->activityLogRepository(),
         );

@@ -63,6 +63,8 @@ final class HttpKernel
                 $method === 'GET' && $path === '/assinatura' => $this->marketingPage('assinatura'),
                 $method === 'GET' && $path === '/privacidade' => $this->marketingPage('privacidade'),
                 $method === 'GET' && $path === '/termos' => $this->marketingPage('termos'),
+                $method === 'GET' && $path === '/enviar-foto' => $this->enviarFotoPage(),
+                $method === 'POST' && $path === '/enviar-foto' => $this->enviarFotoSubmit(),
                 $method === 'POST' && $path === '/webhooks/kirvano' => $this->kirvanoWebhook(),
                 $method === 'POST' && $path === '/api/v1/quiz/sessions' => $this->quizStart(),
                 $method === 'GET' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)$#', $path, $m) === 1
@@ -103,6 +105,10 @@ final class HttpKernel
                 $method === 'POST' && $path === '/admin/contacts/read' => $this->adminMarkContactRead(),
                 $method === 'GET' && $path === '/admin/leads' => $this->adminLeads(),
                 $method === 'GET' && $path === '/admin/customers' => $this->adminCustomers(),
+                $method === 'GET' && preg_match('#^/admin/customers/(\d+)/export$#', $path, $m) === 1
+                    => $this->adminCustomerExport((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/customers/(\d+)/erase$#', $path, $m) === 1
+                    => $this->adminCustomerErase((int) $m[1]),
                 $method === 'GET' && preg_match('#^/admin/customers/(\d+)$#', $path, $m) === 1
                     => $this->adminCustomerDetail((int) $m[1]),
                 $method === 'GET' && $path === '/admin/pets' => $this->adminPets(),
@@ -134,6 +140,10 @@ final class HttpKernel
                     => $this->adminHappyMediaForm((int) $m[1]),
                 $method === 'POST' && preg_match('#^/admin/happy-media/(\d+)$#', $path, $m) === 1
                     => $this->adminHappyMediaSave((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/happy-media/(\d+)/status$#', $path, $m) === 1
+                    => $this->adminHappyMediaStatus((int) $m[1]),
+
+                $method === 'GET' && $path === '/admin/rule-sets' => $this->adminRuleSets(),
 
                 $method === 'GET' && $path === '/admin/faq' => $this->adminFaq(),
                 $method === 'GET' && $path === '/admin/faq/new' => $this->adminFaqForm(null),
@@ -213,6 +223,26 @@ final class HttpKernel
             echo '<h1>403</h1><p>Sem permissão (' . htmlspecialchars($permission, ENT_QUOTES, 'UTF-8') . ').</p><p><a href="/admin/dashboard">Voltar</a></p>';
             exit;
         }
+    }
+
+    /** @param list<string> $permissions */
+    private function requireAnyPermission(array $permissions): void
+    {
+        $this->requireAdmin();
+        $role = UserRole::tryFrom((string) ($this->auth()->role() ?? ''));
+        foreach ($permissions as $permission) {
+            if ($role !== null && $role->can($permission)) {
+                return;
+            }
+        }
+        $label = implode('|', $permissions);
+        if (str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/api/')) {
+            $this->json(['error' => 'Forbidden'], 403);
+            exit;
+        }
+        http_response_code(403);
+        echo '<h1>403</h1><p>Sem permissão (' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . ').</p><p><a href="/admin/dashboard">Voltar</a></p>';
+        exit;
     }
 
     private function checkout(): void
@@ -722,6 +752,43 @@ final class HttpKernel
         require BASE_PATH . '/templates/site/quiz.php';
     }
 
+    private function enviarFotoPage(?string $error = null): void
+    {
+        $file = BASE_PATH . '/templates/site/enviar-foto.php';
+        require $file;
+    }
+
+    private function enviarFotoSubmit(): void
+    {
+        try {
+            if (empty($_POST['consent'])) {
+                throw new DomainException('Marque o consentimento para enviar a foto.');
+            }
+            $pet = trim((string) ($_POST['pet_name'] ?? ''));
+            if ($pet === '') {
+                throw new DomainException('Informe o nome do pet.');
+            }
+            $uploaded = $this->storeUpload('media_file', 'happy');
+            if ($uploaded === null) {
+                throw new DomainException('Selecione uma imagem válida (JPG, PNG ou WebP até 5MB).');
+            }
+            $this->app->homeContent()->saveHappyMedia([
+                'type' => 'image',
+                'pet_name' => $pet,
+                'status' => 'pending',
+                'media_path' => $uploaded,
+                'tutor_handle' => trim((string) ($_POST['tutor_handle'] ?? '')) ?: null,
+                'orientation' => 'landscape',
+                'display_order' => 0,
+            ], null);
+            header('Location: /enviar-foto?sent=1');
+            exit;
+        } catch (DomainException $e) {
+            $error = $e->getMessage();
+            $this->enviarFotoPage($error);
+        }
+    }
+
     private function marketingPage(string $name): void
     {
         $file = BASE_PATH . '/templates/site/' . $name . '.php';
@@ -880,6 +947,36 @@ final class HttpKernel
         $this->renderAdmin('customer_detail', $this->app->crm()->getCustomer($id));
     }
 
+    private function adminCustomerExport(int $id): void
+    {
+        $this->requirePermission('customers');
+        $payload = $this->app->exportCustomerData()->handle($id);
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            throw new DomainException('Failed to encode export.');
+        }
+        $filename = 'customer-' . $id . '-export.json';
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-store');
+        echo $json;
+        exit;
+    }
+
+    private function adminCustomerErase(int $id): void
+    {
+        $this->requirePermission('customers');
+        $confirm = (string) ($_POST['confirm'] ?? '');
+        try {
+            $this->app->eraseCustomerData()->handle($id, $confirm, $this->auth()->userId());
+            header('Location: /admin/customers/' . $id . '?erased=1');
+            exit;
+        } catch (DomainException $e) {
+            header('Location: /admin/customers/' . $id . '?erase_error=' . rawurlencode($e->getMessage()));
+            exit;
+        }
+    }
+
     private function adminPets(): void
     {
         $this->requirePermission('pets');
@@ -976,7 +1073,35 @@ final class HttpKernel
     private function adminHappyMedia(): void
     {
         $this->requirePermission('content');
-        $this->renderAdmin('happy_media', ['items' => $this->app->homeContent()->allHappyMedia()]);
+        $status = (string) ($_GET['status'] ?? '');
+        if ($status !== '' && !in_array($status, ['pending', 'approved', 'rejected'], true)) {
+            $status = '';
+        }
+        $this->renderAdmin('happy_media', [
+            'items' => $this->app->homeContent()->allHappyMedia($status !== '' ? $status : null),
+            'statusFilter' => $status,
+        ]);
+    }
+
+    private function adminHappyMediaStatus(int $id): void
+    {
+        $this->requirePermission('content');
+        $status = (string) ($_POST['status'] ?? '');
+        $this->app->homeContent()->setHappyMediaStatus($id, $status);
+        $redirectStatus = (string) ($_POST['redirect_status'] ?? $_GET['status'] ?? 'pending');
+        $qs = in_array($redirectStatus, ['pending', 'approved', 'rejected'], true)
+            ? '?status=' . rawurlencode($redirectStatus) . '&updated=1'
+            : '?updated=1';
+        header('Location: /admin/happy-media' . $qs);
+        exit;
+    }
+
+    private function adminRuleSets(): void
+    {
+        $this->requireAnyPermission(['content', 'recommendations']);
+        $this->renderAdmin('rule_sets', [
+            'items' => $this->app->listRecommendationRuleSets(),
+        ]);
     }
 
     private function adminHappyMediaForm(?int $id): void
@@ -1062,10 +1187,28 @@ final class HttpKernel
         if (empty($_FILES[$field]['tmp_name']) || !is_uploaded_file($_FILES[$field]['tmp_name'])) {
             return null;
         }
-        $name = (string) ($_FILES[$field]['name'] ?? '');
+        $file = $_FILES[$field];
+        if ((int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            throw new DomainException('Upload failed.');
+        }
+        $maxBytes = 5 * 1024 * 1024;
+        if ((int) ($file['size'] ?? 0) <= 0 || (int) $file['size'] > $maxBytes) {
+            throw new DomainException('Image must be at most 5MB.');
+        }
+        $name = (string) ($file['name'] ?? '');
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
             throw new DomainException('Invalid upload type.');
+        }
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = (string) $finfo->file((string) $file['tmp_name']);
+        $allowedMime = [
+            'image/jpeg' => ['jpg', 'jpeg'],
+            'image/png' => ['png'],
+            'image/webp' => ['webp'],
+        ];
+        if (!isset($allowedMime[$mime]) || !in_array($ext, $allowedMime[$mime], true)) {
+            throw new DomainException('Invalid upload MIME type.');
         }
         $dir = BASE_PATH . '/public/uploads/' . $subdir;
         if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
@@ -1073,7 +1216,7 @@ final class HttpKernel
         }
         $filename = bin2hex(random_bytes(8)) . '.' . $ext;
         $dest = $dir . '/' . $filename;
-        if (!move_uploaded_file($_FILES[$field]['tmp_name'], $dest)) {
+        if (!move_uploaded_file((string) $file['tmp_name'], $dest)) {
             throw new DomainException('Upload failed.');
         }
 

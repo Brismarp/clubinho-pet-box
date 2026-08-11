@@ -1,0 +1,107 @@
+/**
+ * Clubinho Pet Box — shared design tokens (premium warm stone)
+ */
+:root {
+  --color-black: #1c1917;
+  --color-ink: #1c1917;
+  --color-white: #ffffff;
+  --color-graphite: #44403c;
+  --color-muted: #78716c;
+  --color-line: #e7e5e4;
+  --color-surface: #fafaf8;
+  --color-paper: #f3f1ec;
+  --color-sky: #f5f4f1;
+  --color-mint: #f3f1ec;
+  --color-cream: #f3f1ec;
+  --color-accent: #c45c4a;
+  --color-accent-deep: #a84838;
+  --color-sun: #c45c4a;
+  --color-teal: #57534e;
+  --color-gold: var(--color-accent);
+  --color-gold-deep: var(--color-accent-deep);
+
+  --font-display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --font-body: "DM Sans", "Segoe UI", sans-serif;
+
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-sm: clamp(0.875rem, 0.84rem + 0.2vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.06rem + 0.3vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.12rem + 0.5vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 0.85vw, 1.875rem);
+  --text-3xl: clamp(1.85rem, 1.45rem + 1.4vw, 2.5rem);
+  --text-4xl: clamp(2.15rem, 1.6rem + 2vw, 3.25rem);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  --section-y: clamp(4.5rem, 9vw, 7.5rem);
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --container: 1120px;
+  --container-narrow: 640px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 1px 2px rgba(28, 25, 23, 0.04), 0 12px 28px rgba(28, 25, 23, 0.05);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 560ms;
+  --marquee-duration: 55s;
+  --marquee-gap: 1.25rem;
+
+  --color-gray-50: var(--color-surface);
+  --color-gray-100: var(--color-paper);
+  --color-gray-200: var(--color-line);
+  --color-gray-300: #d6d3d1;
+  --color-gray-500: var(--color-muted);
+  --color-gray-600: var(--color-muted);
+  --color-gray-700: var(--color-graphite);
+  --color-gray-800: #292524;
+  --color-gray-900: var(--color-black);
+  --color-beige: var(--color-paper);
+  --color-charcoal: var(--color-graphite);
+  --font-primary: var(--font-body);
+  --font-size-xs: var(--text-xs);
+  --font-size-sm: var(--text-sm);
+  --font-size-base: var(--text-base);
+  --font-size-lg: var(--text-lg);
+  --font-size-xl: var(--text-xl);
+  --font-size-2xl: var(--text-2xl);
+  --font-size-3xl: var(--text-3xl);
+  --font-size-4xl: var(--text-4xl);
+  --spacing-xs: var(--space-1);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-5);
+  --spacing-xl: var(--space-6);
+  --spacing-2xl: var(--space-7);
+  --transition-fast: var(--dur-fast) var(--ease-out-soft);
+  --transition-base: var(--dur-base) var(--ease-out-soft);
+  --transition-slow: var(--dur-slow) var(--ease-out-soft);
+  --shadow-sm: var(--shadow-soft);
+  --shadow-md: var(--shadow-soft);
+  --shadow-lg: var(--shadow-soft);
+  --shadow-xl: var(--shadow-soft);
+
+  /* admin aliases */
+  --admin-bg: var(--color-surface);
+  --admin-ink: var(--color-ink);
+  --admin-accent: var(--color-accent);
+  --admin-line: var(--color-line);
+  --admin-muted: var(--color-muted);
+  --admin-radius: var(--radius-md);
+  --admin-radius-sm: var(--radius-sm);
+}

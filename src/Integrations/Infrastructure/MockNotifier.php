@@ -20,6 +20,11 @@ final class MockNotifier implements Notifier
             $channel = 'log';
         }
 
+        $rendered = NotificationTemplates::render($templateKey, $payload);
+        $enriched = $payload;
+        $enriched['_rendered'] = $rendered;
+        $enriched['_channel'] = $channel;
+
         $stmt = $this->pdo->prepare(
             'INSERT INTO notification_outbox (channel, recipient, template_key, payload_json, status, sent_at)
              VALUES (?, ?, ?, ?, \'sent_mock\', NOW())'
@@ -28,7 +33,7 @@ final class MockNotifier implements Notifier
             $channel,
             $to,
             $templateKey,
-            $payload === [] ? null : json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            json_encode($enriched, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
         ]);
     }
 }

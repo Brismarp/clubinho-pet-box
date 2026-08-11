@@ -19,17 +19,17 @@ enum UserRole: string
             self::Admin => [
                 'dashboard', 'customers', 'pets', 'quizzes', 'recommendations', 'recommendations.fulfill',
                 'products', 'products.write', 'stock', 'boxes', 'boxes.ship', 'subscriptions',
-                'contacts', 'leads', 'blog', 'content', 'payments', 'settings', 'audit', 'plans',
+                'contacts', 'leads', 'blog', 'content', 'payments', 'outbox', 'settings', 'audit', 'plans',
             ],
             self::Operacao => [
                 'dashboard', 'customers', 'pets', 'subscriptions', 'boxes', 'boxes.ship',
-                'recommendations', 'audit', 'plans',
+                'recommendations', 'outbox', 'audit', 'plans',
             ],
             self::Montagem => [
                 'dashboard', 'recommendations', 'recommendations.fulfill', 'products', 'boxes',
             ],
             self::Atendimento => [
-                'dashboard', 'customers', 'pets', 'quizzes', 'contacts', 'leads',
+                'dashboard', 'customers', 'pets', 'quizzes', 'contacts', 'leads', 'outbox',
             ],
             self::Estoque => [
                 'dashboard', 'products', 'products.write', 'stock',

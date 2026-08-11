@@ -24,6 +24,7 @@ Credenciais locais (seed):
 - `make up` / `make down` / `make logs` / `make shell`
 - `make db-import` — reimporta schema (cuidado: dados)
 - `make serve` — PHP built-in sem MySQL (`-t public`)
+- `make backup` — dump gzip em `storage/backups/` via `scripts/backup.sh`
 
 ## Estrutura
 
@@ -42,19 +43,21 @@ Hoje o checkout Kirvano usa a URL mensal do plano por slug. URLs anuais dedicada
 
 ## Integrações (mock vs Kirvano)
 
-- **Pagamento:** `PAYMENT_GATEWAY=kirvano` (default) redireciona para a URL de checkout do plano; `PAYMENT_GATEWAY=mock` devolve `/assinatura?...&mock_checkout=1` sem sair do app.
-- **Envio / notificação:** sempre Mock neste build — tracking `MOCK-TRACK-…` e mensagens em `notification_outbox`.
+- **Pagamento:** `PAYMENT_GATEWAY=mock` (padrão no `.env.example`) devolve `/assinatura?...&mock_checkout=1&subscription_id=…` com UI PIX/cartão; `POST /api/v1/payments/mock/confirm` grava `payments` (`provider=mock`), ativa a assinatura e dispara outbox. `PAYMENT_GATEWAY=kirvano` redireciona para a URL de checkout do plano.
+- **Envio:** MockCarrier — tracking `MOCK-TRACK-…`, timeline em `shipment_events`. No admin, **Avançar rastreio** (`POST /admin/boxes/advance`) avança um passo até `delivered`.
+- **Notificação:** `MockNotifier` grava em `notification_outbox` (e-mail / WhatsApp / log). Painel: `/admin/outbox` (perm `outbox`).
 - **Webhook:** `POST /webhooks/kirvano` — ingest + audit (`webhook_events` / `activity_logs`). Segredo opcional: `KIRVANO_WEBHOOK_SECRET` (headers `X-Kirvano-Secret` ou `X-Webhook-Secret`).
 - Detalhes e payloads de exemplo: [`content/integrations-mock.md`](content/integrations-mock.md).
 
 ## Core operacional (admin)
 
-Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em `stock_movements`) → **ship** (converte reserva).
+Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em `stock_movements`) → **ship** (converte reserva) → **avançar rastreio** (timeline) → entregue.
 
 - CRM: `/admin/customers`, `/admin/pets`
 - Estoque: `/admin/stock` (receive/adjust + alertas `stock_min`)
-- Pagamentos: webhook Kirvano grava `payments`; lista em `/admin/payments` (só `admin`)
-- Migration: `database/migrations/009_operational_core.sql`
+- Pagamentos: webhook Kirvano e/ou mock; lista em `/admin/payments` (só `admin`)
+- Outbox: `/admin/outbox`
+- Migration: `database/migrations/009_operational_core.sql` + `010_shipment_events_testimonials.sql`
 
 ### Roles (senha local igual ao admin: `Carpe1936!`)
 
@@ -66,7 +69,7 @@ Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em
 | atendimento | `atendimento@clubinhopetbox.com.br` |
 | estoque | `estoque@clubinhopetbox.com.br` |
 
-Financeiro (`/admin/payments`) e settings são restritos a **admin**.
+Financeiro (`/admin/payments`) e settings são restritos a **admin**. Outbox: admin, operação e atendimento.
 
 ## LGPD / termos
 
@@ -77,8 +80,16 @@ Financeiro (`/admin/payments`) e settings são restritos a **admin**.
 Com o stack Docker no ar:
 
 ```bash
-docker compose exec -T db mysqldump -uclubinho -pclubinho clubinhopet > backup-$(date +%Y%m%d).sql
+make backup
+# ou: bash scripts/backup.sh
+```
+
+O script usa `mysqldump --single-transaction --routines --triggers --no-tablespaces`, compacta em `storage/backups/clubinhopet-YYYYMMDD-HHMMSS.sql.gz` e mantém os `BACKUP_KEEP` (default 14) dumps mais novos. Override: `BACKUP_DIR`, `BACKUP_KEEP`.
+
+Manual (sem rotação):
+
+```bash
+docker compose exec -T db mysqldump -uclubinho -pclubinho --no-tablespaces clubinhopet > backup-$(date +%Y%m%d).sql
 ```
 
 Os dados do MySQL ficam no volume Docker do serviço `db` (não no working tree). Um `make down` sem `-v` preserva o volume; `docker compose down -v` apaga dados.
-

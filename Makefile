@@ -1,4 +1,4 @@
-.PHONY: install up down logs shell db-import serve composer-dump
+.PHONY: install up down logs shell db-import serve composer-dump backup
 
 install:
 	docker compose run --rm web composer install
@@ -24,3 +24,6 @@ serve:
 
 composer-dump:
 	docker compose exec web composer dump-autoload -o
+
+backup:
+	bash scripts/backup.sh

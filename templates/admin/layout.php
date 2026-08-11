@@ -128,6 +128,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 ['/admin/products', 'Produtos', 'products'],
                 ['/admin/stock', 'Estoque', 'stock'],
                 ['/admin/payments', 'Pagamentos', 'payments'],
+                ['/admin/outbox', 'Outbox', 'outbox'],
                 ['/admin/contacts', 'Contatos', 'contacts'],
                 ['/admin/leads', 'Leads', 'leads'],
                 ['/admin/quizzes', 'Quizzes', 'quizzes'],

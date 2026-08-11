@@ -209,28 +209,84 @@ require BASE_PATH . '/templates/site/header.php';
         <?php if ($testimonials === []): ?>
             <p class="muted" style="text-align:center">Depoimentos em breve.</p>
         <?php else: ?>
-            <div class="testimonials-list reveal-stagger">
-                <?php foreach ($testimonials as $t):
-                    $photo = (string) ($t['photo_path'] ?? '');
-                    if ($photo !== '' && !str_starts_with($photo, '/')) {
-                        $photo = '/' . ltrim($photo, '/');
-                    }
-                    ?>
-                    <blockquote class="testimonial reveal">
-                        <?php if ($photo !== ''): ?>
-                            <div class="testimonial__photo"><img src="<?= htmlspecialchars($photo, ENT_QUOTES, 'UTF-8') ?>" alt="" width="72" height="72" loading="lazy"></div>
-                        <?php endif; ?>
-                        <p class="testimonial__quote"><?= htmlspecialchars((string) $t['quote'], ENT_QUOTES, 'UTF-8') ?></p>
-                        <footer>
-                            <cite><?= htmlspecialchars((string) $t['name'], ENT_QUOTES, 'UTF-8') ?></cite>
-                            <?php if (!empty($t['pet_name'])): ?>
-                                <span class="muted"> · <?= htmlspecialchars((string) $t['pet_name'], ENT_QUOTES, 'UTF-8') ?></span>
+            <?php
+            $renderTestimonialCard = static function (array $t): void {
+                $photo = (string) ($t['photo_path'] ?? '');
+                if ($photo !== '' && !str_starts_with($photo, '/')) {
+                    $photo = '/' . ltrim($photo, '/');
+                }
+                $name = (string) ($t['name'] ?? '');
+                $initial = mb_strtoupper(mb_substr($name !== '' ? $name : '?', 0, 1));
+                $pet = (string) ($t['pet_name'] ?? '');
+                $handle = $pet !== '' ? '@' . preg_replace('/\s+/', '', mb_strtolower($pet)) : '';
+                ?>
+                <article class="testimonial-card">
+                    <div class="testimonial-card__head">
+                        <div class="testimonial-card__avatar" aria-hidden="true">
+                            <?php if ($photo !== ''): ?>
+                                <img src="<?= htmlspecialchars($photo, ENT_QUOTES, 'UTF-8') ?>" alt="" width="40" height="40" loading="lazy">
+                            <?php else: ?>
+                                <?= htmlspecialchars($initial, ENT_QUOTES, 'UTF-8') ?>
                             <?php endif; ?>
-                        </footer>
-                    </blockquote>
-                <?php endforeach; ?>
+                        </div>
+                        <div class="testimonial-card__meta">
+                            <span class="testimonial-card__name"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php if ($handle !== ''): ?>
+                                <span class="testimonial-card__handle"><?= htmlspecialchars($handle, ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <blockquote class="testimonial-card__quote"><?= htmlspecialchars((string) $t['quote'], ENT_QUOTES, 'UTF-8') ?></blockquote>
+                </article>
+                <?php
+            };
+            ?>
+            <div class="testimonials-wall reveal" aria-label="Depoimentos de tutores">
+                <div class="testimonials-wall__stage">
+                    <div class="testimonials-wall__tilt">
+                        <?php for ($col = 0; $col < 4; $col++): ?>
+                            <div
+                                class="marquee marquee--vertical"
+                                data-pause-hover
+                                <?= $col % 2 === 1 ? 'data-reverse' : '' ?>
+                                role="marquee"
+                                aria-label="Coluna de depoimentos <?= $col + 1 ?>"
+                            >
+                                <div class="marquee__track" data-marquee-track>
+                                    <?php foreach ($testimonials as $t) {
+                                        $renderTestimonialCard($t);
+                                    } ?>
+                                </div>
+                            </div>
+                        <?php endfor; ?>
+                    </div>
+                    <div class="testimonials-wall__fade" aria-hidden="true"></div>
+                </div>
+                <div class="testimonials-list testimonials-list-fallback" hidden>
+                    <?php foreach ($testimonials as $t):
+                        $photo = (string) ($t['photo_path'] ?? '');
+                        if ($photo !== '' && !str_starts_with($photo, '/')) {
+                            $photo = '/' . ltrim($photo, '/');
+                        }
+                        ?>
+                        <blockquote class="testimonial">
+                            <?php if ($photo !== ''): ?>
+                                <div class="testimonial__photo"><img src="<?= htmlspecialchars($photo, ENT_QUOTES, 'UTF-8') ?>" alt="" width="72" height="72" loading="lazy"></div>
+                            <?php endif; ?>
+                            <p class="testimonial__quote"><?= htmlspecialchars((string) $t['quote'], ENT_QUOTES, 'UTF-8') ?></p>
+                            <footer>
+                                <cite><?= htmlspecialchars((string) $t['name'], ENT_QUOTES, 'UTF-8') ?></cite>
+                                <?php if (!empty($t['pet_name'])): ?>
+                                    <span class="muted"> · <?= htmlspecialchars((string) $t['pet_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                <?php endif; ?>
+                            </footer>
+                        </blockquote>
+                    <?php endforeach; ?>
+                </div>
             </div>
         <?php endif; ?>
+    </div>
+</section>
 
 <section class="section bg-cream" id="faq">
     <div class="container-narrow">

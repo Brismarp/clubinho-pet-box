@@ -2,12 +2,12 @@
     </main>
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
+            <div class="footer-content reveal-stagger">
+                <div class="footer-section reveal">
                     <h4>Clubinho Pet Box</h4>
                     <p>Assinatura premium de produtos selecionados para o seu pet.</p>
                 </div>
-                <div class="footer-section">
+                <div class="footer-section reveal">
                     <h4>Links</h4>
                     <p><a href="/">Início</a></p>
                     <p><a href="/planos">Planos</a></p>
@@ -17,12 +17,12 @@
                     <p><a href="/contato">Contato</a></p>
                     <p><a href="/assinatura">Assinatura</a></p>
                 </div>
-                <div class="footer-section">
+                <div class="footer-section reveal">
                     <h4>Atendimento</h4>
                     <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
                     <p>Seg a Sex: 9h às 18h</p>
                 </div>
-                <div class="footer-section">
+                <div class="footer-section reveal">
                     <h4>Assine</h4>
                     <p><a href="/planos">Ver planos</a></p>
                     <p><a href="/quiz">Descobrir no quiz</a></p>

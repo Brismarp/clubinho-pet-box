@@ -39,10 +39,10 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="text-uppercase text-gold">Princípios</p>
             <h2>O que nos move</h2>
         </header>
-        <div class="grid grid-3">
-            <article class="step reveal"><h3 class="text-gold">Missão</h3><p>Experiências premium para pets e tutores, com curadoria e entrega cuidadas.</p></article>
-            <article class="step reveal"><h3 class="text-gold">Visão</h3><p>Ser referência em assinatura premium para pets no Brasil.</p></article>
-            <article class="step reveal"><h3 class="text-gold">Valores</h3><ul class="card-features"><li>Respeito pelos animais</li><li>Qualidade sem concessões</li><li>Transparência</li><li>Sustentabilidade</li></ul></article>
+        <div class="grid grid-3 reveal-stagger">
+            <article class="step reveal reveal--scale"><h3 class="text-gold">Missão</h3><p>Experiências premium para pets e tutores, com curadoria e entrega cuidadas.</p></article>
+            <article class="step reveal reveal--scale"><h3 class="text-gold">Visão</h3><p>Ser referência em assinatura premium para pets no Brasil.</p></article>
+            <article class="step reveal reveal--scale"><h3 class="text-gold">Valores</h3><ul class="card-features"><li>Respeito pelos animais</li><li>Qualidade sem concessões</li><li>Transparência</li><li>Sustentabilidade</li></ul></article>
         </div>
     </div>
 </section>

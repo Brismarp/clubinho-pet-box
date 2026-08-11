@@ -42,6 +42,8 @@
     });
   }
 
+  const revealEls = document.querySelectorAll(".reveal");
+
   if (!reduce && "IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -52,11 +54,42 @@
           }
         });
       },
-      { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
     );
-    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    revealEls.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+        el.classList.add("is-visible");
+      } else {
+        observer.observe(el);
+      }
+    });
   } else {
-    document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+  }
+
+  // Vertical marquees — duplicate cards inside each track for a seamless loop
+  document.querySelectorAll("[data-marquee-track]").forEach((track) => {
+    if (reduce) return;
+    const nodes = Array.from(track.children);
+    nodes.forEach((node) => {
+      const copy = node.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      track.appendChild(copy);
+    });
+  });
+
+  if (reduce) {
+    document.querySelectorAll(".testimonials-wall__tilt").forEach((el) => {
+      el.setAttribute("hidden", "");
+    });
+    document.querySelectorAll(".testimonials-wall__fade").forEach((el) => {
+      el.setAttribute("hidden", "");
+    });
+    document.querySelectorAll(".testimonials-list-fallback").forEach((el) => {
+      el.removeAttribute("hidden");
+      el.style.display = "grid";
+    });
   }
 
   let lastFocus = null;

@@ -17,15 +17,15 @@ require BASE_PATH . '/templates/site/header.php';
 </section>
 <section class="section bg-white" id="planos">
     <div class="container">
-        <div class="billing-toggle-wrap">
+        <div class="billing-toggle-wrap reveal">
             <div class="billing-toggle" data-billing-toggle role="group" aria-label="Ciclo de cobrança">
                 <button type="button" class="billing-toggle__btn is-active" data-billing-value="monthly" aria-pressed="true">Mensal</button>
                 <button type="button" class="billing-toggle__btn" data-billing-value="annual" aria-pressed="false">Anual</button>
             </div>
             <p class="billing-toggle__badge">Anual: 2 meses grátis</p>
         </div>
-        <div class="plans-grid">
-            <article class="plan-card" data-slug="happy" data-price-monthly="101.47" data-price-annual="1014.70" data-billing="monthly">
+        <div class="plans-grid reveal-stagger">
+            <article class="plan-card reveal reveal--up" data-slug="happy" data-price-monthly="101.47" data-price-annual="1014.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-happy.jpg" alt="Box Happy" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Happy</h3>
@@ -41,7 +41,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <a href="/checkout?plan=happy&billing=monthly" class="btn btn-secondary" data-plan-cta>Assinar Happy</a>
                 </div>
             </article>
-            <article class="plan-card featured" data-slug="love" data-price-monthly="164.97" data-price-annual="1649.70" data-billing="monthly">
+            <article class="plan-card featured reveal reveal--up" data-slug="love" data-price-monthly="164.97" data-price-annual="1649.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-love.jpg" alt="Box Love" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Love</h3>
@@ -57,7 +57,7 @@ require BASE_PATH . '/templates/site/header.php';
                     <a href="/checkout?plan=love&billing=monthly" class="btn btn-gold" data-plan-cta>Assinar Love</a>
                 </div>
             </article>
-            <article class="plan-card" data-slug="deluxe" data-price-monthly="253.87" data-price-annual="2538.70" data-billing="monthly">
+            <article class="plan-card reveal reveal--up" data-slug="deluxe" data-price-monthly="253.87" data-price-annual="2538.70" data-billing="monthly">
                 <img src="/assets/images/boxes/box-deluxe.jpg" alt="Box Deluxe" class="card-image" loading="lazy" width="640" height="480">
                 <div class="card-content">
                     <h3 class="card-title">Clubinho Deluxe</h3>

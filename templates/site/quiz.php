@@ -18,7 +18,7 @@ require BASE_PATH . '/templates/site/header.php';
 </section>
 
 <section class="section bg-white">
-    <div class="quiz-container" id="quizApp" data-quiz-root>
+    <div class="quiz-container reveal" id="quizApp" data-quiz-root>
         <div class="quiz-progress">
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progressBar" style="width:10%"></div>

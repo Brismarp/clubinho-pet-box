@@ -25,6 +25,8 @@ Credenciais locais (seed):
 - `make db-import` — reimporta schema (cuidado: dados)
 - `make serve` — PHP built-in sem MySQL (`-t public`)
 - `make backup` — dump gzip em `storage/backups/` via `scripts/backup.sh`
+- `make test` — Pest (HTTP smoke + unit; stack Docker precisa estar no ar)
+- `make test-e2e` — Playwright (Chromium) nos fluxos de UI críticos
 
 ## Estrutura
 
@@ -40,6 +42,14 @@ Deploy Hostinger: aponte o document root para `public/` (ou publique o conteúdo
 O toggle do site calcula anual como **10× o mensal** (2 meses grátis) e chama `/checkout?plan={slug}&billing=annual|monthly`.
 
 Hoje o checkout Kirvano usa a URL mensal do plano por slug. URLs anuais dedicadas podem ser adicionadas depois como plans no banco (`billing_cycle=annual`) sem mudar o front.
+
+## Endurecimento (CSRF / LGPD / Quiz / Regras)
+
+- **CSRF:** token de sessão em forms HTML (`_csrf`) e header `X-CSRF-Token` nas APIs same-origin; `GET /api/v1/csrf`.
+- **DSAR:** em `/admin/customers/{id}` — Exportar JSON e Apagar (`confirm=EXCLUIR`).
+- **Quiz v3:** campos ambiente, materiais e tamanho de brinquedo; motor `recommendation_rule_sets` (`rules-v1`).
+- **Upload:** `/enviar-foto` → `happy_media` pending → moderação no admin.
+- Migration: `database/migrations/011_hardening_rules_quiz_media.sql`
 
 ## Integrações (mock vs Kirvano)
 

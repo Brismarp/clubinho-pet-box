@@ -1,7 +1,14 @@
 /vendor/
+/node_modules/
+/test-results/
+/playwright-report/
 .env
 /logs/
 *.log
 .idea/
 .vscode/
 public_html*.zip
+/public/uploads/**
+!/public/uploads/
+!/public/uploads/.gitignore
+!/public/uploads/**/.gitkeep

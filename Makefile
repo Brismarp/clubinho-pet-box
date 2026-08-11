@@ -1,4 +1,4 @@
-.PHONY: install up down logs shell db-import serve composer-dump backup
+.PHONY: install up down logs shell db-import serve composer-dump backup test test-e2e
 
 install:
 	docker compose run --rm web composer install
@@ -27,3 +27,11 @@ composer-dump:
 
 backup:
 	bash scripts/backup.sh
+
+test:
+	docker compose exec -T -e APP_URL=http://127.0.0.1 web ./vendor/bin/pest
+
+test-e2e:
+	npm install
+	npx playwright install chromium
+	APP_URL=$${APP_URL:-http://localhost:8080} npx playwright test

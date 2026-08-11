@@ -705,18 +705,18 @@ select:focus-visible {
   font-size: var(--text-xs);
 }
 
-/* Testimonials 3D marquee wall */
+/* Testimonials 3D marquee wall — slower, flatter, wider on desktop */
 .testimonials-wall {
   position: relative;
   width: 100%;
-  max-width: 880px;
+  max-width: 1280px;
   margin-inline: auto;
-  height: min(28rem, 70vh);
+  height: min(30rem, 72vh);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--color-paper);
-  perspective: 200px;
+  perspective: 600px;
 }
 
 .testimonials-wall__stage {
@@ -736,7 +736,7 @@ select:focus-visible {
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  transform: translateX(-60px) translateY(0) translateZ(-40px) rotateX(8deg) rotateY(-4deg) rotateZ(8deg);
+  transform: translateX(-12px) translateY(0) translateZ(-8px) rotateX(2deg) rotateY(-1deg) rotateZ(2deg);
   transform-style: preserve-3d;
 }
 
@@ -746,8 +746,8 @@ select:focus-visible {
   pointer-events: none;
   z-index: 2;
   background:
-    linear-gradient(to bottom, var(--color-white), transparent 22%, transparent 78%, var(--color-white)),
-    linear-gradient(to right, var(--color-white), transparent 18%, transparent 82%, var(--color-white));
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-white) 75%, transparent), transparent 10%, transparent 90%, color-mix(in srgb, var(--color-white) 75%, transparent)),
+    linear-gradient(to right, color-mix(in srgb, var(--color-white) 55%, transparent), transparent 8%, transparent 92%, color-mix(in srgb, var(--color-white) 55%, transparent));
 }
 
 .marquee {
@@ -756,7 +756,24 @@ select:focus-visible {
   padding: 0.35rem;
   gap: var(--marquee-gap);
   flex-direction: column;
-  max-height: 26rem;
+  max-height: 28rem;
+}
+
+/* Show up to 6 columns on wide screens; hide on smaller */
+.testimonials-wall__tilt .marquee:nth-child(n + 5) {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .testimonials-wall__tilt .marquee:nth-child(n + 5) {
+    display: flex;
+  }
+}
+
+@media (max-width: 900px) {
+  .testimonials-wall__tilt .marquee:nth-child(n + 4) {
+    display: none;
+  }
 }
 
 .marquee__track {
@@ -2149,7 +2166,7 @@ textarea { min-height: 8rem; resize: vertical; }
   }
 
   .testimonials-wall__tilt {
-    transform: translateX(-24px) translateY(0) translateZ(-24px) rotateX(4deg) rotateY(-2deg) rotateZ(4deg);
+    transform: translateX(-6px) translateY(0) translateZ(0) rotateX(1deg) rotateY(0deg) rotateZ(1deg);
     gap: 0.65rem;
   }
 
@@ -2157,7 +2174,7 @@ textarea { min-height: 8rem; resize: vertical; }
     width: 11.5rem;
   }
 
-  .marquee:nth-child(n + 4) {
+  .testimonials-wall__tilt .marquee:nth-child(n + 3) {
     display: none;
   }
 

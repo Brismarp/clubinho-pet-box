@@ -271,7 +271,7 @@ require BASE_PATH . '/templates/site/header.php';
             <div class="testimonials-wall reveal" aria-label="Depoimentos de tutores">
                 <div class="testimonials-wall__stage">
                     <div class="testimonials-wall__tilt">
-                        <?php for ($col = 0; $col < 4; $col++): ?>
+                        <?php for ($col = 0; $col < 6; $col++): ?>
                             <div
                                 class="marquee marquee--vertical"
                                 data-pause-hover

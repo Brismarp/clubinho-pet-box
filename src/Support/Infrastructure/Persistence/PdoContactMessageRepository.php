@@ -42,11 +42,17 @@ final class PdoContactMessageRepository implements ContactMessageRepository
         ]);
     }
 
-    public function findAll(int $limit = 100): array
+    public function findAll(int $limit = 100, ?string $status = null): array
     {
-        $stmt = $this->pdo->prepare(
-            'SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT :limit'
-        );
+        $sql = 'SELECT * FROM contact_messages';
+        if ($status !== null && $status !== '') {
+            $sql .= ' WHERE status = :status';
+        }
+        $sql .= ' ORDER BY created_at DESC LIMIT :limit';
+        $stmt = $this->pdo->prepare($sql);
+        if ($status !== null && $status !== '') {
+            $stmt->bindValue('status', $status);
+        }
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $rows = $stmt->fetchAll() ?: [];
@@ -61,5 +67,13 @@ final class PdoContactMessageRepository implements ContactMessageRepository
         $row = $stmt->fetch();
 
         return $row ? ContactMessage::fromRow($row) : null;
+    }
+
+    public function countByStatus(string $status): int
+    {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM contact_messages WHERE status = :status');
+        $stmt->execute(['status' => $status]);
+
+        return (int) $stmt->fetchColumn();
     }
 }

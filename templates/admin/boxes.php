@@ -3,6 +3,16 @@
 <?php if (!empty($_GET['created'])): ?><div class="flash">Box criada.</div><?php endif; ?>
 <?php if (!empty($_GET['shipped'])): ?><div class="flash">Box marcada como shipped.</div><?php endif; ?>
 
+<?php $status_counts = $status_counts ?? []; ?>
+<div class="grid" style="margin-bottom:1rem">
+    <?php foreach (['preparing' => 'Preparando', 'shipped' => 'Enviadas', 'delivered' => 'Entregues', 'returned' => 'Devolvidas'] as $st => $label): ?>
+        <div class="card">
+            <div class="muted"><?= $label ?></div>
+            <div class="stat"><?= (int) ($status_counts[$st] ?? 0) ?></div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
 <div class="card">
     <h2>Nova box</h2>
     <form method="post" action="/admin/boxes">
@@ -22,6 +32,9 @@
     </form>
 </div>
 
+<?php if (empty($boxes)): ?>
+    <div class="card empty">Nenhuma box cadastrada.</div>
+<?php else: ?>
 <table>
     <thead><tr><th>ID</th><th>Sub</th><th>Status</th><th>Tracking</th><th>Ação</th></tr></thead>
     <tbody>
@@ -44,3 +57,4 @@
     <?php endforeach; ?>
     </tbody>
 </table>
+<?php endif; ?>

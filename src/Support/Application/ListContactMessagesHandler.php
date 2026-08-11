@@ -13,8 +13,13 @@ final class ListContactMessagesHandler
     }
 
     /** @return list<array<string, mixed>> */
-    public function handle(int $limit = 100): array
+    public function handle(int $limit = 100, ?string $status = null): array
     {
-        return array_map(static fn ($m) => $m->toArray(), $this->messages->findAll($limit));
+        return array_map(static fn ($m) => $m->toArray(), $this->messages->findAll($limit, $status));
+    }
+
+    public function countNew(): int
+    {
+        return $this->messages->countByStatus('new');
     }
 }

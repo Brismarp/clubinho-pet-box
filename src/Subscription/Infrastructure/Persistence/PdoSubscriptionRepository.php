@@ -61,4 +61,40 @@ final class PdoSubscriptionRepository implements SubscriptionRepository
 
         return array_map(static fn (array $row) => Subscription::fromRow($row), $rows);
     }
+
+    public function findRecentDetailed(?string $status = null, int $limit = 100): array
+    {
+        $sql = 'SELECT s.*, p.name AS plan_name, p.slug AS plan_slug
+                FROM subscriptions s
+                LEFT JOIN plans p ON p.id = s.plan_id';
+        $params = [];
+        if ($status !== null && $status !== '') {
+            $sql .= ' WHERE s.status = :status';
+            $params['status'] = $status;
+        }
+        $sql .= ' ORDER BY s.created_at DESC LIMIT :limit';
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $out = [];
+        foreach ($stmt->fetchAll() ?: [] as $row) {
+            $out[] = [
+                'id' => (int) $row['id'],
+                'plan_id' => (int) $row['plan_id'],
+                'plan_name' => (string) ($row['plan_name'] ?? ''),
+                'plan_slug' => (string) ($row['plan_slug'] ?? ''),
+                'email' => (string) $row['email'],
+                'status' => (string) $row['status'],
+                'pet_name' => $row['pet_name'] ?? null,
+                'pet_type' => $row['pet_type'] ?? null,
+                'notes' => $row['notes'] ?? null,
+                'created_at' => (string) ($row['created_at'] ?? ''),
+            ];
+        }
+
+        return $out;
+    }
 }

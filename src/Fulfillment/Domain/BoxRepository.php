@@ -12,4 +12,7 @@ interface BoxRepository
     public function save(Box $box): void;
 
     public function findById(int $id): ?Box;
+
+    /** @return array<string, int> */
+    public function countByStatus(): array;
 }

@@ -13,22 +13,8 @@ final class ListSubscriptionsHandler
     }
 
     /** @return list<array<string, mixed>> */
-    public function handle(int $limit = 50): array
+    public function handle(int $limit = 50, ?string $status = null): array
     {
-        $out = [];
-        foreach ($this->subscriptions->findRecent($limit) as $sub) {
-            $pet = $sub->pet();
-            $out[] = [
-                'id' => $sub->id(),
-                'plan_id' => $sub->planId(),
-                'email' => $sub->email()->value(),
-                'status' => $sub->status()->value,
-                'pet_name' => $pet?->name(),
-                'pet_type' => $pet?->type(),
-                'notes' => $sub->notes(),
-            ];
-        }
-
-        return $out;
+        return $this->subscriptions->findRecentDetailed($status, $limit);
     }
 }

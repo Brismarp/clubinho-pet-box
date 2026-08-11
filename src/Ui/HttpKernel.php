@@ -41,8 +41,10 @@ final class HttpKernel
                 $method === 'GET' && $path === '/checkout' => $this->checkout(),
                 $method === 'GET' && $path === '/sitemap.xml' => $this->sitemap(),
                 $method === 'GET' && $path === '/sitemap.php' => $this->sitemapRedirect(),
+                $method === 'POST' && $path === '/api/v1/events' => $this->ingestEvents(),
                 $method === 'POST' && $path === '/subscribe' => $this->subscribe(),
                 $method === 'POST' && $path === '/contact' => $this->contact(),
+                $method === 'POST' && $path === '/lead' => $this->lead(),
 
                 $method === 'GET' && $path === '/admin' => $this->adminRedirect('/admin/dashboard'),
                 $method === 'GET' && $path === '/admin/login' => $this->renderAdmin('login', [
@@ -63,6 +65,7 @@ final class HttpKernel
                 $method === 'POST' && $path === '/admin/boxes/ship' => $this->adminShipBox(),
                 $method === 'GET' && $path === '/admin/contacts' => $this->adminContacts(),
                 $method === 'POST' && $path === '/admin/contacts/read' => $this->adminMarkContactRead(),
+                $method === 'GET' && $path === '/admin/leads' => $this->adminLeads(),
 
                 $method === 'GET' && $path === '/api/v1/admin/plans' => $this->apiAuthJson(fn () => $this->app->listPlans()->handle()),
                 $method === 'GET' && $path === '/api/v1/admin/subscriptions' => $this->apiAuthJson(fn () => $this->app->listSubscriptions()->handle()),
@@ -112,6 +115,11 @@ final class HttpKernel
         // Annual SKUs/checkout URLs can be added later as dedicated plans.
         // For now billing is accepted/logged and we use the plan slug checkout URL.
         error_log(sprintf('checkout plan=%s billing=%s', $plan, $billing));
+
+        $this->recordServerEvent('checkout_click', '/checkout', $plan, null, [
+            'billing' => $billing,
+            'source' => 'server',
+        ]);
 
         $result = $this->app->startCheckout()->handle(
             new \ClubinhoPet\Subscription\Application\StartCheckout\StartCheckoutCommand($plan)
@@ -206,6 +214,11 @@ final class HttpKernel
             )
         );
 
+        $this->recordServerEvent('subscribe_submit', '/subscribe', $plan, (string) ($_POST['email'] ?? ''), [
+            'billing' => $billing,
+            'source' => 'server',
+        ]);
+
         if ($this->wantsJson()) {
             $result['billing'] = $billing;
             $this->json($result, 201);
@@ -225,6 +238,10 @@ final class HttpKernel
 
         $created = $this->app->submitContact()->handle($name, $email, $subject, $message);
 
+        $this->recordServerEvent('contact_submit', '/contato.html', null, $email, [
+            'source' => 'server',
+        ]);
+
         if ($this->wantsJson()) {
             $this->json($created, 201);
             return;
@@ -232,6 +249,66 @@ final class HttpKernel
 
         header('Location: /contato.html?sent=1');
         exit;
+    }
+
+    private function lead(): void
+    {
+        $data = $_POST !== [] ? $_POST : $this->jsonBody();
+        $name = (string) ($data['name'] ?? '');
+        $email = (string) ($data['email'] ?? '');
+        $phone = (string) ($data['phone'] ?? '');
+        $petType = (string) ($data['pet_type'] ?? '');
+        $city = isset($data['city']) && $data['city'] !== '' ? (string) $data['city'] : null;
+        $visitorId = isset($data['visitor_id']) && $data['visitor_id'] !== '' ? (string) $data['visitor_id'] : null;
+        $accept = isset($data['accept_newsletter']) && (string) $data['accept_newsletter'] !== '0' && (string) $data['accept_newsletter'] !== '';
+
+        $created = $this->app->submitLead()->handle($name, $email, $phone, $petType, $city, $visitorId, (bool) $accept);
+
+        $this->recordServerEvent('lead_submit', '/', null, $email, [
+            'source' => 'server',
+            'pet_type' => $petType,
+        ], $visitorId);
+
+        $this->json(['ok' => true] + $created, 201);
+    }
+
+    private function ingestEvents(): void
+    {
+        $payload = $this->jsonBody();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        $ipHash = $ip !== '' ? hash('sha256', $ip) : null;
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $result = $this->app->ingestEvents()->handle($payload, $ipHash, $ua);
+        $this->json(['ok' => true] + $result);
+    }
+
+    /**
+     * @param array<string, mixed>|null $properties
+     */
+    private function recordServerEvent(
+        string $eventName,
+        ?string $path = null,
+        ?string $planSlug = null,
+        ?string $email = null,
+        ?array $properties = null,
+        ?string $visitorId = null,
+    ): void {
+        try {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            $this->app->ingestEvents()->recordServer(
+                eventName: $eventName,
+                path: $path,
+                planSlug: $planSlug,
+                email: $email,
+                properties: $properties,
+                visitorId: $visitorId,
+                sessionId: null,
+                ipHash: $ip !== '' ? hash('sha256', $ip) : null,
+                userAgent: $_SERVER['HTTP_USER_AGENT'] ?? null,
+            );
+        } catch (\Throwable) {
+            // fail-soft
+        }
     }
 
     private function adminLogin(): void
@@ -259,11 +336,11 @@ final class HttpKernel
     private function adminDashboard(): void
     {
         $this->requireAdmin();
+        $range = (int) ($_GET['range'] ?? 30);
+        $metrics = $this->app->dashboardMetrics()->handle($range);
         $this->renderAdmin('dashboard', [
-            'plans' => count($this->app->listPlans()->handle()),
-            'subscriptions' => count($this->app->listSubscriptions()->handle()),
-            'contacts' => count($this->app->listContacts()->handle()),
-            'boxes' => count($this->app->listBoxes()->handle()),
+            'metrics' => $metrics,
+            'contacts_new' => $this->app->listContacts()->countNew(),
             'user' => $this->auth()->userName(),
         ]);
     }
@@ -271,7 +348,10 @@ final class HttpKernel
     private function adminPlans(): void
     {
         $this->requireAdmin();
-        $this->renderAdmin('plans', ['plans' => $this->app->listPlans()->handle()]);
+        $this->renderAdmin('plans', [
+            'plans' => $this->app->listPlans()->handle(),
+            'contacts_new' => $this->app->listContacts()->countNew(),
+        ]);
     }
 
     private function adminUpdatePlanUrl(): void
@@ -285,7 +365,15 @@ final class HttpKernel
     private function adminSubscriptions(): void
     {
         $this->requireAdmin();
-        $this->renderAdmin('subscriptions', ['items' => $this->app->listSubscriptions()->handle()]);
+        $status = isset($_GET['status']) ? (string) $_GET['status'] : null;
+        if ($status === '' || $status === 'all') {
+            $status = null;
+        }
+        $this->renderAdmin('subscriptions', [
+            'items' => $this->app->listSubscriptions()->handle(100, $status),
+            'status' => $status ?? 'all',
+            'contacts_new' => $this->app->listContacts()->countNew(),
+        ]);
     }
 
     private function adminSettings(): void
@@ -314,6 +402,8 @@ final class HttpKernel
         $this->renderAdmin('boxes', [
             'boxes' => $this->app->listBoxes()->handle(),
             'subscriptions' => $this->app->listSubscriptions()->handle(),
+            'status_counts' => $this->app->boxRepository()->countByStatus(),
+            'contacts_new' => $this->app->listContacts()->countNew(),
         ]);
     }
 
@@ -343,7 +433,22 @@ final class HttpKernel
     private function adminContacts(): void
     {
         $this->requireAdmin();
-        $this->renderAdmin('contacts', ['items' => $this->app->listContacts()->handle()]);
+        $filter = isset($_GET['status']) ? (string) $_GET['status'] : 'new';
+        $status = ($filter === 'all' || $filter === '') ? null : $filter;
+        $this->renderAdmin('contacts', [
+            'items' => $this->app->listContacts()->handle(100, $status),
+            'status' => $filter === '' ? 'new' : $filter,
+            'contacts_new' => $this->app->listContacts()->countNew(),
+        ]);
+    }
+
+    private function adminLeads(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('leads', [
+            'items' => $this->app->listLeads()->handle(),
+            'contacts_new' => $this->app->listContacts()->countNew(),
+        ]);
     }
 
     private function adminMarkContactRead(): void
@@ -422,6 +527,13 @@ final class HttpKernel
     {
         if ($requireAuth) {
             $this->requireAdmin();
+        }
+        if (!isset($data['contacts_new']) && $requireAuth) {
+            try {
+                $data['contacts_new'] = $this->app->listContacts()->countNew();
+            } catch (\Throwable) {
+                $data['contacts_new'] = 0;
+            }
         }
         extract($data, EXTR_SKIP);
         $auth = $this->auth();

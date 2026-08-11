@@ -10,4 +10,9 @@ interface SubscriptionRepository
 
     /** @return list<Subscription> */
     public function findRecent(int $limit = 50): array;
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function findRecentDetailed(?string $status = null, int $limit = 100): array;
 }

@@ -239,7 +239,7 @@
             <button type="button" class="modal-close" data-close-modal aria-label="Fechar">&times;</button>
             <h2 id="modal-lead-title">Cadastre seu perfil</h2>
             <p class="lead">Receba ofertas e novidades do Clubinho Pet Box.</p>
-            <form id="form-lead" class="stack" action="save_lead.php" method="POST">
+            <form id="form-lead" class="stack" action="/lead" method="POST">
                 <div class="form-group">
                     <label for="lead-name">Nome completo *</label>
                     <input id="lead-name" type="text" name="name" required>
@@ -274,6 +274,7 @@
         </div>
     </div>
     <script src="assets/js/billing-toggle.js" defer></script>
+    <script src="assets/js/tracker.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
 
     <script>
@@ -291,7 +292,11 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
-                    const response = await fetch('save_lead.php', { method: 'POST', body: new FormData(form) });
+                    const body = new FormData(form);
+                    if (window.ClubinhoTrack && ClubinhoTrack.visitorId) {
+                        body.set('visitor_id', ClubinhoTrack.visitorId());
+                    }
+                    const response = await fetch('/lead', { method: 'POST', body });
                     if (response.ok) {
                         alert('Perfil cadastrado com sucesso!');
                         document.getElementById('modal-lead').classList.remove('is-open');

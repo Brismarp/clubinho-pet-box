@@ -1,6 +1,16 @@
 <?php declare(strict_types=1); ?>
 <h1>Contatos</h1>
 <?php if (!empty($_GET['updated'])): ?><div class="flash">Atualizado.</div><?php endif; ?>
+<?php $status = $status ?? 'new'; ?>
+<div class="filters">
+    <?php foreach (['new' => 'Novos', 'read' => 'Lidos', 'all' => 'Todos'] as $val => $label): ?>
+        <a class="<?= $status === $val ? 'is-active' : '' ?>" href="/admin/contacts?status=<?= urlencode($val) ?>"><?= $label ?></a>
+    <?php endforeach; ?>
+</div>
+
+<?php if (empty($items)): ?>
+    <div class="card empty">Nenhuma mensagem neste filtro.</div>
+<?php else: ?>
 <table>
     <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>Assunto</th><th>Status</th><th></th></tr></thead>
     <tbody>
@@ -26,3 +36,4 @@
     <?php endforeach; ?>
     </tbody>
 </table>
+<?php endif; ?>

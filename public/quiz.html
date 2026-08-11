@@ -51,8 +51,6 @@
     </section>
     <section class="section bg-white">
 <div class="quiz-container">
-            
-            <!-- Progress Bar -->
             <div class="quiz-progress">
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="progressBar"></div>
@@ -62,8 +60,16 @@
                 </p>
             </div>
 
-            <!-- Question 1 -->
-            <div class="quiz-question active" data-question="1">
+            <div class="quiz-stage">
+                <aside class="quiz-mood" aria-hidden="false">
+                    <div class="quiz-mood-frame" id="quizMoodFrame">
+                        <img id="quizMoodImage" src="assets/images/mood/q01.jpg" alt="Cães felizes brincando ao ar livre" width="900" height="1100">
+                    </div>
+                    <p class="quiz-mood-caption" id="quizMoodCaption">Momento tutor + pet</p>
+                </aside>
+
+                <div class="quiz-panel">
+            <div class="quiz-question active" data-question="1" data-mood="assets/images/mood/q01.jpg" data-caption="Momento tutor + pet" data-alt="Cães felizes brincando ao ar livre">
                 <h2 class="question-title">Qual é o tipo do seu pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="dog">Cachorro</button>
@@ -71,8 +77,7 @@
                 </div>
             </div>
 
-            <!-- Question 2 -->
-            <div class="quiz-question" data-question="2">
+            <div class="quiz-question" data-question="2" data-mood="assets/images/mood/q02.jpg" data-caption="Cada porte, uma curadoria" data-alt="Cão atento e feliz no parque">
                 <h2 class="question-title">Qual é o porte do seu pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="mini">Mini (até 5kg)</button>
@@ -83,8 +88,7 @@
                 </div>
             </div>
 
-            <!-- Question 3 -->
-            <div class="quiz-question" data-question="3">
+            <div class="quiz-question" data-question="3" data-mood="assets/images/mood/q03.jpg" data-caption="Do filhote ao sênior" data-alt="Filhote curioso e carinhoso">
                 <h2 class="question-title">Qual é a idade do seu pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="puppy">Filhote (0-1 ano)</button>
@@ -93,8 +97,7 @@
                 </div>
             </div>
 
-            <!-- Question 4 -->
-            <div class="quiz-question" data-question="4">
+            <div class="quiz-question" data-question="4" data-mood="assets/images/mood/q04.jpg" data-caption="Energia bem canalizada" data-alt="Cão brincalhão correndo">
                 <h2 class="question-title">Qual é o nível de energia do seu pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="low">Baixa energia (calmo, dorme muito)</button>
@@ -103,8 +106,7 @@
                 </div>
             </div>
 
-            <!-- Question 5 -->
-            <div class="quiz-question" data-question="5">
+            <div class="quiz-question" data-question="5" data-mood="assets/images/mood/q05.jpg" data-caption="O que faz o rabo balançar" data-alt="Cão com brinquedo na boca">
                 <h2 class="question-title">O que seu pet mais gosta de fazer?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="toys">Brincar com brinquedos</button>
@@ -113,8 +115,7 @@
                 </div>
             </div>
 
-            <!-- Question 6 -->
-            <div class="quiz-question" data-question="6">
+            <div class="quiz-question" data-question="6" data-mood="assets/images/mood/q06.jpg" data-caption="Cuidado em cada escolha" data-alt="Cão olhando com carinho">
                 <h2 class="question-title">Seu pet tem alguma restrição alimentar?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="no">Não, pode comer tudo</button>
@@ -123,8 +124,7 @@
                 </div>
             </div>
 
-            <!-- Question 7 -->
-            <div class="quiz-question" data-question="7">
+            <div class="quiz-question" data-question="7" data-mood="assets/images/mood/q07.jpg" data-caption="Presentes que cabem no mês" data-alt="Tutor abraçando o cão">
                 <h2 class="question-title">Qual é o seu orçamento mensal para o pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="basic">Até R$ 100</button>
@@ -133,8 +133,7 @@
                 </div>
             </div>
 
-            <!-- Question 8 -->
-            <div class="quiz-question" data-question="8">
+            <div class="quiz-question" data-question="8" data-mood="assets/images/mood/q08.jpg" data-caption="Curadoria com carinho" data-alt="Cão fofo em close">
                 <h2 class="question-title">Você prefere produtos naturais e orgânicos?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="always">Sim, sempre que possível</button>
@@ -143,8 +142,7 @@
                 </div>
             </div>
 
-            <!-- Question 9 -->
-            <div class="quiz-question" data-question="9">
+            <div class="quiz-question" data-question="9" data-mood="assets/images/mood/q09.jpg" data-caption="Ritmo da rotina a dois" data-alt="Tutor e cão juntos no sofá">
                 <h2 class="question-title">Com que frequência você compra produtos para o pet?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="weekly">Semanalmente</button>
@@ -153,8 +151,7 @@
                 </div>
             </div>
 
-            <!-- Question 10 -->
-            <div class="quiz-question" data-question="10">
+            <div class="quiz-question" data-question="10" data-mood="assets/images/mood/q10.jpg" data-caption="O essencial, bem escolhido" data-alt="Cão feliz ao ar livre">
                 <h2 class="question-title">O que é mais importante para você?</h2>
                 <div class="quiz-options">
                     <button type="button" class="quiz-option" data-value="variety">Variedade de produtos</button>
@@ -163,37 +160,34 @@
                 </div>
             </div>
 
-            <!-- Result -->
             <div class="quiz-result" id="quizResult">
-                <div class="result-icon"></div>
+                <div class="result-icon" id="resultIcon"></div>
+                <p class="result-warm" id="resultWarm">Vocês merecem essa curadoria.</p>
                 <h2 class="result-title" id="resultTitle"></h2>
                 <p class="result-subtitle" id="resultSubtitle"></p>
                 <p class="result-description" id="resultDescription"></p>
-                
                 <div class="result-box-details" id="resultDetails"></div>
-                
                 <div class="result-price" id="resultPrice"></div>
-                
                 <div class="result-actions">
-                    <button onclick="saveQuizDataAndRedirect(recommendedBox)" class="btn btn-gold">
+                    <button onclick="saveQuizDataAndRedirect(recommendedBox)" class="btn btn-gold" type="button">
                         Criar Conta e Assinar
                     </button>
-                    <button onclick="restartQuiz()" class="btn btn-secondary">
+                    <button onclick="restartQuiz()" class="btn btn-secondary" type="button">
                         Refazer Quiz
                     </button>
                 </div>
             </div>
 
-            <!-- Navigation -->
             <div class="quiz-navigation" id="quizNavigation">
-                <button class="btn-quiz btn-back" id="btnBack" onclick="previousQuestion()">
+                <button class="btn-quiz btn-back" id="btnBack" onclick="previousQuestion()" type="button">
                     ← Voltar
                 </button>
-                <button class="btn-quiz btn-next" id="btnNext" onclick="nextQuestion()" disabled>
+                <button class="btn-quiz btn-next" id="btnNext" onclick="nextQuestion()" disabled type="button">
                     Próxima →
                 </button>
             </div>
-
+                </div>
+            </div>
         </div>
     </section>
     </main>
@@ -233,17 +227,27 @@
     </footer>
 
     <script src="assets/js/billing-toggle.js" defer></script>
+    <script src="assets/js/tracker.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
 
 <script>
         let currentQuestionIndex = 1;
         const totalQuestions = 10;
         let answers = {};
+        let quizStarted = false;
+
+        function trackQuiz(name, data) {
+            if (window.ClubinhoTrack && typeof ClubinhoTrack.track === 'function') {
+                ClubinhoTrack.track(name, data || {});
+            }
+        }
 
         // Initialize
         document.getElementById('totalQuestions').textContent = totalQuestions;
         updateProgress();
         updateNavigationButtons();
+        trackQuiz('quiz_start', { properties: { total_questions: totalQuestions } });
+        quizStarted = true;
 
         // Option selection
         document.querySelectorAll('.quiz-option').forEach(option => {
@@ -261,6 +265,12 @@
                 
                 // Store answer
                 answers[questionNumber] = this.dataset.value;
+                trackQuiz('quiz_step', {
+                    properties: {
+                        question: Number(questionNumber),
+                        value: this.dataset.value,
+                    },
+                });
                 
                 // Enable next button
                 document.getElementById('btnNext').disabled = false;
@@ -398,6 +408,14 @@
         function showResult() {
             const result = calculateResult();
             recommendedBox = result; // Salvar na variável global
+            trackQuiz('quiz_complete', {
+                plan_slug: result,
+                properties: {
+                    recommended: result,
+                    answered: Object.keys(answers).length,
+                    stage: 'result_view',
+                },
+            });
             
             // Hide quiz navigation
             document.getElementById('quizNavigation').style.display = 'none';
@@ -465,13 +483,10 @@
         }
 
         function saveQuizDataAndRedirect(boxType) {
-            // Salvar dados do quiz na sessão via PHP
-            const quizData = {
-                answers: answers,
-                recommendedBox: boxType
-            };
+            if (window.ClubinhoTrack && ClubinhoTrack.flush) {
+                ClubinhoTrack.flush();
+            }
             
-            // Redirecionar para página de pagamento/assinatura
             const billing = (window.ClubinhoBilling && ClubinhoBilling.get()) || 'monthly';
             window.location.href = '/checkout?plan=' + boxType + '&billing=' + billing;
         }

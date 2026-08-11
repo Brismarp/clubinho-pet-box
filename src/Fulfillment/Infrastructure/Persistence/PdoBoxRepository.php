@@ -62,4 +62,15 @@ final class PdoBoxRepository implements BoxRepository
             'id' => $box->id(),
         ]);
     }
+
+    public function countByStatus(): array
+    {
+        $stmt = $this->pdo->query('SELECT status, COUNT(*) AS c FROM boxes GROUP BY status');
+        $out = [];
+        foreach ($stmt->fetchAll() ?: [] as $row) {
+            $out[(string) $row['status']] = (int) $row['c'];
+        }
+
+        return $out;
+    }
 }

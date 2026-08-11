@@ -9,6 +9,12 @@ use ClubinhoPet\Catalog\Application\ListPlansHandler;
 use ClubinhoPet\Catalog\Application\UpdatePlanCheckoutUrlHandler;
 use ClubinhoPet\Catalog\Infrastructure\Persistence\PdoPlanRepository;
 use ClubinhoPet\Catalog\Infrastructure\Persistence\PdoProductRepository;
+use ClubinhoPet\Analytics\Application\GetDashboardMetricsHandler;
+use ClubinhoPet\Analytics\Application\IngestEventsHandler;
+use ClubinhoPet\Analytics\Application\ListLeadsHandler;
+use ClubinhoPet\Analytics\Application\SubmitLeadHandler;
+use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoAnalyticsEventRepository;
+use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoLeadRepository;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
@@ -90,6 +96,16 @@ final class AppContainer
     public function contactMessageRepository(): PdoContactMessageRepository
     {
         return new PdoContactMessageRepository($this->pdo);
+    }
+
+    public function analyticsEventRepository(): PdoAnalyticsEventRepository
+    {
+        return new PdoAnalyticsEventRepository($this->pdo);
+    }
+
+    public function leadRepository(): PdoLeadRepository
+    {
+        return new PdoLeadRepository($this->pdo);
     }
 
     public function paymentGateway(): PlanCheckoutGateway
@@ -184,5 +200,29 @@ final class AppContainer
     public function shipBox(): ShipBoxHandler
     {
         return new ShipBoxHandler($this->boxRepository());
+    }
+
+    public function ingestEvents(): IngestEventsHandler
+    {
+        return new IngestEventsHandler($this->analyticsEventRepository());
+    }
+
+    public function submitLead(): SubmitLeadHandler
+    {
+        return new SubmitLeadHandler($this->leadRepository());
+    }
+
+    public function listLeads(): ListLeadsHandler
+    {
+        return new ListLeadsHandler($this->leadRepository());
+    }
+
+    public function dashboardMetrics(): GetDashboardMetricsHandler
+    {
+        return new GetDashboardMetricsHandler(
+            $this->analyticsEventRepository(),
+            $this->leadRepository(),
+            $this->pdo,
+        );
     }
 }

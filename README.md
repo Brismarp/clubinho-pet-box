@@ -19,6 +19,10 @@ Credenciais locais (seed):
 - Email: `admin@clubinhopetbox.com.br` (ou usuário `admin` / `AsmoD`)
 - Senha: `Carpe1936!`
 
+## Visual
+
+Design system **premium warm stone** (off-white + charcoal + accent coral muted): Cormorant Garamond + DM Sans. Tokens compartilhados em `public/assets/css/tokens.css` (site `style.css`, admin `admin.css`).
+
 ## Comandos
 
 - `make up` / `make down` / `make logs` / `make shell`

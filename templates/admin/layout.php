@@ -121,6 +121,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 '/admin/products' => 'Produtos',
                 '/admin/recommendations' => 'Recomendações',
                 '/admin/settings' => 'Settings',
+                '/admin/audit' => 'Auditoria',
             ];
             foreach ($links as $href => $label):
                 $active = str_starts_with($currentPath, $href);

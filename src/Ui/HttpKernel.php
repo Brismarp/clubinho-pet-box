@@ -49,6 +49,9 @@ final class HttpKernel
                 $method === 'GET' && $path === '/sobre' => $this->marketingPage('sobre'),
                 $method === 'GET' && $path === '/contato' => $this->marketingPage('contato'),
                 $method === 'GET' && $path === '/assinatura' => $this->marketingPage('assinatura'),
+                $method === 'GET' && $path === '/privacidade' => $this->marketingPage('privacidade'),
+                $method === 'GET' && $path === '/termos' => $this->marketingPage('termos'),
+                $method === 'POST' && $path === '/webhooks/kirvano' => $this->kirvanoWebhook(),
                 $method === 'POST' && $path === '/api/v1/quiz/sessions' => $this->quizStart(),
                 $method === 'GET' && preg_match('#^/api/v1/quiz/sessions/([a-f0-9]+)$#', $path, $m) === 1
                     => $this->json($this->app->quiz()->getSession($m[1])),
@@ -77,6 +80,7 @@ final class HttpKernel
                 $method === 'GET' && $path === '/admin/subscriptions' => $this->adminSubscriptions(),
                 $method === 'GET' && $path === '/admin/settings' => $this->adminSettings(),
                 $method === 'POST' && $path === '/admin/settings' => $this->adminUpdateSetting(),
+                $method === 'GET' && $path === '/admin/audit' => $this->adminAudit(),
                 $method === 'GET' && $path === '/admin/boxes' => $this->adminBoxes(),
                 $method === 'POST' && $path === '/admin/boxes' => $this->adminCreateBox(),
                 $method === 'POST' && $path === '/admin/boxes/ship' => $this->adminShipBox(),
@@ -212,6 +216,8 @@ final class HttpKernel
             ['loc' => $base . '/contato', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => $base . '/quiz', 'priority' => '0.8', 'changefreq' => 'monthly'],
             ['loc' => $base . '/assinatura', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/privacidade', 'priority' => '0.3', 'changefreq' => 'yearly'],
+            ['loc' => $base . '/termos', 'priority' => '0.3', 'changefreq' => 'yearly'],
         ];
 
         try {
@@ -506,6 +512,7 @@ final class HttpKernel
         $this->app->shipBox()->handle(
             (int) ($_POST['box_id'] ?? 0),
             isset($_POST['tracking_number']) && $_POST['tracking_number'] !== '' ? (string) $_POST['tracking_number'] : null,
+            $this->auth()->userId(),
         );
         header('Location: /admin/boxes?shipped=1');
         exit;
@@ -631,6 +638,37 @@ final class HttpKernel
         require $file;
     }
 
+    private function kirvanoWebhook(): void
+    {
+        $secret = Env::get('KIRVANO_WEBHOOK_SECRET', '') ?? '';
+        if ($secret !== '') {
+            $provided = (string) ($_SERVER['HTTP_X_KIRVANO_SECRET']
+                ?? $_SERVER['HTTP_X_WEBHOOK_SECRET']
+                ?? '');
+            if (!hash_equals($secret, $provided)) {
+                $this->json(['error' => 'Unauthorized'], 401);
+                return;
+            }
+        }
+        $payload = $this->jsonBody();
+        $headers = [];
+        foreach ($_SERVER as $k => $v) {
+            if (str_starts_with($k, 'HTTP_') && is_string($v)) {
+                $headers[$k] = $v;
+            }
+        }
+        $result = $this->app->kirvanoWebhook()->handle($payload, $headers);
+        $this->json($result);
+    }
+
+    private function adminAudit(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('audit', [
+            'items' => $this->app->activityLogRepository()->recent(150),
+        ]);
+    }
+
     private function quizStart(): void
     {
         $body = $this->jsonBody();
@@ -708,7 +746,7 @@ final class HttpKernel
     {
         $this->requireAdmin();
         $status = (string) ($_POST['status'] ?? '');
-        $this->app->quiz()->adminSetRecommendationStatus($id, $status);
+        $this->app->quiz()->adminSetRecommendationStatus($id, $status, $this->auth()->userId());
         header('Location: /admin/recommendations/' . $id . '?saved=1');
         exit;
     }
@@ -921,6 +959,7 @@ final class HttpKernel
         $this->json($this->app->shipBox()->handle(
             (int) ($body['box_id'] ?? 0),
             isset($body['tracking_number']) ? (string) $body['tracking_number'] : null,
+            $this->auth()->userId(),
         ));
     }
 

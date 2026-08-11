@@ -1,0 +1,29 @@
+# Clubinho Pet Box
+
+Assinatura premium de boxes mensais com produtos selecionados para cães e gatos.
+Tom da marca: acolhedor, premium, claro — preto e dourado; linguagem em português do Brasil.
+
+## Site
+
+- Home: /
+- Planos: /planos.html
+- Sobre: /sobre.html
+- Contato: /contato.html
+- Quiz (recomendação de plano): /quiz.html
+- Assinatura (formulário): /assinatura.html
+
+## Planos
+
+- Happy — box essencial
+- Love — box premium (mais popular)
+- Deluxe — box completo
+
+Checkout externo (Kirvano) via /checkout?plan={slug}&billing=monthly|annual — não é página de conteúdo.
+
+## Admin
+
+Área privada em /admin — não indexar.
+
+## Contato
+
+Use /contato.html para dúvidas e suporte.

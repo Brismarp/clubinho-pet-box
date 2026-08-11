@@ -11,17 +11,30 @@
   }
 
   const toggle = document.querySelector(".nav-toggle");
-  const nav = document.querySelector(".nav");
+  const nav = document.querySelector("#primary-nav") || document.querySelector(".nav");
+
+  const closeNav = () => {
+    if (!nav || !toggle) return;
+    nav.classList.remove("is-open");
+    document.body.classList.remove("nav-open");
+    toggle.setAttribute("aria-expanded", "false");
+  };
+
+  const openNav = () => {
+    if (!nav || !toggle) return;
+    nav.classList.add("is-open");
+    document.body.classList.add("nav-open");
+    toggle.setAttribute("aria-expanded", "true");
+  };
+
   if (toggle && nav) {
+    toggle.setAttribute("aria-controls", nav.id || "primary-nav");
     toggle.addEventListener("click", () => {
-      const open = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (nav.classList.contains("is-open")) closeNav();
+      else openNav();
     });
     nav.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-      });
+      link.addEventListener("click", closeNav);
     });
   }
 
@@ -37,31 +50,50 @@
       },
       { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
     );
-
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
   } else {
     document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
   }
 
+  let lastFocus = null;
+
+  const openModal = (modal) => {
+    if (!modal) return;
+    lastFocus = document.activeElement;
+    modal.classList.add("is-open");
+    const focusable = modal.querySelector(
+      'input, select, textarea, button, [href], [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable) focusable.focus();
+  };
+
+  const closeModal = (modal) => {
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  };
+
   document.querySelectorAll("[data-open-modal]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const id = btn.getAttribute("data-open-modal");
-      const modal = id && document.getElementById(id);
-      if (modal) modal.classList.add("is-open");
+      openModal(id && document.getElementById(id));
     });
   });
 
   document.querySelectorAll("[data-close-modal]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const modal = btn.closest(".modal");
-      if (modal) modal.classList.remove("is-open");
-    });
+    btn.addEventListener("click", () => closeModal(btn.closest(".modal")));
   });
 
   document.querySelectorAll(".modal").forEach((modal) => {
     modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.remove("is-open");
+      if (e.target === modal) closeModal(modal);
     });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    closeNav();
+    document.querySelectorAll(".modal.is-open").forEach((modal) => closeModal(modal));
   });
 })();

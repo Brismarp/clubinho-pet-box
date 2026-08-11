@@ -5,30 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Formulário de Assinatura - Clubinho Pet Box">
     <title>Assinatura | Clubinho Pet Box</title>
+    <link rel="canonical" href="http://localhost:8080/assinatura.html">
+    <meta property="og:title" content="Assinatura | Clubinho Pet Box">
+    <meta property="og:description" content="Formulário de Assinatura - Clubinho Pet Box">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8080/assinatura.html">
+    <meta property="og:image" content="http://localhost:8080/assets/images/boxes/box-love.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Assinatura | Clubinho Pet Box">
+    <meta name="twitter:description" content="Formulário de Assinatura - Clubinho Pet Box">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <header class="header">
         <div class="header-container">
             <a href="index.html" class="logo-link">
-                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" width="176" height="56" onerror="this.src='assets/images/logo/logo.jpg'">
             </a>
-            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
                 <span></span><span></span><span></span>
             </button>
-            <nav class="nav" aria-label="Principal">
+            <nav id="primary-nav" class="nav" aria-label="Principal">
                 <a href="index.html" class="nav-link">Início</a>
                 <a href="planos.html" class="nav-link">Planos</a>
                 <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
                 <a href="contato.html" class="nav-link">Contato</a>
                 <a href="planos.html" class="btn btn-primary">Assinar</a>
             </nav>
         </div>
     </header>
 
+    <main id="main">
     <section class="page-hero">
         <div class="container reveal">
             <p class="text-uppercase text-gold">Assinatura</p>
@@ -36,7 +49,6 @@
             <p class="lead">Preencha o formulário e siga para o checkout seguro.</p>
         </div>
     </section>
-
     <section class="section bg-white">
         <div class="container">
             <div class="form-panel reveal">
@@ -45,12 +57,18 @@
                         <label for="plan">Plano</label>
                         <select id="plan" name="plan" required>
                             <option value="">Escolha um plano</option>
-                            <option value="happy">Happy — R$ 101,47/mês</option>
-                            <option value="love">Love — R$ 164,97/mês</option>
-                            <option value="deluxe">Deluxe — R$ 253,87/mês</option>
+                            <option value="happy">Happy</option>
+                            <option value="love">Love</option>
+                            <option value="deluxe">Deluxe</option>
                         </select>
                     </div>
-
+                    <div class="form-group">
+                        <label for="billing">Ciclo</label>
+                        <select id="billing" name="billing" data-billing-select>
+                            <option value="monthly">Mensal</option>
+                            <option value="annual">Anual (2 meses grátis)</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="name">Nome completo</label>
                         <input type="text" id="name" name="name" required>
@@ -63,7 +81,6 @@
                         <label for="phone">Telefone</label>
                         <input type="tel" id="phone" name="phone">
                     </div>
-
                     <h3>Dados do pet</h3>
                     <div class="form-group">
                         <label for="pet_name">Nome do pet</label>
@@ -90,18 +107,15 @@
                         <label for="dietary_restrictions">Restrições alimentares</label>
                         <textarea id="dietary_restrictions" name="dietary_restrictions"></textarea>
                     </div>
-
                     <h3>Entrega</h3>
                     <div class="form-group">
                         <label for="address">Endereço</label>
                         <input type="text" id="address" name="address">
                     </div>
-
                     <div class="form-group cluster">
                         <input type="checkbox" id="terms" name="terms" required style="width:auto">
                         <label for="terms" style="margin:0;font-weight:400">Concordo com os termos da assinatura</label>
                     </div>
-
                     <div class="cluster">
                         <button type="submit" class="btn btn-primary">Continuar para pagamento</button>
                         <a href="planos.html" class="btn btn-secondary">Voltar aos planos</a>
@@ -110,14 +124,44 @@
             </div>
         </div>
     </section>
-
+    </main>
+    <!-- site-footer -->
     <footer class="footer">
         <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Clubinho Pet Box</h4>
+                    <p>Assinatura premium de produtos selecionados para o seu pet.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="planos.html">Planos</a></p>
+                    <p><a href="sobre.html">Sobre</a></p>
+                    <p><a href="quiz.html">Quiz</a></p>
+                    <p><a href="contato.html">Contato</a></p>
+                    <p><a href="assinatura.html">Assinatura</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
+                    <p>Seg a Sex: 9h às 18h</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Assine</h4>
+                    <p><a href="planos.html">Ver planos</a></p>
+                    <p><a href="quiz.html">Descobrir no quiz</a></p>
+                </div>
+            </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Clubinho Pet Box.</p>
+                <p>&copy; 2025 Clubinho Pet Box. Todos os direitos reservados.</p>
+                <p class="footer-company">Brismarp Tecnologia Ltda | CNPJ: 63.304.598/0001-22</p>
             </div>
         </div>
     </footer>
+
+    <script src="assets/js/billing-toggle.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
+
 </body>
 </html>

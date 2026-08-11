@@ -7,6 +7,7 @@ namespace ClubinhoPet\Ui;
 use ClubinhoPet\Identity\Domain\AuthSession;
 use ClubinhoPet\Shared\Domain\DomainException;
 use ClubinhoPet\Shared\Infrastructure\AppContainer;
+use ClubinhoPet\Shared\Infrastructure\Env;
 
 final class HttpKernel
 {
@@ -38,6 +39,8 @@ final class HttpKernel
                         'data' => $this->app->getPublicSettings()->handle(),
                     ]),
                 $method === 'GET' && $path === '/checkout' => $this->checkout(),
+                $method === 'GET' && $path === '/sitemap.xml' => $this->sitemap(),
+                $method === 'GET' && $path === '/sitemap.php' => $this->sitemapRedirect(),
                 $method === 'POST' && $path === '/subscribe' => $this->subscribe(),
                 $method === 'POST' && $path === '/contact' => $this->contact(),
 
@@ -101,6 +104,15 @@ final class HttpKernel
     private function checkout(): void
     {
         $plan = (string) ($_GET['plan'] ?? '');
+        $billing = strtolower((string) ($_GET['billing'] ?? 'monthly'));
+        if (!in_array($billing, ['monthly', 'annual'], true)) {
+            $billing = 'monthly';
+        }
+
+        // Annual SKUs/checkout URLs can be added later as dedicated plans.
+        // For now billing is accepted/logged and we use the plan slug checkout URL.
+        error_log(sprintf('checkout plan=%s billing=%s', $plan, $billing));
+
         $result = $this->app->startCheckout()->handle(
             new \ClubinhoPet\Subscription\Application\StartCheckout\StartCheckoutCommand($plan)
         );
@@ -108,13 +120,80 @@ final class HttpKernel
         exit;
     }
 
+    private function sitemapRedirect(): void
+    {
+        header('Location: /sitemap.xml', true, 301);
+        exit;
+    }
+
+    private function sitemap(): void
+    {
+        $base = rtrim(Env::get('APP_URL', 'http://localhost:8080') ?? 'http://localhost:8080', '/');
+        $today = date('Y-m-d');
+
+        $urls = [
+            ['loc' => $base . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
+            ['loc' => $base . '/planos.html', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $base . '/sobre.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/contato.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/quiz.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => $base . '/assinatura.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
+        ];
+
+        try {
+            foreach ($this->app->listPlans()->handle() as $plan) {
+                $slug = (string) ($plan['slug'] ?? '');
+                if ($slug === '') {
+                    continue;
+                }
+                // Indexable subscription entry points per active plan (checkout redirects are omitted).
+                $urls[] = [
+                    'loc' => $base . '/assinatura.html?plan=' . rawurlencode($slug),
+                    'priority' => '0.6',
+                    'changefreq' => 'weekly',
+                ];
+            }
+        } catch (\Throwable) {
+            // Pages-only sitemap if catalog is unavailable.
+        }
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        foreach ($urls as $entry) {
+            $xml .= "  <url>\n";
+            $xml .= '    <loc>' . htmlspecialchars($entry['loc'], ENT_XML1) . "</loc>\n";
+            $xml .= '    <lastmod>' . $today . "</lastmod>\n";
+            $xml .= '    <changefreq>' . $entry['changefreq'] . "</changefreq>\n";
+            $xml .= '    <priority>' . $entry['priority'] . "</priority>\n";
+            $xml .= "  </url>\n";
+        }
+        $xml .= '</urlset>';
+
+        http_response_code(200);
+        header('Content-Type: application/xml; charset=utf-8');
+        echo $xml;
+        exit;
+    }
+
     private function subscribe(): void
     {
         $str = static fn (string $key): ?string => isset($_POST[$key]) && $_POST[$key] !== '' ? (string) $_POST[$key] : null;
 
+        $billing = strtolower((string) ($_POST['billing'] ?? 'monthly'));
+        if (!in_array($billing, ['monthly', 'annual'], true)) {
+            $billing = 'monthly';
+        }
+
+        $address = $str('address');
+        $addressNote = $address !== null
+            ? $address . ' | billing: ' . $billing
+            : 'billing: ' . $billing;
+
+        $plan = (string) ($_POST['plan'] ?? '');
+
         $result = $this->app->registerInterest()->handle(
             new \ClubinhoPet\Subscription\Application\RegisterInterest\RegisterInterestCommand(
-                planSlug: (string) ($_POST['plan'] ?? ''),
+                planSlug: $plan,
                 name: (string) ($_POST['name'] ?? ''),
                 email: (string) ($_POST['email'] ?? ''),
                 petName: (string) ($_POST['pet_name'] ?? ''),
@@ -123,16 +202,17 @@ final class HttpKernel
                 petBreed: $str('pet_breed'),
                 dietaryRestrictions: $str('dietary_restrictions'),
                 phone: $str('phone'),
-                address: $str('address'),
+                address: $addressNote,
             )
         );
 
         if ($this->wantsJson()) {
+            $result['billing'] = $billing;
             $this->json($result, 201);
             return;
         }
 
-        header('Location: ' . $result['checkout_url']);
+        header('Location: /checkout?plan=' . urlencode($plan) . '&billing=' . urlencode($billing));
         exit;
     }
 

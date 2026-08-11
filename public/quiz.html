@@ -5,30 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Quiz personalizado Clubinho Pet Box">
     <title>Quiz | Clubinho Pet Box</title>
+    <link rel="canonical" href="http://localhost:8080/quiz.html">
+    <meta property="og:title" content="Quiz | Clubinho Pet Box">
+    <meta property="og:description" content="Quiz personalizado Clubinho Pet Box">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8080/quiz.html">
+    <meta property="og:image" content="http://localhost:8080/assets/images/boxes/box-love.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Quiz | Clubinho Pet Box">
+    <meta name="twitter:description" content="Quiz personalizado Clubinho Pet Box">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <header class="header">
         <div class="header-container">
             <a href="index.html" class="logo-link">
-                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" width="176" height="56" onerror="this.src='assets/images/logo/logo.jpg'">
             </a>
-            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
                 <span></span><span></span><span></span>
             </button>
-            <nav class="nav" aria-label="Principal">
+            <nav id="primary-nav" class="nav" aria-label="Principal">
                 <a href="index.html" class="nav-link">Início</a>
                 <a href="planos.html" class="nav-link">Planos</a>
                 <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="quiz.html" aria-current="page" class="nav-link is-active">Quiz</a>
                 <a href="contato.html" class="nav-link">Contato</a>
                 <a href="planos.html" class="btn btn-primary">Assinar</a>
             </nav>
         </div>
     </header>
 
+    <main id="main">
     <section class="page-hero">
         <div class="container reveal">
             <p class="text-uppercase text-gold">Descubra a box perfeita</p>
@@ -36,10 +49,8 @@
             <p class="lead">Dez perguntas rápidas para indicar o plano ideal.</p>
         </div>
     </section>
-
-    <!-- QUIZ -->
     <section class="section bg-white">
-        <div class="quiz-container">
+<div class="quiz-container">
             
             <!-- Progress Bar -->
             <div class="quiz-progress">
@@ -55,8 +66,8 @@
             <div class="quiz-question active" data-question="1">
                 <h2 class="question-title">Qual é o tipo do seu pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="dog"> Cachorro</div>
-                    <div class="quiz-option" data-value="cat"> Gato</div>
+                    <button type="button" class="quiz-option" data-value="dog">Cachorro</button>
+                    <button type="button" class="quiz-option" data-value="cat">Gato</button>
                 </div>
             </div>
 
@@ -64,11 +75,11 @@
             <div class="quiz-question" data-question="2">
                 <h2 class="question-title">Qual é o porte do seu pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="mini">Mini (até 5kg)</div>
-                    <div class="quiz-option" data-value="small">Pequeno (5-10kg)</div>
-                    <div class="quiz-option" data-value="medium">Médio (10-25kg)</div>
-                    <div class="quiz-option" data-value="large">Grande (25-45kg)</div>
-                    <div class="quiz-option" data-value="giant">Gigante (acima de 45kg)</div>
+                    <button type="button" class="quiz-option" data-value="mini">Mini (até 5kg)</button>
+                    <button type="button" class="quiz-option" data-value="small">Pequeno (5-10kg)</button>
+                    <button type="button" class="quiz-option" data-value="medium">Médio (10-25kg)</button>
+                    <button type="button" class="quiz-option" data-value="large">Grande (25-45kg)</button>
+                    <button type="button" class="quiz-option" data-value="giant">Gigante (acima de 45kg)</button>
                 </div>
             </div>
 
@@ -76,9 +87,9 @@
             <div class="quiz-question" data-question="3">
                 <h2 class="question-title">Qual é a idade do seu pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="puppy"> Filhote (0-1 ano)</div>
-                    <div class="quiz-option" data-value="adult"> Adulto (1-7 anos)</div>
-                    <div class="quiz-option" data-value="senior"> Idoso (acima de 7 anos)</div>
+                    <button type="button" class="quiz-option" data-value="puppy">Filhote (0-1 ano)</button>
+                    <button type="button" class="quiz-option" data-value="adult">Adulto (1-7 anos)</button>
+                    <button type="button" class="quiz-option" data-value="senior">Idoso (acima de 7 anos)</button>
                 </div>
             </div>
 
@@ -86,9 +97,9 @@
             <div class="quiz-question" data-question="4">
                 <h2 class="question-title">Qual é o nível de energia do seu pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="low"> Baixa energia (calmo, dorme muito)</div>
-                    <div class="quiz-option" data-value="moderate"> Energia moderada (equilibrado)</div>
-                    <div class="quiz-option" data-value="high"> Alta energia (muito ativo, brincalhão)</div>
+                    <button type="button" class="quiz-option" data-value="low">Baixa energia (calmo, dorme muito)</button>
+                    <button type="button" class="quiz-option" data-value="moderate">Energia moderada (equilibrado)</button>
+                    <button type="button" class="quiz-option" data-value="high">Alta energia (muito ativo, brincalhão)</button>
                 </div>
             </div>
 
@@ -96,9 +107,9 @@
             <div class="quiz-question" data-question="5">
                 <h2 class="question-title">O que seu pet mais gosta de fazer?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="toys"> Brincar com brinquedos</div>
-                    <div class="quiz-option" data-value="treats"> Comer petiscos</div>
-                    <div class="quiz-option" data-value="comfort"> Relaxar e ter conforto</div>
+                    <button type="button" class="quiz-option" data-value="toys">Brincar com brinquedos</button>
+                    <button type="button" class="quiz-option" data-value="treats">Comer petiscos</button>
+                    <button type="button" class="quiz-option" data-value="comfort">Relaxar e ter conforto</button>
                 </div>
             </div>
 
@@ -106,9 +117,9 @@
             <div class="quiz-question" data-question="6">
                 <h2 class="question-title">Seu pet tem alguma restrição alimentar?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="no"> Não, pode comer tudo</div>
-                    <div class="quiz-option" data-value="allergies"> Sim, tem alergias</div>
-                    <div class="quiz-option" data-value="health"> Sim, problemas de saúde</div>
+                    <button type="button" class="quiz-option" data-value="no">Não, pode comer tudo</button>
+                    <button type="button" class="quiz-option" data-value="allergies">Sim, tem alergias</button>
+                    <button type="button" class="quiz-option" data-value="health">Sim, problemas de saúde</button>
                 </div>
             </div>
 
@@ -116,9 +127,9 @@
             <div class="quiz-question" data-question="7">
                 <h2 class="question-title">Qual é o seu orçamento mensal para o pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="basic"> Até R$ 100</div>
-                    <div class="quiz-option" data-value="standard"> R$ 100-200</div>
-                    <div class="quiz-option" data-value="premium"> Acima de R$ 200</div>
+                    <button type="button" class="quiz-option" data-value="basic">Até R$ 100</button>
+                    <button type="button" class="quiz-option" data-value="standard">R$ 100-200</button>
+                    <button type="button" class="quiz-option" data-value="premium">Acima de R$ 200</button>
                 </div>
             </div>
 
@@ -126,9 +137,9 @@
             <div class="quiz-question" data-question="8">
                 <h2 class="question-title">Você prefere produtos naturais e orgânicos?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="always"> Sim, sempre que possível</div>
-                    <div class="quiz-option" data-value="sometimes"> Às vezes, depende do produto</div>
-                    <div class="quiz-option" data-value="no"> Não necessariamente</div>
+                    <button type="button" class="quiz-option" data-value="always">Sim, sempre que possível</button>
+                    <button type="button" class="quiz-option" data-value="sometimes">Às vezes, depende do produto</button>
+                    <button type="button" class="quiz-option" data-value="no">Não necessariamente</button>
                 </div>
             </div>
 
@@ -136,9 +147,9 @@
             <div class="quiz-question" data-question="9">
                 <h2 class="question-title">Com que frequência você compra produtos para o pet?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="weekly"> Semanalmente</div>
-                    <div class="quiz-option" data-value="monthly"> Mensalmente</div>
-                    <div class="quiz-option" data-value="occasionally"> Ocasionalmente</div>
+                    <button type="button" class="quiz-option" data-value="weekly">Semanalmente</button>
+                    <button type="button" class="quiz-option" data-value="monthly">Mensalmente</button>
+                    <button type="button" class="quiz-option" data-value="occasionally">Ocasionalmente</button>
                 </div>
             </div>
 
@@ -146,9 +157,9 @@
             <div class="quiz-question" data-question="10">
                 <h2 class="question-title">O que é mais importante para você?</h2>
                 <div class="quiz-options">
-                    <div class="quiz-option" data-value="variety"> Variedade de produtos</div>
-                    <div class="quiz-option" data-value="quality"> Qualidade premium</div>
-                    <div class="quiz-option" data-value="value"> Melhor custo-benefício</div>
+                    <button type="button" class="quiz-option" data-value="variety">Variedade de produtos</button>
+                    <button type="button" class="quiz-option" data-value="quality">Qualidade premium</button>
+                    <button type="button" class="quiz-option" data-value="value">Melhor custo-benefício</button>
                 </div>
             </div>
 
@@ -185,18 +196,46 @@
 
         </div>
     </section>
-
-
+    </main>
+    <!-- site-footer -->
     <footer class="footer">
         <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Clubinho Pet Box</h4>
+                    <p>Assinatura premium de produtos selecionados para o seu pet.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="planos.html">Planos</a></p>
+                    <p><a href="sobre.html">Sobre</a></p>
+                    <p><a href="quiz.html">Quiz</a></p>
+                    <p><a href="contato.html">Contato</a></p>
+                    <p><a href="assinatura.html">Assinatura</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
+                    <p>Seg a Sex: 9h às 18h</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Assine</h4>
+                    <p><a href="planos.html">Ver planos</a></p>
+                    <p><a href="quiz.html">Descobrir no quiz</a></p>
+                </div>
+            </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Clubinho Pet Box.</p>
+                <p>&copy; 2025 Clubinho Pet Box. Todos os direitos reservados.</p>
+                <p class="footer-company">Brismarp Tecnologia Ltda | CNPJ: 63.304.598/0001-22</p>
             </div>
         </div>
     </footer>
+
+    <script src="assets/js/billing-toggle.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
-    <!-- JavaScript -->
-    <script>
+
+<script>
         let currentQuestionIndex = 1;
         const totalQuestions = 10;
         let answers = {};
@@ -337,6 +376,23 @@
             return recommended;
         }
 
+
+        function renderResultPrice(monthly) {
+            const billing = (window.ClubinhoBilling && ClubinhoBilling.get()) || 'monthly';
+            const fmt = (window.ClubinhoBilling && ClubinhoBilling.formatBRL)
+                ? ClubinhoBilling.formatBRL
+                : ((v) => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}));
+            if (billing === 'annual') {
+                const annual = monthly * 10;
+                document.getElementById('resultPrice').innerHTML =
+                    fmt(annual) + '<span class="result-price-period">/ano</span>' +
+                    '<div class="card-price-equiv" style="display:block">equiv. ' + fmt(annual/12) + '/mês</div>';
+            } else {
+                document.getElementById('resultPrice').innerHTML =
+                    fmt(monthly) + '<span class="result-price-period">/mês</span>';
+            }
+        }
+
         let recommendedBox = 'love'; // Variável global para armazenar a box recomendada
 
         function showResult() {
@@ -370,7 +426,7 @@
                         <li>Surpresas mensais</li>
                     </ul>
                 `;
-                document.getElementById('resultPrice').innerHTML = 'R$ 101,47<span class="result-price-period">/mês</span>';
+                renderResultPrice(101.47);
             } else if (result === 'love') {
                 document.getElementById('resultTitle').textContent = 'Clubinho Pet Love';
                 document.getElementById('resultSubtitle').textContent = 'Box Premium';
@@ -386,7 +442,7 @@
                         <li>Entrega prioritária</li>
                     </ul>
                 `;
-                document.getElementById('resultPrice').innerHTML = 'R$ 164,97<span class="result-price-period">/mês</span>';
+                renderResultPrice(164.97);
             } else {
                 document.getElementById('resultTitle').textContent = 'Clubinho Pet Deluxe';
                 document.getElementById('resultSubtitle').textContent = 'Box Super Premium';
@@ -404,7 +460,7 @@
                         <li>Atendimento VIP</li>
                     </ul>
                 `;
-                document.getElementById('resultPrice').innerHTML = 'R$ 253,87<span class="result-price-period">/mês</span>';
+                renderResultPrice(253.87);
             }
         }
 
@@ -416,7 +472,8 @@
             };
             
             // Redirecionar para página de pagamento/assinatura
-            window.location.href = '/checkout?plan=' + boxType;
+            const billing = (window.ClubinhoBilling && ClubinhoBilling.get()) || 'monthly';
+            window.location.href = '/checkout?plan=' + boxType + '&billing=' + billing;
         }
 
         function restartQuiz() {
@@ -446,7 +503,5 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
-
 </body>
-
 </html>

@@ -3,97 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Planos Happy, Love e Deluxe do Clubinho Pet Box.">
+    <meta name="description" content="Planos Happy, Love e Deluxe do Clubinho Pet Box — mensal ou anual.">
     <title>Planos | Clubinho Pet Box</title>
+    <link rel="canonical" href="http://localhost:8080/planos.html">
+    <meta property="og:title" content="Planos | Clubinho Pet Box">
+    <meta property="og:description" content="Planos Happy, Love e Deluxe do Clubinho Pet Box — mensal ou anual.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8080/planos.html">
+    <meta property="og:image" content="http://localhost:8080/assets/images/boxes/box-love.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Planos | Clubinho Pet Box">
+    <meta name="twitter:description" content="Planos Happy, Love e Deluxe do Clubinho Pet Box — mensal ou anual.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <header class="header">
         <div class="header-container">
             <a href="index.html" class="logo-link">
-                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" width="176" height="56" onerror="this.src='assets/images/logo/logo.jpg'">
             </a>
-            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
                 <span></span><span></span><span></span>
             </button>
-            <nav class="nav" aria-label="Principal">
+            <nav id="primary-nav" class="nav" aria-label="Principal">
                 <a href="index.html" class="nav-link">Início</a>
-                <a href="planos.html" class="nav-link">Planos</a>
+                <a href="planos.html" aria-current="page" class="nav-link is-active">Planos</a>
                 <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
                 <a href="contato.html" class="nav-link">Contato</a>
                 <a href="planos.html" class="btn btn-primary">Assinar</a>
             </nav>
         </div>
     </header>
 
+    <main id="main">
     <section class="page-hero">
         <div class="container reveal">
             <p class="text-uppercase text-gold">Assinatura premium</p>
             <h1>Escolha seu plano</h1>
-            <p class="lead">Três boxes curadas — do essencial ao super premium.</p>
+            <p class="lead">Três boxes curadas — mensal ou anual com 2 meses grátis.</p>
         </div>
     </section>
-
     <section class="section bg-white" id="planos">
         <div class="container">
+
+            <div class="billing-toggle-wrap">
+                <div class="billing-toggle" data-billing-toggle role="group" aria-label="Ciclo de cobrança">
+                    <button type="button" class="billing-toggle__btn is-active" data-billing-value="monthly" aria-pressed="true">Mensal</button>
+                    <button type="button" class="billing-toggle__btn" data-billing-value="annual" aria-pressed="false">Anual</button>
+                </div>
+                <p class="billing-toggle__badge">Anual: 2 meses grátis</p>
+            </div>
+
             <div class="plans-grid">
-                <article class="plan-card reveal">
-                    <img src="assets/images/boxes/box-happy.jpg" alt="Box Happy" class="card-image" loading="lazy">
+                <article class="plan-card" data-slug="happy" data-price-monthly="101.47" data-price-annual="1014.70" data-billing="monthly">
+                    <img src="assets/images/boxes/box-happy.jpg" alt="Box Happy" class="card-image" loading="lazy" width="640" height="480">
                     <div class="card-content">
-                        <h2 class="card-title">Happy</h2>
-                        <p class="card-price">R$ 101,47 <span class="card-price-period">/mês</span></p>
-                        <p class="lead" style="font-size:var(--text-sm);margin:0">Box essencial com produtos selecionados.</p>
+                        <h3 class="card-title">Clubinho Happy</h3>
+                        <p class="card-price"><span data-plan-price>R$ 101,47</span> <span class="card-price-period" data-plan-period>/mês</span></p>
+                        <p class="card-price-equiv" data-plan-equiv hidden></p>
+                        <p class="lead" style="font-size: var(--text-sm); margin: 0;">Box essencial com produtos selecionados.</p>
                         <ul class="card-features">
                             <li>4 a 6 produtos essenciais</li>
                             <li>Brinquedos divertidos</li>
                             <li>Petiscos saborosos</li>
                             <li>Produtos de higiene</li>
                         </ul>
-                        <a href="/checkout?plan=happy" class="btn btn-primary">Assinar Happy</a>
-                        <a href="quiz.html" class="btn btn-ghost">Fazer quiz</a>
+                        <a href="/checkout?plan=happy&billing=monthly" class="btn btn-secondary" data-plan-cta>Assinar Happy</a>
                     </div>
                 </article>
 
-                <article class="plan-card featured reveal">
-                    <img src="assets/images/boxes/box-love.jpg" alt="Box Love" class="card-image" loading="lazy">
+                <article class="plan-card featured" data-slug="love" data-price-monthly="164.97" data-price-annual="1649.70" data-billing="monthly">
+                    <img src="assets/images/boxes/box-love.jpg" alt="Box Love" class="card-image" loading="lazy" width="640" height="480">
                     <div class="card-content">
-                        <h2 class="card-title">Love</h2>
-                        <p class="card-price">R$ 164,97 <span class="card-price-period">/mês</span></p>
-                        <p class="lead" style="font-size:var(--text-sm);margin:0">Box premium com marcas renomadas.</p>
+                        <h3 class="card-title">Clubinho Love</h3>
+                        <p class="card-price"><span data-plan-price>R$ 164,97</span> <span class="card-price-period" data-plan-period>/mês</span></p>
+                        <p class="card-price-equiv" data-plan-equiv hidden></p>
+                        <p class="lead" style="font-size: var(--text-sm); margin: 0;">Box premium com marcas renomadas.</p>
                         <ul class="card-features">
                             <li>6 a 8 produtos exclusivos</li>
                             <li>Brinquedos interativos</li>
                             <li>Petiscos premium</li>
                             <li>Marcas renomadas</li>
                         </ul>
-                        <a href="/checkout?plan=love" class="btn btn-gold">Assinar Love</a>
-                        <a href="quiz.html" class="btn btn-ghost">Fazer quiz</a>
+                        <a href="/checkout?plan=love&billing=monthly" class="btn btn-gold" data-plan-cta>Assinar Love</a>
                     </div>
                 </article>
 
-                <article class="plan-card reveal">
-                    <img src="assets/images/boxes/box-deluxe.jpg" alt="Box Deluxe" class="card-image" loading="lazy">
+                <article class="plan-card" data-slug="deluxe" data-price-monthly="253.87" data-price-annual="2538.70" data-billing="monthly">
+                    <img src="assets/images/boxes/box-deluxe.jpg" alt="Box Deluxe" class="card-image" loading="lazy" width="640" height="480">
                     <div class="card-content">
-                        <h2 class="card-title">Deluxe</h2>
-                        <p class="card-price">R$ 253,87 <span class="card-price-period">/mês</span></p>
-                        <p class="lead" style="font-size:var(--text-sm);margin:0">O melhor em cada entrega.</p>
+                        <h3 class="card-title">Clubinho Deluxe</h3>
+                        <p class="card-price"><span data-plan-price>R$ 253,87</span> <span class="card-price-period" data-plan-period>/mês</span></p>
+                        <p class="card-price-equiv" data-plan-equiv hidden></p>
+                        <p class="lead" style="font-size: var(--text-sm); margin: 0;">O que há de melhor em cada entrega.</p>
                         <ul class="card-features">
                             <li>8 a 10 produtos de luxo</li>
                             <li>Brinquedos importados</li>
                             <li>Petiscos gourmet</li>
                             <li>Produtos naturais</li>
                         </ul>
-                        <a href="/checkout?plan=deluxe" class="btn btn-primary">Assinar Deluxe</a>
-                        <a href="quiz.html" class="btn btn-ghost">Fazer quiz</a>
+                        <a href="/checkout?plan=deluxe&billing=monthly" class="btn btn-secondary" data-plan-cta>Assinar Deluxe</a>
                     </div>
                 </article>
+
             </div>
         </div>
     </section>
-
     <section class="cta-band">
         <div class="container-narrow reveal">
             <p class="text-uppercase">Não sabe por onde começar?</p>
@@ -102,36 +123,44 @@
             <a href="quiz.html" class="btn btn-gold">Começar quiz</a>
         </div>
     </section>
-
+    </main>
+    <!-- site-footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>Clubinho Pet Box</h4>
-                    <p>Assinatura premium para o seu pet.</p>
+                    <p>Assinatura premium de produtos selecionados para o seu pet.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Links</h4>
                     <p><a href="index.html">Início</a></p>
                     <p><a href="planos.html">Planos</a></p>
                     <p><a href="sobre.html">Sobre</a></p>
+                    <p><a href="quiz.html">Quiz</a></p>
                     <p><a href="contato.html">Contato</a></p>
+                    <p><a href="assinatura.html">Assinatura</a></p>
                 </div>
                 <div class="footer-section">
                     <h4>Atendimento</h4>
-                    <p>contato@clubinhopetbox.com.br</p>
+                    <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
+                    <p>Seg a Sex: 9h às 18h</p>
                 </div>
                 <div class="footer-section">
-                    <h4>Social</h4>
-                    <p><a href="#">Instagram</a></p>
-                    <p><a href="#">Facebook</a></p>
+                    <h4>Assine</h4>
+                    <p><a href="planos.html">Ver planos</a></p>
+                    <p><a href="quiz.html">Descobrir no quiz</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Clubinho Pet Box.</p>
+                <p>&copy; 2025 Clubinho Pet Box. Todos os direitos reservados.</p>
+                <p class="footer-company">Brismarp Tecnologia Ltda | CNPJ: 63.304.598/0001-22</p>
             </div>
         </div>
     </footer>
+
+    <script src="assets/js/billing-toggle.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
+
 </body>
 </html>

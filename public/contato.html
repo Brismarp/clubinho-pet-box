@@ -5,30 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Fale com o Clubinho Pet Box.">
     <title>Contato | Clubinho Pet Box</title>
+    <link rel="canonical" href="http://localhost:8080/contato.html">
+    <meta property="og:title" content="Contato | Clubinho Pet Box">
+    <meta property="og:description" content="Fale com o Clubinho Pet Box.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8080/contato.html">
+    <meta property="og:image" content="http://localhost:8080/assets/images/boxes/box-love.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contato | Clubinho Pet Box">
+    <meta name="twitter:description" content="Fale com o Clubinho Pet Box.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
+    <a class="skip-link" href="#main">Ir para o conteúdo</a>
     <header class="header">
         <div class="header-container">
             <a href="index.html" class="logo-link">
-                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" onerror="this.src='assets/images/logo/logo.jpg'">
+                <img src="assets/images/logo/logo.png" alt="Clubinho Pet Box" class="logo" width="176" height="56" onerror="this.src='assets/images/logo/logo.jpg'">
             </a>
-            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-nav">
                 <span></span><span></span><span></span>
             </button>
-            <nav class="nav" aria-label="Principal">
+            <nav id="primary-nav" class="nav" aria-label="Principal">
                 <a href="index.html" class="nav-link">Início</a>
                 <a href="planos.html" class="nav-link">Planos</a>
                 <a href="sobre.html" class="nav-link">Sobre</a>
-                <a href="contato.html" class="nav-link">Contato</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
+                <a href="contato.html" aria-current="page" class="nav-link is-active">Contato</a>
                 <a href="planos.html" class="btn btn-primary">Assinar</a>
             </nav>
         </div>
     </header>
 
+    <main id="main">
     <section class="page-hero">
         <div class="container reveal">
             <p class="text-uppercase text-gold">Fale conosco</p>
@@ -36,14 +49,13 @@
             <p class="lead">Dúvidas, sugestões ou suporte — nossa equipe responde com cuidado.</p>
         </div>
     </section>
-
     <section class="section bg-white">
         <div class="container">
             <div class="about-content">
                 <div class="stack-lg reveal">
                     <div>
                         <h3 class="text-gold">E-mail</h3>
-                        <p>contato@clubinhopetbox.com.br</p>
+                        <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
                         <p class="lead" style="font-size:var(--text-sm)">Resposta em até 24h úteis</p>
                     </div>
                     <div>
@@ -51,7 +63,6 @@
                         <p>Segunda a sexta, 9h às 18h</p>
                     </div>
                 </div>
-
                 <div class="form-panel reveal" style="margin:0;max-width:none">
                     <h3>Envie sua mensagem</h3>
                     <form action="/contact" method="POST" class="stack mt-lg">
@@ -87,34 +98,44 @@
             </div>
         </div>
     </section>
-
+    </main>
+    <!-- site-footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>Clubinho Pet Box</h4>
-                    <p>Estamos à disposição.</p>
+                    <p>Assinatura premium de produtos selecionados para o seu pet.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Links</h4>
                     <p><a href="index.html">Início</a></p>
                     <p><a href="planos.html">Planos</a></p>
                     <p><a href="sobre.html">Sobre</a></p>
+                    <p><a href="quiz.html">Quiz</a></p>
+                    <p><a href="contato.html">Contato</a></p>
+                    <p><a href="assinatura.html">Assinatura</a></p>
                 </div>
                 <div class="footer-section">
-                    <h4>Contato</h4>
-                    <p>contato@clubinhopetbox.com.br</p>
+                    <h4>Atendimento</h4>
+                    <p><a href="mailto:contato@clubinhopetbox.com.br">contato@clubinhopetbox.com.br</a></p>
+                    <p>Seg a Sex: 9h às 18h</p>
                 </div>
                 <div class="footer-section">
-                    <h4>Social</h4>
-                    <p><a href="#">Instagram</a></p>
+                    <h4>Assine</h4>
+                    <p><a href="planos.html">Ver planos</a></p>
+                    <p><a href="quiz.html">Descobrir no quiz</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Clubinho Pet Box.</p>
+                <p>&copy; 2025 Clubinho Pet Box. Todos os direitos reservados.</p>
+                <p class="footer-company">Brismarp Tecnologia Ltda | CNPJ: 63.304.598/0001-22</p>
             </div>
         </div>
     </footer>
+
+    <script src="assets/js/billing-toggle.js" defer></script>
     <script src="assets/js/motion.js" defer></script>
+
 </body>
 </html>

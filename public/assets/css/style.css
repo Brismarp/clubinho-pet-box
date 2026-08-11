@@ -1596,11 +1596,23 @@ textarea { min-height: 8rem; resize: vertical; }
   min-height: 3rem;
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-black);
-  background: var(--color-white);
   font-family: var(--font-body);
   font-weight: 600;
   cursor: pointer;
+  margin-left: auto;
+}
+
+.btn-quiz.btn-primary {
+  background: var(--color-ink);
+  color: var(--color-white);
+  border-color: var(--color-ink);
+}
+
+.btn-quiz.btn-secondary {
+  margin-left: 0;
+  background: transparent;
+  color: var(--color-ink);
+  border-color: color-mix(in srgb, var(--color-ink) 28%, transparent);
 }
 
 .btn-quiz:disabled {
@@ -1609,7 +1621,7 @@ textarea { min-height: 8rem; resize: vertical; }
 }
 
 .btn-next {
-  background: var(--color-black);
+  background: var(--color-ink);
   color: var(--color-white);
   margin-left: auto;
 }

@@ -33,6 +33,7 @@
             <nav id="primary-nav" class="nav" aria-label="Principal">
                 <a href="index.html" class="nav-link">Início</a>
                 <a href="planos.html" class="nav-link">Planos</a>
+                <a href="/blog" class="nav-link">Blog</a>
                 <a href="sobre.html" class="nav-link">Sobre</a>
                 <a href="quiz.html" aria-current="page" class="nav-link is-active">Quiz</a>
                 <a href="contato.html" class="nav-link">Contato</a>
@@ -203,6 +204,7 @@
                     <h4>Links</h4>
                     <p><a href="index.html">Início</a></p>
                     <p><a href="planos.html">Planos</a></p>
+                    <p><a href="/blog">Blog</a></p>
                     <p><a href="sobre.html">Sobre</a></p>
                     <p><a href="quiz.html">Quiz</a></p>
                     <p><a href="contato.html">Contato</a></p>
@@ -235,6 +237,12 @@
         const totalQuestions = 10;
         let answers = {};
         let quizStarted = false;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const resultMood = {
+            happy: { src: 'assets/images/mood/result-happy.jpg', alt: 'Cão feliz — plano Happy' },
+            love: { src: 'assets/images/mood/result-love.jpg', alt: 'Cão carinhoso — plano Love' },
+            deluxe: { src: 'assets/images/mood/result-deluxe.jpg', alt: 'Cão premium — plano Deluxe' },
+        };
 
         function trackQuiz(name, data) {
             if (window.ClubinhoTrack && typeof ClubinhoTrack.track === 'function') {
@@ -242,10 +250,46 @@
             }
         }
 
+        function syncMoodFromQuestion(n) {
+            const q = document.querySelector(`.quiz-question[data-question="${n}"]`);
+            if (!q) return;
+            const img = document.getElementById('quizMoodImage');
+            const frame = document.getElementById('quizMoodFrame');
+            const caption = document.getElementById('quizMoodCaption');
+            const mood = document.querySelector('.quiz-mood');
+            if (!img || !q.dataset.mood) return;
+            if (mood) mood.hidden = false;
+
+            const apply = () => {
+                img.src = q.dataset.mood;
+                img.alt = q.dataset.alt || 'Momento com cão feliz';
+                if (caption) caption.textContent = q.dataset.caption || '';
+                if (frame) frame.classList.remove('is-fading');
+            };
+
+            if (reduceMotion || img.getAttribute('src') === q.dataset.mood) {
+                apply();
+                return;
+            }
+            if (frame) frame.classList.add('is-fading');
+            setTimeout(apply, 160);
+        }
+
+        function setResultMood(plan) {
+            const icon = document.getElementById('resultIcon');
+            const moodAside = document.querySelector('.quiz-mood');
+            if (moodAside) moodAside.hidden = true;
+            const meta = resultMood[plan] || resultMood.love;
+            if (icon) {
+                icon.innerHTML = `<img src="${meta.src}" alt="${meta.alt}" width="400" height="400">`;
+            }
+        }
+
         // Initialize
         document.getElementById('totalQuestions').textContent = totalQuestions;
         updateProgress();
         updateNavigationButtons();
+        syncMoodFromQuestion(1);
         trackQuiz('quiz_start', { properties: { total_questions: totalQuestions } });
         quizStarted = true;
 
@@ -317,7 +361,7 @@
                 // Show next question
                 currentQuestionIndex++;
                 document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.add('active');
-                
+                syncMoodFromQuestion(currentQuestionIndex);
                 updateProgress();
                 updateNavigationButtons();
             } else {
@@ -334,7 +378,7 @@
                 // Show previous question
                 currentQuestionIndex--;
                 document.querySelector(`.quiz-question[data-question="${currentQuestionIndex}"]`).classList.add('active');
-                
+                syncMoodFromQuestion(currentQuestionIndex);
                 updateProgress();
                 updateNavigationButtons();
             }
@@ -416,6 +460,7 @@
                     stage: 'result_view',
                 },
             });
+            setResultMood(result);
             
             // Hide quiz navigation
             document.getElementById('quizNavigation').style.display = 'none';
@@ -492,29 +537,21 @@
         }
 
         function restartQuiz() {
-            // Reset variables
             currentQuestionIndex = 1;
             answers = {};
-            
-            // Hide result
             document.getElementById('quizResult').classList.remove('active');
-            
-            // Show navigation
+            const icon = document.getElementById('resultIcon');
+            if (icon) icon.innerHTML = '';
+            const moodAside = document.querySelector('.quiz-mood');
+            if (moodAside) moodAside.hidden = false;
             document.getElementById('quizNavigation').style.display = 'flex';
-            
-            // Remove all selections
             document.querySelectorAll('.quiz-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
-            
-            // Show first question
             document.querySelector('.quiz-question[data-question="1"]').classList.add('active');
-            
-            // Update UI
+            syncMoodFromQuestion(1);
             updateProgress();
             updateNavigationButtons();
-            
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>

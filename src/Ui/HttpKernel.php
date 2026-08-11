@@ -41,6 +41,9 @@ final class HttpKernel
                 $method === 'GET' && $path === '/checkout' => $this->checkout(),
                 $method === 'GET' && $path === '/sitemap.xml' => $this->sitemap(),
                 $method === 'GET' && $path === '/sitemap.php' => $this->sitemapRedirect(),
+                $method === 'GET' && $path === '/blog' => $this->blogIndex(),
+                $method === 'GET' && preg_match('#^/blog/([a-z0-9\-]+)$#', $path, $m) === 1
+                    => $this->blogShow($m[1]),
                 $method === 'POST' && $path === '/api/v1/events' => $this->ingestEvents(),
                 $method === 'POST' && $path === '/subscribe' => $this->subscribe(),
                 $method === 'POST' && $path === '/contact' => $this->contact(),
@@ -66,6 +69,13 @@ final class HttpKernel
                 $method === 'GET' && $path === '/admin/contacts' => $this->adminContacts(),
                 $method === 'POST' && $path === '/admin/contacts/read' => $this->adminMarkContactRead(),
                 $method === 'GET' && $path === '/admin/leads' => $this->adminLeads(),
+                $method === 'GET' && $path === '/admin/blog' => $this->adminBlog(),
+                $method === 'GET' && $path === '/admin/blog/new' => $this->adminBlogForm(null),
+                $method === 'POST' && $path === '/admin/blog' => $this->adminBlogSave(null),
+                $method === 'GET' && preg_match('#^/admin/blog/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminBlogForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/blog/(\d+)$#', $path, $m) === 1
+                    => $this->adminBlogSave((int) $m[1]),
 
                 $method === 'GET' && $path === '/api/v1/admin/plans' => $this->apiAuthJson(fn () => $this->app->listPlans()->handle()),
                 $method === 'GET' && $path === '/api/v1/admin/subscriptions' => $this->apiAuthJson(fn () => $this->app->listSubscriptions()->handle()),
@@ -142,6 +152,7 @@ final class HttpKernel
         $urls = [
             ['loc' => $base . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
             ['loc' => $base . '/planos.html', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => $base . '/blog', 'priority' => '0.85', 'changefreq' => 'weekly'],
             ['loc' => $base . '/sobre.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => $base . '/contato.html', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => $base . '/quiz.html', 'priority' => '0.8', 'changefreq' => 'monthly'],
@@ -154,7 +165,6 @@ final class HttpKernel
                 if ($slug === '') {
                     continue;
                 }
-                // Indexable subscription entry points per active plan (checkout redirects are omitted).
                 $urls[] = [
                     'loc' => $base . '/assinatura.html?plan=' . rawurlencode($slug),
                     'priority' => '0.6',
@@ -163,6 +173,22 @@ final class HttpKernel
             }
         } catch (\Throwable) {
             // Pages-only sitemap if catalog is unavailable.
+        }
+
+        try {
+            foreach ($this->app->listPublishedPosts()->handle(200) as $post) {
+                $slug = (string) ($post['slug'] ?? '');
+                if ($slug === '') {
+                    continue;
+                }
+                $urls[] = [
+                    'loc' => $base . '/blog/' . rawurlencode($slug),
+                    'priority' => '0.7',
+                    'changefreq' => 'monthly',
+                ];
+            }
+        } catch (\Throwable) {
+            // skip blog if unavailable
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -449,6 +475,63 @@ final class HttpKernel
             'items' => $this->app->listLeads()->handle(),
             'contacts_new' => $this->app->listContacts()->countNew(),
         ]);
+    }
+
+    private function blogIndex(): void
+    {
+        $posts = $this->app->listPublishedPosts()->handle();
+        require BASE_PATH . '/templates/blog/index.php';
+    }
+
+    private function blogShow(string $slug): void
+    {
+        try {
+            $post = $this->app->getPublishedPost()->handle($slug);
+        } catch (DomainException) {
+            http_response_code(404);
+            echo '404 Post não encontrado';
+            return;
+        }
+        require BASE_PATH . '/templates/blog/show.php';
+    }
+
+    private function adminBlog(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('blog', [
+            'items' => $this->app->listAdminPosts()->handle(),
+            'flash' => isset($_GET['saved']),
+        ]);
+    }
+
+    private function adminBlogForm(?int $id): void
+    {
+        $this->requireAdmin();
+        $post = null;
+        if ($id !== null) {
+            $post = $this->app->getAdminPost()->handle($id);
+        }
+        $this->renderAdmin('blog_form', [
+            'post' => $post,
+            'error' => null,
+        ]);
+    }
+
+    private function adminBlogSave(?int $id): void
+    {
+        $this->requireAdmin();
+        try {
+            $this->app->savePost()->handle($_POST, $id);
+            header('Location: /admin/blog?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $post = $_POST;
+            $post['id'] = $id;
+            $this->renderAdmin('blog_form', [
+                'post' => $post,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function adminMarkContactRead(): void

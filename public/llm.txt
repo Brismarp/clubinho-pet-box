@@ -1,12 +1,14 @@
 # Clubinho Pet Box
 
-Assinatura premium de boxes mensais com produtos selecionados para cães e gatos.
+Assinatura premium de boxes mensais com produtos selecionados para pets.
 Tom da marca: acolhedor, premium, claro — preto e dourado; linguagem em português do Brasil.
+Foco editorial do blog nesta fase: **cães**.
 
 ## Site
 
 - Home: /
 - Planos: /planos.html
+- Blog: /blog (artigos sobre cuidados e vida com cães)
 - Sobre: /sobre.html
 - Contato: /contato.html
 - Quiz (recomendação de plano): /quiz.html

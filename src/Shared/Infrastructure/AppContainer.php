@@ -15,6 +15,12 @@ use ClubinhoPet\Analytics\Application\ListLeadsHandler;
 use ClubinhoPet\Analytics\Application\SubmitLeadHandler;
 use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoAnalyticsEventRepository;
 use ClubinhoPet\Analytics\Infrastructure\Persistence\PdoLeadRepository;
+use ClubinhoPet\Content\Application\GetAdminPostHandler;
+use ClubinhoPet\Content\Application\GetPublishedPostBySlugHandler;
+use ClubinhoPet\Content\Application\ListAdminPostsHandler;
+use ClubinhoPet\Content\Application\ListPublishedPostsHandler;
+use ClubinhoPet\Content\Application\SavePostHandler;
+use ClubinhoPet\Content\Infrastructure\Persistence\PdoPostRepository;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
@@ -106,6 +112,11 @@ final class AppContainer
     public function leadRepository(): PdoLeadRepository
     {
         return new PdoLeadRepository($this->pdo);
+    }
+
+    public function postRepository(): PdoPostRepository
+    {
+        return new PdoPostRepository($this->pdo);
     }
 
     public function paymentGateway(): PlanCheckoutGateway
@@ -224,5 +235,30 @@ final class AppContainer
             $this->leadRepository(),
             $this->pdo,
         );
+    }
+
+    public function listPublishedPosts(): ListPublishedPostsHandler
+    {
+        return new ListPublishedPostsHandler($this->postRepository());
+    }
+
+    public function getPublishedPost(): GetPublishedPostBySlugHandler
+    {
+        return new GetPublishedPostBySlugHandler($this->postRepository());
+    }
+
+    public function listAdminPosts(): ListAdminPostsHandler
+    {
+        return new ListAdminPostsHandler($this->postRepository());
+    }
+
+    public function getAdminPost(): GetAdminPostHandler
+    {
+        return new GetAdminPostHandler($this->postRepository());
+    }
+
+    public function savePost(): SavePostHandler
+    {
+        return new SavePostHandler($this->postRepository());
     }
 }

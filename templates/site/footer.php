@@ -26,6 +26,8 @@
                     <h4>Assine</h4>
                     <p><a href="/planos">Ver planos</a></p>
                     <p><a href="/quiz">Descobrir no quiz</a></p>
+                    <p><a href="/privacidade">Privacidade</a></p>
+                    <p><a href="/termos">Termos</a></p>
                 </div>
             </div>
             <div class="footer-bottom">

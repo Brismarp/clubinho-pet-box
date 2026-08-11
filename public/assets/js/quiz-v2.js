@@ -190,7 +190,12 @@
       caption: 'Quase lá',
       fields: [
         { name: 'summary', label: '', type: 'summary' },
-        { name: 'consent_lgpd', label: 'Concordo com o uso dos meus dados e do perfil do pet apenas para personalizar a box e atendimento (LGPD).', type: 'checkbox', required: true },
+        {
+          name: 'consent_lgpd',
+          label: 'Concordo com o uso dos meus dados e do perfil do pet apenas para personalizar a box e atendimento (LGPD). Li a <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a> e os <a href="/termos" target="_blank" rel="noopener">Termos</a>.',
+          type: 'checkbox',
+          required: true,
+        },
         { name: 'consent_marketing', label: 'Aceito receber novidades por e-mail/WhatsApp.', type: 'checkbox' },
       ],
     },
@@ -358,7 +363,11 @@
     for (const field of step.fields) {
       if (!field.required) continue;
       const v = data[field.name];
-      if (field.type === 'checkbox' && !v) return `Marque: ${field.label}`;
+      if (field.type === 'checkbox' && !v) {
+        return field.name === 'consent_lgpd'
+          ? 'Marque o consentimento LGPD para continuar.'
+          : `Marque: ${field.label.replace(/<[^>]+>/g, '')}`;
+      }
       if (field.type === 'multi' && (!Array.isArray(v) || v.length === 0)) return `Selecione ao menos uma opção em “${field.label}”.`;
       if (field.type !== 'checkbox' && field.type !== 'multi' && field.type !== 'summary' && (v === undefined || v === null || v === '')) {
         return `Preencha “${field.label}”.`;

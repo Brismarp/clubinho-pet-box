@@ -29,6 +29,13 @@ use ClubinhoPet\Quiz\Application\QuizHandlers;
 use ClubinhoPet\Quiz\Domain\AttributeMapper;
 use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
 use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
+use ClubinhoPet\Integrations\Application\KirvanoWebhookHandler;
+use ClubinhoPet\Integrations\Domain\Notifier;
+use ClubinhoPet\Integrations\Domain\ShipmentProvider;
+use ClubinhoPet\Integrations\Infrastructure\KirvanoRedirectPaymentGateway;
+use ClubinhoPet\Integrations\Infrastructure\MockNotifier;
+use ClubinhoPet\Integrations\Infrastructure\MockPaymentGateway;
+use ClubinhoPet\Integrations\Infrastructure\MockShipmentProvider;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
@@ -45,6 +52,7 @@ use ClubinhoPet\Platform\Infrastructure\Persistence\PdoSettingRepository;
 use ClubinhoPet\Subscription\Application\ListSubscriptionsHandler;
 use ClubinhoPet\Subscription\Application\RegisterInterest\RegisterInterestHandler;
 use ClubinhoPet\Subscription\Application\StartCheckout\StartCheckoutHandler;
+use ClubinhoPet\Subscription\Domain\PaymentGateway;
 use ClubinhoPet\Subscription\Infrastructure\Payment\PlanCheckoutGateway;
 use ClubinhoPet\Subscription\Infrastructure\Persistence\PdoSubscriptionRepository;
 use ClubinhoPet\Support\Application\ListContactMessagesHandler;
@@ -127,9 +135,29 @@ final class AppContainer
         return new PdoPostRepository($this->pdo);
     }
 
-    public function paymentGateway(): PlanCheckoutGateway
+    public function paymentGateway(): PaymentGateway
     {
-        return new PlanCheckoutGateway($this->planRepository());
+        $mode = strtolower((string) (Env::get('PAYMENT_GATEWAY', 'kirvano') ?? 'kirvano'));
+        if ($mode === 'mock') {
+            return new MockPaymentGateway((string) (Env::get('APP_URL', 'http://localhost:8080') ?? 'http://localhost:8080'));
+        }
+
+        return new KirvanoRedirectPaymentGateway(new PlanCheckoutGateway($this->planRepository()));
+    }
+
+    public function shipmentProvider(): ShipmentProvider
+    {
+        return new MockShipmentProvider();
+    }
+
+    public function notifier(): Notifier
+    {
+        return new MockNotifier($this->pdo);
+    }
+
+    public function kirvanoWebhook(): KirvanoWebhookHandler
+    {
+        return new KirvanoWebhookHandler($this->pdo, $this->activityLogRepository());
     }
 
     public function listPlans(): ListPlansHandler
@@ -218,7 +246,12 @@ final class AppContainer
 
     public function shipBox(): ShipBoxHandler
     {
-        return new ShipBoxHandler($this->boxRepository());
+        return new ShipBoxHandler(
+            $this->boxRepository(),
+            $this->shipmentProvider(),
+            $this->activityLogRepository(),
+            $this->notifier(),
+        );
     }
 
     public function ingestEvents(): IngestEventsHandler
@@ -305,6 +338,8 @@ final class AppContainer
             $this->quizRepository(),
             new AttributeMapper(),
             new MockRecommendationEngine(),
+            $this->notifier(),
+            $this->activityLogRepository(),
         );
     }
 }

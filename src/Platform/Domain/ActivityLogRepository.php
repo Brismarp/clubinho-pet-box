@@ -16,4 +16,7 @@ interface ActivityLogRepository
         ?string $ip = null,
         ?string $ua = null,
     ): void;
+
+    /** @return list<array<string, mixed>> */
+    public function recent(int $limit = 100): array;
 }

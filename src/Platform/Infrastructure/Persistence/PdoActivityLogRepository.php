@@ -38,4 +38,15 @@ final class PdoActivityLogRepository implements ActivityLogRepository
             'ua' => $ua,
         ]);
     }
+
+    public function recent(int $limit = 100): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM activity_logs ORDER BY id DESC LIMIT :limit'
+        );
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll() ?: [];
+    }
 }

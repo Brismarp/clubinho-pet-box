@@ -7,6 +7,8 @@ namespace ClubinhoPet\Quiz\Application;
 use ClubinhoPet\Quiz\Domain\AttributeMapper;
 use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
 use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
+use ClubinhoPet\Integrations\Domain\Notifier;
+use ClubinhoPet\Platform\Domain\ActivityLogRepository;
 use ClubinhoPet\Shared\Domain\DomainException;
 
 final class QuizHandlers
@@ -15,6 +17,8 @@ final class QuizHandlers
         private PdoQuizRepository $repo,
         private AttributeMapper $mapper,
         private MockRecommendationEngine $engine,
+        private ?Notifier $notifier = null,
+        private ?ActivityLogRepository $logs = null,
     ) {
     }
 
@@ -135,6 +139,18 @@ final class QuizHandlers
         $items = $this->engine->recommend($attrs, $products, 8);
         $recId = $this->repo->createRecommendation((int) $session['id'], $petId, $plan, $items);
 
+        $this->logs?->log(null, 'quiz.completed', 'quiz_sessions', (int) $session['id'], null, [
+            'customer_id' => $customerId,
+            'pet_id' => $petId,
+            'plan' => $plan,
+            'recommendation_id' => $recId,
+        ]);
+        $this->notifier?->send('email', $email, 'quiz.completed', [
+            'plan' => $plan,
+            'pet' => $petData['name'] ?? null,
+            'session_id' => (int) $session['id'],
+        ]);
+
         $fresh = $this->repo->findSessionByToken($token);
 
         return [
@@ -188,12 +204,20 @@ final class QuizHandlers
         return $row;
     }
 
-    public function adminSetRecommendationStatus(int $id, string $status): void
+    public function adminSetRecommendationStatus(int $id, string $status, ?int $actorUserId = null): void
     {
         if (!in_array($status, ['pending_review', 'approved', 'rejected'], true)) {
             throw new DomainException('Invalid status.');
         }
         $this->repo->setRecommendationStatus($id, $status);
+        $this->logs?->log($actorUserId, 'recommendation.' . $status, 'box_recommendations', $id, null, [
+            'status' => $status,
+        ]);
+        if ($status === 'approved') {
+            $this->notifier?->send('log', 'ops@clubinhopetbox.local', 'recommendation.approved', [
+                'recommendation_id' => $id,
+            ]);
+        }
     }
 
     public function adminToggleItem(int $itemId, bool $selected): void

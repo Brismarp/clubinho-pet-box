@@ -1,4 +1,4 @@
-<?php declare(strict_types=1); /** @var list<array<string,mixed>> $items */ /** @var string $q */ ?>
+<?php declare(strict_types=1); /** @var list<array<string,mixed>> $items */ /** @var string $q */ /** @var array<string,mixed> $pager */ ?>
 <h1>Clientes</h1>
 <form class="filters" method="get" action="/admin/customers">
     <input type="search" name="q" value="<?= htmlspecialchars($q ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Nome, e-mail ou telefone" style="max-width:280px">
@@ -24,5 +24,9 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    <?php
+    $baseQs = http_build_query(['q' => $q ?? '']);
+    require __DIR__ . '/_pager.php';
+    ?>
 <?php endif; ?>
 </div>

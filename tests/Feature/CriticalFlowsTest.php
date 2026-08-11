@@ -109,3 +109,86 @@ it('exports customer dsar json when admin authenticated', function () {
         expect(true)->toBeTrue();
     }
 });
+
+it('allows financeiro login and opens payments', function () {
+    $jar = tempnam(sys_get_temp_dir(), 'cpb');
+    $csrf = csrfToken($jar);
+    $login = httpRequest('POST', '/admin/login', $jar, [
+        'email' => 'financeiro@clubinhopetbox.com.br',
+        'password' => 'Carpe1936!',
+        '_csrf' => $csrf,
+    ]);
+    expect(in_array($login['status'], [302, 200], true))->toBeTrue();
+
+    $payments = httpRequest('GET', '/admin/payments', $jar);
+    expect($payments['status'])->toBe(200)
+        ->and($payments['body'])->toContain('Pagamentos');
+
+    $users = httpRequest('GET', '/admin/users', $jar);
+    expect(in_array($users['status'], [302, 403], true) || str_contains($users['body'], 'Forbidden') || $users['status'] === 403)->toBeTrue();
+});
+
+it('pauses and reactivates a subscription as admin', function () {
+    $jar = tempnam(sys_get_temp_dir(), 'cpb');
+    $csrf = csrfToken($jar);
+    $email = 'pest-sub-' . bin2hex(random_bytes(3)) . '@example.com';
+
+    $sub = httpRequest('POST', '/subscribe', $jar, [
+        'plan' => 'happy',
+        'billing' => 'monthly',
+        'name' => 'Sub Lifecycle',
+        'email' => $email,
+        'pet_name' => 'Bob',
+        'pet_type' => 'cachorro',
+        'terms' => '1',
+        '_csrf' => $csrf,
+    ]);
+    expect($sub['status'])->toBe(201);
+    $sid = (int) (json_decode($sub['body'], true)['subscription_id'] ?? 0);
+    expect($sid)->toBeGreaterThan(0);
+
+    httpRequest('POST', '/api/v1/payments/mock/confirm', $jar, null, [
+        'subscription_id' => $sid,
+        'method' => 'card',
+    ], ['X-CSRF-Token' => $csrf]);
+
+    $login = httpRequest('POST', '/admin/login', $jar, [
+        'email' => 'admin@clubinhopetbox.com.br',
+        'password' => 'Carpe1936!',
+        '_csrf' => csrfToken($jar),
+    ]);
+    expect(in_array($login['status'], [302, 200], true))->toBeTrue();
+    $csrf = csrfToken($jar);
+
+    $pause = httpRequest('POST', '/admin/subscriptions/status', $jar, [
+        'id' => (string) $sid,
+        'action' => 'pause',
+        '_csrf' => $csrf,
+    ]);
+    expect(in_array($pause['status'], [302, 200], true))->toBeTrue();
+
+    $react = httpRequest('POST', '/admin/subscriptions/status', $jar, [
+        'id' => (string) $sid,
+        'action' => 'reactivate',
+        '_csrf' => csrfToken($jar),
+    ]);
+    expect(in_array($react['status'], [302, 200], true))->toBeTrue();
+
+    $list = httpRequest('GET', '/admin/subscriptions?status=active', $jar);
+    expect($list['status'])->toBe(200)
+        ->and($list['body'])->toContain($email);
+});
+
+it('lists admin users for admin role', function () {
+    $jar = tempnam(sys_get_temp_dir(), 'cpb');
+    $csrf = csrfToken($jar);
+    httpRequest('POST', '/admin/login', $jar, [
+        'email' => 'admin@clubinhopetbox.com.br',
+        'password' => 'Carpe1936!',
+        '_csrf' => $csrf,
+    ]);
+    $page = httpRequest('GET', '/admin/users', $jar);
+    expect($page['status'])->toBe(200)
+        ->and($page['body'])->toContain('Usuários')
+        ->and($page['body'])->toContain('financeiro@clubinhopetbox.com.br');
+});

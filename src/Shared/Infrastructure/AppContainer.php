@@ -54,6 +54,7 @@ use ClubinhoPet\Inventory\Application\StockLedger;
 use ClubinhoPet\Fulfillment\Infrastructure\Persistence\PdoBoxRepository;
 use ClubinhoPet\Identity\Application\LoginAdminHandler;
 use ClubinhoPet\Identity\Application\LogoutAdminHandler;
+use ClubinhoPet\Identity\Application\ManageAdminUsersHandler;
 use ClubinhoPet\Identity\Infrastructure\PhpSessionAuth;
 use ClubinhoPet\Identity\Infrastructure\PdoUserRepository;
 use ClubinhoPet\Platform\Application\GetPublicSettingsHandler;
@@ -61,6 +62,7 @@ use ClubinhoPet\Platform\Application\ListSettingsHandler;
 use ClubinhoPet\Platform\Application\UpdateSettingHandler;
 use ClubinhoPet\Platform\Infrastructure\Persistence\PdoActivityLogRepository;
 use ClubinhoPet\Platform\Infrastructure\Persistence\PdoSettingRepository;
+use ClubinhoPet\Subscription\Application\ChangeSubscriptionStatusHandler;
 use ClubinhoPet\Subscription\Application\ListSubscriptionsHandler;
 use ClubinhoPet\Subscription\Application\RegisterInterest\RegisterInterestHandler;
 use ClubinhoPet\Subscription\Application\StartCheckout\StartCheckoutHandler;
@@ -277,6 +279,22 @@ final class AppContainer
     public function listSubscriptions(): ListSubscriptionsHandler
     {
         return new ListSubscriptionsHandler($this->subscriptionRepository());
+    }
+
+    public function changeSubscriptionStatus(): ChangeSubscriptionStatusHandler
+    {
+        return new ChangeSubscriptionStatusHandler(
+            $this->subscriptionRepository(),
+            $this->activityLogRepository(),
+        );
+    }
+
+    public function manageUsers(): ManageAdminUsersHandler
+    {
+        return new ManageAdminUsersHandler(
+            $this->userRepository(),
+            $this->activityLogRepository(),
+        );
     }
 
     public function createBox(): CreateBoxHandler

@@ -68,10 +68,13 @@ Hoje o checkout Kirvano usa a URL mensal do plano por slug. URLs anuais dedicada
 Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em `stock_movements`) → **ship** (converte reserva) → **avançar rastreio** (timeline) → entregue.
 
 - CRM: `/admin/customers`, `/admin/pets`
-- Estoque: `/admin/stock` (receive/adjust + alertas `stock_min`)
-- Pagamentos: webhook Kirvano e/ou mock; lista em `/admin/payments` (só `admin`)
+- Usuários: `/admin/users` (CRUD de roles; só `admin`)
+- Assinaturas: pause / cancel (confirm `CANCELAR`) / reativar em `/admin/subscriptions`
+- Estoque: `/admin/stock` (confirm no ajuste + alertas `stock_min`)
+- Pagamentos: resumo por período, busca e paginação em `/admin/payments`
 - Outbox: `/admin/outbox`
-- Migration: `database/migrations/009_operational_core.sql` + `010_shipment_events_testimonials.sql`
+- Pets Felizes: upload público foto **ou** vídeo em `/enviar-foto` → moderação
+- Migrations: `009`–`012` (inclui role `financeiro`)
 
 ### Roles (senha local igual ao admin: `Carpe1936!`)
 
@@ -82,8 +85,9 @@ Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em
 | montagem | `montagem@clubinhopetbox.com.br` |
 | atendimento | `atendimento@clubinhopetbox.com.br` |
 | estoque | `estoque@clubinhopetbox.com.br` |
+| financeiro | `financeiro@clubinhopetbox.com.br` |
 
-Financeiro (`/admin/payments`) e settings são restritos a **admin**. Outbox: admin, operação e atendimento.
+Financeiro acessa dashboard, pagamentos, assinaturas e auditoria. Settings e CRUD de usuários são restritos a **admin**. Outbox: admin, operação e atendimento.
 
 ## LGPD / termos
 

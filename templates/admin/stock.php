@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 <div class="card">
     <h2>Ajuste rápido</h2>
-    <form method="post" action="/admin/stock/adjust" class="inline">
+    <form method="post" action="/admin/stock/adjust" class="inline"
+          onsubmit="return confirm('Confirmar ajuste de estoque?');">
         <select name="product_id" required style="width:auto;min-width:12rem">
             <?php foreach ($products as $p): ?>
                 <option value="<?= (int) $p['id'] ?>"><?= htmlspecialchars((string) $p['name'], ENT_QUOTES, 'UTF-8') ?> (<?= (int) $p['stock_qty'] ?>)</option>

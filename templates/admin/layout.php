@@ -50,6 +50,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
                 ['/admin/testimonials', 'Depoimentos', 'content'],
                 ['/admin/happy-media', 'Pets Felizes', 'content'],
                 ['/admin/faq', 'FAQ', 'content'],
+                ['/admin/users', 'Usuários', 'users'],
                 ['/admin/settings', 'Settings', 'settings'],
                 ['/admin/audit', 'Auditoria', 'audit'],
             ];

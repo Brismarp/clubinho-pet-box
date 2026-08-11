@@ -1,6 +1,10 @@
-<?php declare(strict_types=1); /** @var list<array<string,mixed>> $items */ ?>
+<?php declare(strict_types=1); /** @var list<array<string,mixed>> $items */ /** @var string $q */ /** @var array<string,mixed> $pager */ ?>
 <h1>Quizzes</h1>
 <?php if (isset($_GET['saved'])): ?><div class="flash">Salvo.</div><?php endif; ?>
+<form class="filters" method="get" action="/admin/quizzes">
+    <input type="search" name="q" value="<?= htmlspecialchars($q ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Tutor, e-mail ou pet" style="max-width:280px">
+    <button type="submit">Buscar</button>
+</form>
 <div class="card">
 <?php if ($items === []): ?>
     <p class="empty">Nenhum quiz ainda.</p>
@@ -34,5 +38,9 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    <?php
+    $baseQs = http_build_query(['q' => $q ?? '']);
+    require __DIR__ . '/_pager.php';
+    ?>
 <?php endif; ?>
 </div>

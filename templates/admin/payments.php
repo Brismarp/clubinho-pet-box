@@ -1,10 +1,56 @@
-<?php declare(strict_types=1); /** @var list<array<string,mixed>> $items */ /** @var string $status */ ?>
+<?php declare(strict_types=1);
+/** @var list<array<string,mixed>> $items */
+/** @var string $status */
+/** @var array<string,mixed> $summary */
+/** @var array<string,mixed> $pager */
+/** @var array<string,mixed> $filters */
+$summary = $summary ?? [];
+$pager = $pager ?? [];
+$filters = $filters ?? ['status' => 'all', 'q' => '', 'range' => 30];
+$status = $status ?? ($filters['status'] ?? 'all') ?: 'all';
+$q = (string) ($filters['q'] ?? '');
+$range = (int) ($filters['range'] ?? 30);
+?>
 <h1>Pagamentos</h1>
 <div class="filters">
-    <?php foreach (['all', 'paid', 'pending', 'failed', 'refunded', 'cancelled'] as $st): ?>
-        <a class="<?= ($status ?? 'all') === $st ? 'is-active' : '' ?>" href="/admin/payments?status=<?= $st ?>"><?= $st ?></a>
+    <span class="muted">Período:</span>
+    <?php foreach ([7, 30, 90] as $d): ?>
+        <a class="<?= $range === $d ? 'is-active' : '' ?>"
+           href="/admin/payments?range=<?= $d ?>&status=<?= urlencode((string) $status) ?>&q=<?= urlencode($q) ?>"><?= $d ?>d</a>
     <?php endforeach; ?>
 </div>
+<div class="grid">
+    <div class="card">
+        <div class="muted">Receita paid (<?= $range ?>d)</div>
+        <div class="stat">R$ <?= number_format(((int) ($summary['paid_cents'] ?? 0)) / 100, 2, ',', '.') ?></div>
+    </div>
+    <div class="card">
+        <div class="muted">Pending</div>
+        <div class="stat"><?= (int) ($summary['pending_count'] ?? 0) ?></div>
+    </div>
+    <div class="card">
+        <div class="muted">Failed</div>
+        <div class="stat"><?= (int) ($summary['failed_count'] ?? 0) ?></div>
+    </div>
+    <div class="card">
+        <div class="muted">Refunded</div>
+        <div class="stat"><?= (int) ($summary['refunded_count'] ?? 0) ?></div>
+    </div>
+    <div class="card">
+        <div class="muted">Inadimplência (ativos sem paid 45d)</div>
+        <div class="stat"><?= (int) ($summary['delinquent_active_subs'] ?? 0) ?></div>
+    </div>
+</div>
+<form class="filters" method="get" action="/admin/payments">
+    <input type="hidden" name="range" value="<?= $range ?>">
+    <input type="search" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>" placeholder="E-mail" style="max-width:220px">
+    <select name="status" style="width:auto">
+        <?php foreach (['all', 'paid', 'pending', 'failed', 'refunded', 'cancelled'] as $st): ?>
+            <option value="<?= $st ?>" <?= $status === $st ? 'selected' : '' ?>><?= $st ?></option>
+        <?php endforeach; ?>
+    </select>
+    <button type="submit">Filtrar</button>
+</form>
 <div class="card">
 <?php if ($items === []): ?>
     <p class="empty">Nenhum pagamento.</p>
@@ -24,5 +70,13 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    <?php
+    $baseQs = http_build_query([
+        'range' => $range,
+        'status' => $status,
+        'q' => $q,
+    ]);
+    require __DIR__ . '/_pager.php';
+    ?>
 <?php endif; ?>
 </div>

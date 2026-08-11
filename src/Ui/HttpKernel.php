@@ -7,6 +7,7 @@ namespace ClubinhoPet\Ui;
 use ClubinhoPet\Identity\Domain\AuthSession;
 use ClubinhoPet\Identity\Domain\UserRole;
 use ClubinhoPet\Shared\Domain\DomainException;
+use ClubinhoPet\Shared\Infrastructure\AdminPager;
 use ClubinhoPet\Shared\Infrastructure\AppContainer;
 use ClubinhoPet\Shared\Infrastructure\Env;
 
@@ -93,6 +94,16 @@ final class HttpKernel
                 $method === 'GET' && $path === '/admin/plans' => $this->adminPlans(),
                 $method === 'POST' && $path === '/admin/plans/checkout-url' => $this->adminUpdatePlanUrl(),
                 $method === 'GET' && $path === '/admin/subscriptions' => $this->adminSubscriptions(),
+                $method === 'POST' && $path === '/admin/subscriptions/status' => $this->adminSubscriptionStatus(),
+                $method === 'GET' && $path === '/admin/users' => $this->adminUsers(),
+                $method === 'GET' && $path === '/admin/users/new' => $this->adminUserForm(null),
+                $method === 'POST' && $path === '/admin/users' => $this->adminUserSave(null),
+                $method === 'GET' && preg_match('#^/admin/users/(\d+)/edit$#', $path, $m) === 1
+                    => $this->adminUserForm((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/users/(\d+)/active$#', $path, $m) === 1
+                    => $this->adminUserSetActive((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/users/(\d+)$#', $path, $m) === 1
+                    => $this->adminUserSave((int) $m[1]),
                 $method === 'GET' && $path === '/admin/settings' => $this->adminSettings(),
                 $method === 'POST' && $path === '/admin/settings' => $this->adminUpdateSetting(),
                 $method === 'GET' && $path === '/admin/audit' => $this->adminAudit(),
@@ -539,8 +550,74 @@ final class HttpKernel
         $this->renderAdmin('subscriptions', [
             'items' => $this->app->listSubscriptions()->handle(100, $status),
             'status' => $status ?? 'all',
+            'canWrite' => true,
             'contacts_new' => $this->app->listContacts()->countNew(),
         ]);
+    }
+
+    private function adminSubscriptionStatus(): void
+    {
+        $this->requirePermission('subscriptions');
+        try {
+            $this->app->changeSubscriptionStatus()->handle(
+                (int) ($_POST['id'] ?? 0),
+                (string) ($_POST['action'] ?? ''),
+                $this->auth()->userId(),
+                isset($_POST['confirm']) ? (string) $_POST['confirm'] : null,
+            );
+            header('Location: /admin/subscriptions?updated=1');
+            exit;
+        } catch (DomainException $e) {
+            header('Location: /admin/subscriptions?error=' . rawurlencode($e->getMessage()));
+            exit;
+        }
+    }
+
+    private function adminUsers(): void
+    {
+        $this->requirePermission('users');
+        $this->renderAdmin('users', [
+            'items' => $this->app->manageUsers()->list(),
+        ]);
+    }
+
+    private function adminUserForm(?int $id): void
+    {
+        $this->requirePermission('users');
+        $item = $id !== null ? $this->app->manageUsers()->get($id) : [];
+        $this->renderAdmin('user_form', ['item' => $item, 'error' => null]);
+    }
+
+    private function adminUserSave(?int $id): void
+    {
+        $this->requirePermission('users');
+        try {
+            $data = $_POST;
+            if (!isset($data['is_active'])) {
+                $data['is_active'] = '0';
+            }
+            $this->app->manageUsers()->save($data, $id, $this->auth()->userId());
+            header('Location: /admin/users?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            $item = $_POST;
+            $item['id'] = $id;
+            $this->renderAdmin('user_form', ['item' => $item, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function adminUserSetActive(int $id): void
+    {
+        $this->requirePermission('users');
+        try {
+            $active = (string) ($_POST['is_active'] ?? '0') === '1';
+            $this->app->manageUsers()->setActive($id, $active, $this->auth()->userId());
+            header('Location: /admin/users?saved=1');
+            exit;
+        } catch (DomainException $e) {
+            header('Location: /admin/users?error=' . rawurlencode($e->getMessage()));
+            exit;
+        }
     }
 
     private function adminSettings(): void
@@ -762,23 +839,27 @@ final class HttpKernel
     {
         try {
             if (empty($_POST['consent'])) {
-                throw new DomainException('Marque o consentimento para enviar a foto.');
+                throw new DomainException('Marque o consentimento para enviar a mídia.');
             }
             $pet = trim((string) ($_POST['pet_name'] ?? ''));
             if ($pet === '') {
                 throw new DomainException('Informe o nome do pet.');
             }
-            $uploaded = $this->storeUpload('media_file', 'happy');
+            $uploaded = $this->storeHappyMediaUpload('media_file');
             if ($uploaded === null) {
-                throw new DomainException('Selecione uma imagem válida (JPG, PNG ou WebP até 5MB).');
+                throw new DomainException('Selecione uma foto (JPG/PNG/WebP até 5MB) ou vídeo (MP4/WebM até 25MB).');
+            }
+            $orientation = (string) ($_POST['orientation'] ?? 'auto');
+            if (!in_array($orientation, ['portrait', 'landscape'], true)) {
+                $orientation = $uploaded['orientation'];
             }
             $this->app->homeContent()->saveHappyMedia([
-                'type' => 'image',
+                'type' => $uploaded['type'],
                 'pet_name' => $pet,
                 'status' => 'pending',
-                'media_path' => $uploaded,
+                'media_path' => $uploaded['path'],
                 'tutor_handle' => trim((string) ($_POST['tutor_handle'] ?? '')) ?: null,
-                'orientation' => 'landscape',
+                'orientation' => $orientation,
                 'display_order' => 0,
             ], null);
             header('Location: /enviar-foto?sent=1');
@@ -840,7 +921,31 @@ final class HttpKernel
     private function adminQuizzes(): void
     {
         $this->requirePermission('quizzes');
-        $this->renderAdmin('quizzes', ['items' => $this->app->quiz()->adminListSessions()]);
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $all = $this->app->quiz()->adminListSessions();
+        if ($q !== '') {
+            $needle = mb_strtolower($q);
+            $all = array_values(array_filter(
+                $all,
+                static function (array $row) use ($needle): bool {
+                    $hay = mb_strtolower(
+                        (string) ($row['customer_name'] ?? '') . ' '
+                        . (string) ($row['customer_email'] ?? '') . ' '
+                        . (string) ($row['pet_name'] ?? '')
+                    );
+
+                    return str_contains($hay, $needle);
+                }
+            ));
+        }
+        $pagerReq = AdminPager::fromRequest(25);
+        $total = count($all);
+        $items = array_slice($all, $pagerReq['offset'], $pagerReq['per_page']);
+        $this->renderAdmin('quizzes', [
+            'items' => $items,
+            'q' => $q,
+            'pager' => AdminPager::meta($total, $pagerReq['page'], $pagerReq['per_page']),
+        ]);
     }
 
     private function adminQuizDetail(int $id): void
@@ -852,7 +957,31 @@ final class HttpKernel
     private function adminProducts(): void
     {
         $this->requirePermission('products');
-        $this->renderAdmin('products', ['items' => $this->app->quiz()->adminListProducts()]);
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $all = $this->app->quiz()->adminListProducts();
+        if ($q !== '') {
+            $needle = mb_strtolower($q);
+            $all = array_values(array_filter(
+                $all,
+                static function (array $row) use ($needle): bool {
+                    $hay = mb_strtolower(
+                        (string) ($row['name'] ?? '') . ' '
+                        . (string) ($row['sku'] ?? '') . ' '
+                        . (string) ($row['category'] ?? '')
+                    );
+
+                    return str_contains($hay, $needle);
+                }
+            ));
+        }
+        $pagerReq = AdminPager::fromRequest(25);
+        $total = count($all);
+        $items = array_slice($all, $pagerReq['offset'], $pagerReq['per_page']);
+        $this->renderAdmin('products', [
+            'items' => $items,
+            'q' => $q,
+            'pager' => AdminPager::meta($total, $pagerReq['page'], $pagerReq['per_page']),
+        ]);
     }
 
     private function adminProductForm(?int $id): void
@@ -935,9 +1064,14 @@ final class HttpKernel
     {
         $this->requirePermission('customers');
         $q = isset($_GET['q']) ? (string) $_GET['q'] : null;
+        $all = $this->app->crm()->listCustomers($q);
+        $pagerReq = AdminPager::fromRequest(25);
+        $total = count($all);
+        $items = array_slice($all, $pagerReq['offset'], $pagerReq['per_page']);
         $this->renderAdmin('customers', [
-            'items' => $this->app->crm()->listCustomers($q),
+            'items' => $items,
             'q' => $q ?? '',
+            'pager' => AdminPager::meta($total, $pagerReq['page'], $pagerReq['per_page']),
         ]);
     }
 
@@ -1021,8 +1155,14 @@ final class HttpKernel
         if ($status === 'all' || $status === '') {
             $status = null;
         }
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $range = (int) ($_GET['range'] ?? 30);
+        $result = $this->app->listPayments()->handle($status, $q, $range);
         $this->renderAdmin('payments', [
-            'items' => $this->app->listPayments()->handle($status),
+            'items' => $result['items'],
+            'summary' => $result['summary'],
+            'pager' => $result['pager'],
+            'filters' => $result['filters'],
             'status' => $status ?? 'all',
         ]);
     }
@@ -1127,9 +1267,13 @@ final class HttpKernel
         $this->requirePermission('content');
         try {
             $data = $_POST;
-            $uploaded = $this->storeUpload('media_file', 'happy');
+            $uploaded = $this->storeHappyMediaUpload('media_file');
             if ($uploaded !== null) {
-                $data['media_path'] = $uploaded;
+                $data['media_path'] = $uploaded['path'];
+                $data['type'] = $uploaded['type'];
+                if (empty($data['orientation']) || !in_array((string) $data['orientation'], ['portrait', 'landscape'], true)) {
+                    $data['orientation'] = $uploaded['orientation'];
+                }
             }
             $this->app->homeContent()->saveHappyMedia($data, $id);
             header('Location: /admin/happy-media?saved=1');
@@ -1221,6 +1365,74 @@ final class HttpKernel
         }
 
         return '/uploads/' . $subdir . '/' . $filename;
+    }
+
+    /**
+     * @return array{path:string,type:string,orientation:string}|null
+     */
+    private function storeHappyMediaUpload(string $field): ?array
+    {
+        if (empty($_FILES[$field]['tmp_name']) || !is_uploaded_file($_FILES[$field]['tmp_name'])) {
+            return null;
+        }
+        $file = $_FILES[$field];
+        if ((int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            throw new DomainException('Upload failed.');
+        }
+        $name = (string) ($file['name'] ?? '');
+        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = (string) $finfo->file((string) $file['tmp_name']);
+        $size = (int) ($file['size'] ?? 0);
+
+        $imageMime = [
+            'image/jpeg' => ['jpg', 'jpeg'],
+            'image/png' => ['png'],
+            'image/webp' => ['webp'],
+        ];
+        $videoMime = [
+            'video/mp4' => ['mp4'],
+            'video/webm' => ['webm'],
+        ];
+
+        $type = null;
+        $maxBytes = 0;
+        if (isset($imageMime[$mime]) && in_array($ext, $imageMime[$mime], true)) {
+            $type = 'image';
+            $maxBytes = 5 * 1024 * 1024;
+        } elseif (isset($videoMime[$mime]) && in_array($ext, $videoMime[$mime], true)) {
+            $type = 'video';
+            $maxBytes = 25 * 1024 * 1024;
+        } else {
+            throw new DomainException('Invalid media type. Use JPG/PNG/WebP or MP4/WebM.');
+        }
+        if ($size <= 0 || $size > $maxBytes) {
+            throw new DomainException($type === 'video' ? 'Video must be at most 25MB.' : 'Image must be at most 5MB.');
+        }
+
+        $orientation = 'landscape';
+        if ($type === 'image') {
+            $info = @getimagesize((string) $file['tmp_name']);
+            if (is_array($info) && isset($info[0], $info[1]) && (int) $info[0] < (int) $info[1]) {
+                $orientation = 'portrait';
+            }
+        }
+
+        $dir = BASE_PATH . '/public/uploads/happy';
+        if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+            throw new DomainException('Upload directory unavailable.');
+        }
+        $filename = bin2hex(random_bytes(8)) . '.' . $ext;
+        $dest = $dir . '/' . $filename;
+        if (!move_uploaded_file((string) $file['tmp_name'], $dest)) {
+            throw new DomainException('Upload failed.');
+        }
+
+        return [
+            'path' => '/uploads/happy/' . $filename,
+            'type' => $type,
+            'orientation' => $orientation,
+        ];
     }
 
     private function adminMarkContactRead(): void

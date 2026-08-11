@@ -33,10 +33,10 @@ require BASE_PATH . '/templates/site/header.php';
     </header>
     <div class="section bg-white">
         <div class="container-narrow">
-            <div class="blog-prose">
+            <div class="blog-prose reveal">
                 <?= $post['body'] /* trusted admin HTML */ ?>
             </div>
-            <div class="hero-actions" style="justify-content:center;margin-top:var(--space-8)">
+            <div class="hero-actions reveal" style="justify-content:center;margin-top:var(--space-8)">
                 <a class="btn btn-gold" href="/quiz">Encontrar minha box</a>
                 <a class="btn btn-secondary" href="/blog">Voltar ao blog</a>
             </div>
@@ -51,7 +51,7 @@ require BASE_PATH . '/templates/site/header.php';
             <p class="text-uppercase text-gold">Continue lendo</p>
             <h2>Outros artigos</h2>
         </header>
-        <div class="blog-mosaic blog-mosaic--related">
+        <div class="blog-mosaic blog-mosaic--related reveal-stagger">
             <?php foreach ($related as $row):
                 $rCover = (string) ($row['cover_image'] ?: '/assets/images/mood/q01.jpg');
                 if ($rCover !== '' && !str_starts_with($rCover, 'http') && !str_starts_with($rCover, '/')) {
@@ -59,7 +59,7 @@ require BASE_PATH . '/templates/site/header.php';
                 }
                 $href = '/blog/' . rawurlencode((string) $row['slug']);
                 ?>
-                <article class="blog-mosaic__item reveal">
+                <article class="blog-mosaic__item reveal reveal--up">
                     <a class="blog-mosaic__media" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>">
                         <img src="<?= htmlspecialchars($rCover, ENT_QUOTES, 'UTF-8') ?>" alt="" width="640" height="480" loading="lazy">
                     </a>

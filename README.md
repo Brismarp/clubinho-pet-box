@@ -74,7 +74,14 @@ Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em
 - Pagamentos: resumo por período, busca e paginação em `/admin/payments`
 - Outbox: `/admin/outbox`
 - Pets Felizes: upload público foto **ou** vídeo em `/enviar-foto` → moderação
-- Migrations: `009`–`012` (inclui role `financeiro`)
+- Migrations: `009`–`013` (inclui role `financeiro`; `013` expande blog + 8 posts do roadmap)
+
+Aplicar só a `013` em banco já existente (local ou Railway):
+
+```bash
+docker compose exec -T db mysql -uclubinho -pclubinho clubinhopet < database/migrations/013_blog_expand_and_seed.sql
+# Railway: railway ssh / mysql one-off import do mesmo arquivo após o deploy
+```
 
 ### Roles (senha local igual ao admin: `Carpe1936!`)
 

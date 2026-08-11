@@ -79,12 +79,12 @@ $mosaic = array_slice($posts, min(3, count($posts)));
                     <?php endif; ?>
                 </div>
 
-                <aside class="blog-side-rail">
+                <aside class="blog-side-rail reveal-stagger">
                     <?php foreach (array_slice($posts, 1, 3) as $post):
                         $cover = $normalizeCover($post);
                         $href = '/blog/' . rawurlencode((string) $post['slug']);
                         ?>
-                        <article class="blog-rail-item">
+                        <article class="blog-rail-item reveal reveal--up">
                             <a class="blog-rail-item__media" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>">
                                 <img src="<?= htmlspecialchars($cover, ENT_QUOTES, 'UTF-8') ?>" alt="" width="400" height="300" loading="lazy">
                             </a>
@@ -102,16 +102,16 @@ $mosaic = array_slice($posts, min(3, count($posts)));
             </div>
 
             <?php if ($mosaic !== []): ?>
-                <header class="section-head" style="margin-top:var(--space-8)">
+                <header class="section-head reveal" style="margin-top:var(--space-8)">
                     <p class="text-uppercase text-gold">Mais leituras</p>
                     <h2>Últimas publicações</h2>
                 </header>
-                <div class="blog-mosaic">
+                <div class="blog-mosaic reveal-stagger">
                     <?php foreach ($mosaic as $post):
                         $cover = $normalizeCover($post);
                         $href = '/blog/' . rawurlencode((string) $post['slug']);
                         ?>
-                        <article class="blog-mosaic__item reveal">
+                        <article class="blog-mosaic__item reveal reveal--up">
                             <a class="blog-mosaic__media" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8') ?>">
                                 <img src="<?= htmlspecialchars($cover, ENT_QUOTES, 'UTF-8') ?>" alt="" width="640" height="480" loading="lazy">
                             </a>

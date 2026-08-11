@@ -79,4 +79,4 @@ Formato: **título** · keyword/ângulo · intenção
 | Datas | 21, 22, 24 |
 | Conversão | 16, 29, 30 |
 
-Priorizar próximos 8 em backlog de produção: **6, 7, 11, 16, 21, 29, 30, 31**.
+Priorizar próximos 8 em backlog de produção: **6, 7, 11, 16, 21, 29, 30, 31** — seed via `database/migrations/013_blog_expand_and_seed.sql`.

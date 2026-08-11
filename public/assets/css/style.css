@@ -647,7 +647,8 @@ select:focus-visible {
 }
 
 .happy-item__media img,
-.happy-item__media iframe {
+.happy-item__media iframe,
+.happy-item__media video {
   width: 100%;
   height: 100%;
   object-fit: cover;

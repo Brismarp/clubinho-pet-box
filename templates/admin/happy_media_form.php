@@ -19,8 +19,8 @@ $action = $isEdit ? '/admin/happy-media/' . (int) $item['id'] : '/admin/happy-me
         </select>
     </label></p>
     <p><label>Media path<br><input name="media_path" value="<?= htmlspecialchars((string) ($item['media_path'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="/assets/images/mood/q01.jpg"></label></p>
-    <p><label>Upload imagem<br><input type="file" name="media_file" accept=".jpg,.jpeg,.png,.webp"></label></p>
-    <p><label>URL vídeo (opcional)<br><input name="media_url" value="<?= htmlspecialchars((string) ($item['media_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label></p>
+    <p><label>Upload foto ou vídeo<br><input type="file" name="media_file" accept=".jpg,.jpeg,.png,.webp,.mp4,.webm,image/*,video/mp4,video/webm"></label></p>
+    <p><label>URL vídeo externa (opcional)<br><input name="media_url" value="<?= htmlspecialchars((string) ($item['media_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"></label></p>
     <p><label>Orientação
         <select name="orientation">
             <?php foreach (['portrait','landscape'] as $o): ?>

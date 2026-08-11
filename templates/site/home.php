@@ -201,9 +201,13 @@ require BASE_PATH . '/templates/site/header.php';
                     $orient = (string) ($media['orientation'] ?? 'landscape');
                     ?>
                     <figure class="happy-item happy-item--<?= htmlspecialchars($orient, ENT_QUOTES, 'UTF-8') ?> reveal reveal--scale">
-                        <?php if (($media['type'] ?? '') === 'video' && !empty($media['media_url'])): ?>
+                        <?php if (($media['type'] ?? '') === 'video'): ?>
                             <div class="happy-item__media">
-                                <iframe src="<?= htmlspecialchars((string) $media['media_url'], ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars((string) $media['pet_name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" allowfullscreen></iframe>
+                                <?php if (!empty($media['media_url']) && (str_contains((string) $media['media_url'], 'youtube') || str_contains((string) $media['media_url'], 'vimeo') || str_starts_with((string) $media['media_url'], 'http'))): ?>
+                                    <iframe src="<?= htmlspecialchars((string) $media['media_url'], ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars((string) $media['pet_name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy" allowfullscreen></iframe>
+                                <?php else: ?>
+                                    <video src="<?= htmlspecialchars($src !== '' ? $src : (string) ($media['media_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" controls playsinline preload="metadata"></video>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <div class="happy-item__media">

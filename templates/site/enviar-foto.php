@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 $activeNav = 'enviar-foto';
-$pageTitle = 'Enviar foto | Clubinho Pet Box';
-$metaDescription = 'Envie uma foto do seu pet feliz para a galeria Clubinho Pet Box.';
+$pageTitle = 'Enviar foto ou vídeo | Clubinho Pet Box';
+$metaDescription = 'Envie uma foto ou vídeo do seu pet feliz para a galeria Clubinho Pet Box.';
 $canonicalPath = '/enviar-foto';
 $error = $error ?? null;
 $sent = !empty($_GET['sent']);
@@ -13,15 +13,15 @@ require BASE_PATH . '/templates/site/header.php';
 <section class="page-hero">
     <div class="container reveal">
         <p class="text-uppercase text-gold">Pets felizes</p>
-        <h1>Envie a foto do seu pet</h1>
-        <p class="lead">Fotos aprovadas podem aparecer na galeria da home. Formatos JPG, PNG ou WebP até 5&nbsp;MB.</p>
+        <h1>Envie foto ou vídeo do seu pet</h1>
+        <p class="lead">Conteúdos aprovados podem aparecer na galeria da home. Foto JPG/PNG/WebP até 5&nbsp;MB ou vídeo MP4/WebM até 25&nbsp;MB.</p>
     </div>
 </section>
 <section class="section bg-white">
     <div class="container" style="max-width:36rem">
         <?php if ($sent): ?>
             <div class="flash reveal" style="padding:1rem;margin-bottom:1rem;border:1px solid var(--color-line);border-radius:var(--radius-md)">
-                Obrigado! Sua foto foi enviada e aguarda moderação.
+                Obrigado! Sua mídia foi enviada e aguarda moderação.
             </div>
         <?php endif; ?>
         <?php if ($error): ?>
@@ -42,17 +42,30 @@ require BASE_PATH . '/templates/site/header.php';
                            value="<?= htmlspecialchars((string) ($_POST['tutor_handle'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="form-group">
-                    <label for="media_file">Foto *</label>
-                    <input type="file" id="media_file" name="media_file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" required>
+                    <label for="orientation">Orientação</label>
+                    <select id="orientation" name="orientation">
+                        <?php
+                        $orient = (string) ($_POST['orientation'] ?? 'auto');
+                        foreach (['auto' => 'Detectar automaticamente', 'landscape' => 'Horizontal', 'portrait' => 'Vertical'] as $val => $label):
+                        ?>
+                            <option value="<?= $val ?>" <?= $orient === $val ? 'selected' : '' ?>><?= $label ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="media_file">Foto ou vídeo *</label>
+                    <input type="file" id="media_file" name="media_file"
+                           accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,.jpg,.jpeg,.png,.webp,.mp4,.webm"
+                           required>
                 </div>
                 <div class="form-group">
                     <label class="cluster" style="display:flex;gap:.5rem;align-items:flex-start">
                         <input type="checkbox" name="consent" value="1" style="width:auto;margin-top:.2rem" required
                             <?= !empty($_POST['consent']) ? 'checked' : '' ?>>
-                        <span>Autorizo o uso desta imagem na comunicação do Clubinho Pet Box (moderação prévia). *</span>
+                        <span>Autorizo o uso desta mídia na comunicação do Clubinho Pet Box (moderação prévia). *</span>
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block-sm">Enviar foto</button>
+                <button type="submit" class="btn btn-primary btn-block-sm">Enviar</button>
             </form>
         </div>
     </div>

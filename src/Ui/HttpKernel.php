@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ClubinhoPet\Ui;
 
 use ClubinhoPet\Identity\Domain\AuthSession;
+use ClubinhoPet\Identity\Domain\UserRole;
 use ClubinhoPet\Shared\Domain\DomainException;
 use ClubinhoPet\Shared\Infrastructure\AppContainer;
 use ClubinhoPet\Shared\Infrastructure\Env;
@@ -87,6 +88,15 @@ final class HttpKernel
                 $method === 'GET' && $path === '/admin/contacts' => $this->adminContacts(),
                 $method === 'POST' && $path === '/admin/contacts/read' => $this->adminMarkContactRead(),
                 $method === 'GET' && $path === '/admin/leads' => $this->adminLeads(),
+                $method === 'GET' && $path === '/admin/customers' => $this->adminCustomers(),
+                $method === 'GET' && preg_match('#^/admin/customers/(\d+)$#', $path, $m) === 1
+                    => $this->adminCustomerDetail((int) $m[1]),
+                $method === 'GET' && $path === '/admin/pets' => $this->adminPets(),
+                $method === 'GET' && preg_match('#^/admin/pets/(\d+)$#', $path, $m) === 1
+                    => $this->adminPetDetail((int) $m[1]),
+                $method === 'GET' && $path === '/admin/stock' => $this->adminStock(),
+                $method === 'POST' && $path === '/admin/stock/adjust' => $this->adminStockAdjust(),
+                $method === 'GET' && $path === '/admin/payments' => $this->adminPayments(),
                 $method === 'GET' && $path === '/admin/blog' => $this->adminBlog(),
                 $method === 'GET' && $path === '/admin/blog/new' => $this->adminBlogForm(null),
                 $method === 'POST' && $path === '/admin/blog' => $this->adminBlogSave(null),
@@ -134,6 +144,8 @@ final class HttpKernel
                     => $this->adminRecommendationDetail((int) $m[1]),
                 $method === 'POST' && preg_match('#^/admin/recommendations/(\d+)/status$#', $path, $m) === 1
                     => $this->adminRecommendationStatus((int) $m[1]),
+                $method === 'POST' && preg_match('#^/admin/recommendations/(\d+)/fulfill$#', $path, $m) === 1
+                    => $this->adminRecommendationFulfill((int) $m[1]),
                 $method === 'POST' && $path === '/admin/recommendations/item' => $this->adminRecommendationItemToggle(),
 
                 $method === 'GET' && $path === '/api/v1/admin/plans' => $this->apiAuthJson(fn () => $this->app->listPlans()->handle()),
@@ -169,6 +181,21 @@ final class HttpKernel
                 exit;
             }
             header('Location: /admin/login');
+            exit;
+        }
+    }
+
+    private function requirePermission(string $permission): void
+    {
+        $this->requireAdmin();
+        $role = UserRole::tryFrom((string) ($this->auth()->role() ?? ''));
+        if ($role === null || !$role->can($permission)) {
+            if (str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/api/')) {
+                $this->json(['error' => 'Forbidden'], 403);
+                exit;
+            }
+            http_response_code(403);
+            echo '<h1>403</h1><p>Sem permissão (' . htmlspecialchars($permission, ENT_QUOTES, 'UTF-8') . ').</p><p><a href="/admin/dashboard">Voltar</a></p>';
             exit;
         }
     }
@@ -422,7 +449,7 @@ final class HttpKernel
 
     private function adminDashboard(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('dashboard');
         $range = (int) ($_GET['range'] ?? 30);
         $metrics = $this->app->dashboardMetrics()->handle($range);
         $this->renderAdmin('dashboard', [
@@ -434,7 +461,7 @@ final class HttpKernel
 
     private function adminPlans(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('plans');
         $this->renderAdmin('plans', [
             'plans' => $this->app->listPlans()->handle(),
             'contacts_new' => $this->app->listContacts()->countNew(),
@@ -443,7 +470,7 @@ final class HttpKernel
 
     private function adminUpdatePlanUrl(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('plans');
         $this->app->updatePlanCheckoutUrl()->handle((int) ($_POST['plan_id'] ?? 0), (string) ($_POST['checkout_url'] ?? ''));
         header('Location: /admin/plans?updated=1');
         exit;
@@ -451,7 +478,7 @@ final class HttpKernel
 
     private function adminSubscriptions(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('subscriptions');
         $status = isset($_GET['status']) ? (string) $_GET['status'] : null;
         if ($status === '' || $status === 'all') {
             $status = null;
@@ -465,13 +492,13 @@ final class HttpKernel
 
     private function adminSettings(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('settings');
         $this->renderAdmin('settings', ['settings' => $this->app->listSettings()->handle()]);
     }
 
     private function adminUpdateSetting(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('settings');
         $this->app->updateSetting()->handle(
             (string) ($_POST['key'] ?? ''),
             (string) ($_POST['value'] ?? ''),
@@ -485,7 +512,7 @@ final class HttpKernel
 
     private function adminBoxes(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('boxes');
         $this->renderAdmin('boxes', [
             'boxes' => $this->app->listBoxes()->handle(),
             'subscriptions' => $this->app->listSubscriptions()->handle(),
@@ -496,7 +523,7 @@ final class HttpKernel
 
     private function adminCreateBox(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('boxes');
         $this->app->createBox()->handle(
             (int) ($_POST['subscription_id'] ?? 0),
             isset($_POST['box_number']) && $_POST['box_number'] !== '' ? (int) $_POST['box_number'] : null,
@@ -508,7 +535,7 @@ final class HttpKernel
 
     private function adminShipBox(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('boxes.ship');
         $this->app->shipBox()->handle(
             (int) ($_POST['box_id'] ?? 0),
             isset($_POST['tracking_number']) && $_POST['tracking_number'] !== '' ? (string) $_POST['tracking_number'] : null,
@@ -520,7 +547,7 @@ final class HttpKernel
 
     private function adminContacts(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('contacts');
         $filter = isset($_GET['status']) ? (string) $_GET['status'] : 'new';
         $status = ($filter === 'all' || $filter === '') ? null : $filter;
         $this->renderAdmin('contacts', [
@@ -532,7 +559,7 @@ final class HttpKernel
 
     private function adminLeads(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('leads');
         $this->renderAdmin('leads', [
             'items' => $this->app->listLeads()->handle(),
             'contacts_new' => $this->app->listContacts()->countNew(),
@@ -573,7 +600,7 @@ final class HttpKernel
 
     private function adminBlog(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $this->renderAdmin('blog', [
             'items' => $this->app->listAdminPosts()->handle(),
             'flash' => isset($_GET['saved']),
@@ -582,7 +609,7 @@ final class HttpKernel
 
     private function adminBlogForm(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $post = null;
         if ($id !== null) {
             $post = $this->app->getAdminPost()->handle($id);
@@ -595,7 +622,7 @@ final class HttpKernel
 
     private function adminBlogSave(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         try {
             $this->app->savePost()->handle($_POST, $id);
             header('Location: /admin/blog?saved=1');
@@ -663,7 +690,7 @@ final class HttpKernel
 
     private function adminAudit(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('audit');
         $this->renderAdmin('audit', [
             'items' => $this->app->activityLogRepository()->recent(150),
         ]);
@@ -678,25 +705,25 @@ final class HttpKernel
 
     private function adminQuizzes(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('quizzes');
         $this->renderAdmin('quizzes', ['items' => $this->app->quiz()->adminListSessions()]);
     }
 
     private function adminQuizDetail(int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('quizzes');
         $this->renderAdmin('quiz_detail', ['item' => $this->app->quiz()->adminSessionDetail($id)]);
     }
 
     private function adminProducts(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('products');
         $this->renderAdmin('products', ['items' => $this->app->quiz()->adminListProducts()]);
     }
 
     private function adminProductForm(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('products');
         $item = $id !== null ? $this->app->quiz()->adminGetProduct($id) : null;
         if ($id !== null && $item === null) {
             throw new DomainException('Product not found.');
@@ -706,7 +733,7 @@ final class HttpKernel
 
     private function adminProductSave(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('products.write');
         try {
             if (!isset($_POST['is_available'])) {
                 $_POST['is_available'] = '0';
@@ -723,7 +750,7 @@ final class HttpKernel
 
     private function adminRecommendations(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('recommendations');
         $status = isset($_GET['status']) ? (string) $_GET['status'] : 'pending_review';
         if ($status === 'all') {
             $status = null;
@@ -736,7 +763,7 @@ final class HttpKernel
 
     private function adminRecommendationDetail(int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('recommendations');
         $this->renderAdmin('recommendation_detail', [
             'item' => $this->app->quiz()->adminRecommendationDetail($id),
         ]);
@@ -744,7 +771,7 @@ final class HttpKernel
 
     private function adminRecommendationStatus(int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('recommendations');
         $status = (string) ($_POST['status'] ?? '');
         $this->app->quiz()->adminSetRecommendationStatus($id, $status, $this->auth()->userId());
         header('Location: /admin/recommendations/' . $id . '?saved=1');
@@ -753,7 +780,7 @@ final class HttpKernel
 
     private function adminRecommendationItemToggle(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('recommendations');
         $itemId = (int) ($_POST['item_id'] ?? 0);
         $selected = ((string) ($_POST['is_selected'] ?? '1')) === '1';
         $recId = (int) ($_POST['recommendation_id'] ?? 0);
@@ -762,15 +789,89 @@ final class HttpKernel
         exit;
     }
 
+    private function adminRecommendationFulfill(int $id): void
+    {
+        $this->requirePermission('recommendations.fulfill');
+        $result = $this->app->fulfillRecommendation()->handle($id, $this->auth()->userId());
+        header('Location: /admin/boxes?fulfilled=' . (int) $result['box_id']);
+        exit;
+    }
+
+    private function adminCustomers(): void
+    {
+        $this->requirePermission('customers');
+        $q = isset($_GET['q']) ? (string) $_GET['q'] : null;
+        $this->renderAdmin('customers', [
+            'items' => $this->app->crm()->listCustomers($q),
+            'q' => $q ?? '',
+        ]);
+    }
+
+    private function adminCustomerDetail(int $id): void
+    {
+        $this->requirePermission('customers');
+        $this->renderAdmin('customer_detail', $this->app->crm()->getCustomer($id));
+    }
+
+    private function adminPets(): void
+    {
+        $this->requirePermission('pets');
+        $q = isset($_GET['q']) ? (string) $_GET['q'] : null;
+        $this->renderAdmin('pets', [
+            'items' => $this->app->crm()->listPets($q),
+            'q' => $q ?? '',
+        ]);
+    }
+
+    private function adminPetDetail(int $id): void
+    {
+        $this->requirePermission('pets');
+        $this->renderAdmin('pet_detail', $this->app->crm()->getPet($id));
+    }
+
+    private function adminStock(): void
+    {
+        $this->requirePermission('stock');
+        $this->renderAdmin('stock', [
+            'products' => $this->app->stockLedger()->productStockList(),
+            'movements' => $this->app->stockLedger()->recent(80),
+        ]);
+    }
+
+    private function adminStockAdjust(): void
+    {
+        $this->requirePermission('stock');
+        $productId = (int) ($_POST['product_id'] ?? 0);
+        $delta = (int) ($_POST['delta'] ?? 0);
+        $reason = (string) ($_POST['reason'] ?? 'adjust');
+        $note = trim((string) ($_POST['note'] ?? ''));
+        $this->app->adjustStock()->handle($productId, $delta, $reason, $this->auth()->userId(), $note !== '' ? $note : null);
+        header('Location: /admin/stock?saved=1');
+        exit;
+    }
+
+    private function adminPayments(): void
+    {
+        $this->requirePermission('payments');
+        $status = isset($_GET['status']) ? (string) $_GET['status'] : null;
+        if ($status === 'all' || $status === '') {
+            $status = null;
+        }
+        $this->renderAdmin('payments', [
+            'items' => $this->app->listPayments()->handle($status),
+            'status' => $status ?? 'all',
+        ]);
+    }
+
     private function adminTestimonials(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $this->renderAdmin('testimonials', ['items' => $this->app->homeContent()->allTestimonials()]);
     }
 
     private function adminTestimonialForm(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $item = null;
         if ($id !== null) {
             foreach ($this->app->homeContent()->allTestimonials() as $row) {
@@ -788,7 +889,7 @@ final class HttpKernel
 
     private function adminTestimonialSave(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         try {
             $data = $_POST;
             $uploaded = $this->storeUpload('photo_file', 'testimonials');
@@ -807,13 +908,13 @@ final class HttpKernel
 
     private function adminHappyMedia(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $this->renderAdmin('happy_media', ['items' => $this->app->homeContent()->allHappyMedia()]);
     }
 
     private function adminHappyMediaForm(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $item = null;
         if ($id !== null) {
             foreach ($this->app->homeContent()->allHappyMedia() as $row) {
@@ -831,7 +932,7 @@ final class HttpKernel
 
     private function adminHappyMediaSave(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         try {
             $data = $_POST;
             $uploaded = $this->storeUpload('media_file', 'happy');
@@ -850,13 +951,13 @@ final class HttpKernel
 
     private function adminFaq(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $this->renderAdmin('faq', ['items' => $this->app->homeContent()->allFaqs()]);
     }
 
     private function adminFaqForm(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         $item = null;
         if ($id !== null) {
             foreach ($this->app->homeContent()->allFaqs() as $row) {
@@ -874,7 +975,7 @@ final class HttpKernel
 
     private function adminFaqSave(?int $id): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('content');
         try {
             if (!isset($_POST['is_published'])) {
                 $_POST['is_published'] = '0';
@@ -914,7 +1015,7 @@ final class HttpKernel
 
     private function adminMarkContactRead(): void
     {
-        $this->requireAdmin();
+        $this->requirePermission('contacts');
         $this->app->markContactRead()->handle((int) ($_POST['id'] ?? 0));
         header('Location: /admin/contacts?updated=1');
         exit;
@@ -999,6 +1100,8 @@ final class HttpKernel
         }
         extract($data, EXTR_SKIP);
         $auth = $this->auth();
+        $role = UserRole::tryFrom((string) ($auth->role() ?? ''));
+        $can = static fn (string $perm): bool => $role !== null && $role->can($perm);
         require BASE_PATH . '/templates/admin/layout.php';
     }
 

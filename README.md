@@ -47,6 +47,27 @@ Hoje o checkout Kirvano usa a URL mensal do plano por slug. URLs anuais dedicada
 - **Webhook:** `POST /webhooks/kirvano` — ingest + audit (`webhook_events` / `activity_logs`). Segredo opcional: `KIRVANO_WEBHOOK_SECRET` (headers `X-Kirvano-Secret` ou `X-Webhook-Secret`).
 - Detalhes e payloads de exemplo: [`content/integrations-mock.md`](content/integrations-mock.md).
 
+## Core operacional (admin)
+
+Fluxo: **quiz → recomendação → aprovar → Gerar box** (reserva estoque em `stock_movements`) → **ship** (converte reserva).
+
+- CRM: `/admin/customers`, `/admin/pets`
+- Estoque: `/admin/stock` (receive/adjust + alertas `stock_min`)
+- Pagamentos: webhook Kirvano grava `payments`; lista em `/admin/payments` (só `admin`)
+- Migration: `database/migrations/009_operational_core.sql`
+
+### Roles (senha local igual ao admin: `Carpe1936!`)
+
+| Role | E-mail demo |
+|------|-------------|
+| admin | `admin@clubinhopetbox.com.br` |
+| operacao | `operacao@clubinhopetbox.com.br` |
+| montagem | `montagem@clubinhopetbox.com.br` |
+| atendimento | `atendimento@clubinhopetbox.com.br` |
+| estoque | `estoque@clubinhopetbox.com.br` |
+
+Financeiro (`/admin/payments`) e settings são restritos a **admin**.
+
 ## LGPD / termos
 
 - `/privacidade` e `/termos` — páginas públicas; links no footer e no consentimento do quiz.

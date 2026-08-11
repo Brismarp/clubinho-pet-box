@@ -115,24 +115,33 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
         <div class="brand">Clubinho Pet Box</div>
         <nav>
             <?php
+            /** @var callable(string):bool $can */
+            $can = $can ?? static fn (string $p): bool => true;
             $links = [
-                '/admin/dashboard' => 'Dashboard',
-                '/admin/plans' => 'Planos',
-                '/admin/subscriptions' => 'Assinaturas',
-                '/admin/boxes' => 'Boxes',
-                '/admin/contacts' => 'Contatos',
-                '/admin/leads' => 'Leads',
-                '/admin/blog' => 'Blog',
-                '/admin/testimonials' => 'Depoimentos',
-                '/admin/happy-media' => 'Pets Felizes',
-                '/admin/faq' => 'FAQ',
-                '/admin/quizzes' => 'Quizzes',
-                '/admin/products' => 'Produtos',
-                '/admin/recommendations' => 'Recomendações',
-                '/admin/settings' => 'Settings',
-                '/admin/audit' => 'Auditoria',
+                ['/admin/dashboard', 'Dashboard', 'dashboard'],
+                ['/admin/customers', 'Clientes', 'customers'],
+                ['/admin/pets', 'Pets', 'pets'],
+                ['/admin/plans', 'Planos', 'plans'],
+                ['/admin/subscriptions', 'Assinaturas', 'subscriptions'],
+                ['/admin/boxes', 'Boxes', 'boxes'],
+                ['/admin/recommendations', 'Recomendações', 'recommendations'],
+                ['/admin/products', 'Produtos', 'products'],
+                ['/admin/stock', 'Estoque', 'stock'],
+                ['/admin/payments', 'Pagamentos', 'payments'],
+                ['/admin/contacts', 'Contatos', 'contacts'],
+                ['/admin/leads', 'Leads', 'leads'],
+                ['/admin/quizzes', 'Quizzes', 'quizzes'],
+                ['/admin/blog', 'Blog', 'content'],
+                ['/admin/testimonials', 'Depoimentos', 'content'],
+                ['/admin/happy-media', 'Pets Felizes', 'content'],
+                ['/admin/faq', 'FAQ', 'content'],
+                ['/admin/settings', 'Settings', 'settings'],
+                ['/admin/audit', 'Auditoria', 'audit'],
             ];
-            foreach ($links as $href => $label):
+            foreach ($links as [$href, $label, $perm]):
+                if (!$can($perm)) {
+                    continue;
+                }
                 $active = str_starts_with($currentPath, $href);
             ?>
                 <a href="<?= $href ?>" class="<?= $active ? 'is-active' : '' ?>">

@@ -36,9 +36,14 @@ use ClubinhoPet\Integrations\Infrastructure\KirvanoRedirectPaymentGateway;
 use ClubinhoPet\Integrations\Infrastructure\MockNotifier;
 use ClubinhoPet\Integrations\Infrastructure\MockPaymentGateway;
 use ClubinhoPet\Integrations\Infrastructure\MockShipmentProvider;
+use ClubinhoPet\Billing\Application\ListPaymentsHandler;
+use ClubinhoPet\Crm\Application\CustomerCrmHandlers;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
+use ClubinhoPet\Fulfillment\Application\FulfillRecommendationHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
 use ClubinhoPet\Fulfillment\Application\ShipBoxHandler;
+use ClubinhoPet\Inventory\Application\AdjustStockHandler;
+use ClubinhoPet\Inventory\Application\StockLedger;
 use ClubinhoPet\Fulfillment\Infrastructure\Persistence\PdoBoxRepository;
 use ClubinhoPet\Identity\Application\LoginAdminHandler;
 use ClubinhoPet\Identity\Application\LogoutAdminHandler;
@@ -251,7 +256,38 @@ final class AppContainer
             $this->shipmentProvider(),
             $this->activityLogRepository(),
             $this->notifier(),
+            $this->stockLedger(),
+            $this->pdo,
         );
+    }
+
+    public function stockLedger(): StockLedger
+    {
+        return new StockLedger($this->pdo);
+    }
+
+    public function adjustStock(): AdjustStockHandler
+    {
+        return new AdjustStockHandler($this->stockLedger());
+    }
+
+    public function fulfillRecommendation(): FulfillRecommendationHandler
+    {
+        return new FulfillRecommendationHandler(
+            $this->pdo,
+            $this->stockLedger(),
+            $this->activityLogRepository(),
+        );
+    }
+
+    public function crm(): CustomerCrmHandlers
+    {
+        return new CustomerCrmHandlers($this->pdo);
+    }
+
+    public function listPayments(): ListPaymentsHandler
+    {
+        return new ListPaymentsHandler($this->pdo);
     }
 
     public function ingestEvents(): IngestEventsHandler

@@ -63,6 +63,11 @@ final class User
 
     public function canAccessAdmin(): bool
     {
-        return $this->active && in_array($this->role, [UserRole::Admin, UserRole::Editor, UserRole::Viewer], true);
+        return $this->active && in_array($this->role, UserRole::adminAccessRoles(), true);
+    }
+
+    public function can(string $permission): bool
+    {
+        return $this->canAccessAdmin() && $this->role->can($permission);
     }
 }

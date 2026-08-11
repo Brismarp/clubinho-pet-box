@@ -57,8 +57,19 @@ $steps = [
         <div class="stat"><?= (int) ($metrics['quiz_complete'] ?? 0) ?></div>
     </div>
     <div class="card">
-        <div class="muted">Receita</div>
-        <div class="stat" style="font-size:1rem;line-height:1.35"><?= htmlspecialchars((string) ($metrics['revenue_note'] ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
+        <div class="muted">Receita (pagamentos paid)</div>
+        <div class="stat">R$ <?= number_format(((int) ($ops['revenue_cents'] ?? 0)) / 100, 2, ',', '.') ?></div>
+        <div class="muted"><a href="/admin/payments">Ver pagamentos</a></div>
+    </div>
+    <div class="card">
+        <div class="muted">Recomendações pendentes</div>
+        <div class="stat"><?= (int) ($ops['recommendations_pending'] ?? 0) ?></div>
+        <div class="muted"><a href="/admin/recommendations">Fila</a></div>
+    </div>
+    <div class="card">
+        <div class="muted">Estoque baixo</div>
+        <div class="stat"><?= (int) ($ops['low_stock'] ?? 0) ?></div>
+        <div class="muted"><a href="/admin/stock">Estoque</a></div>
     </div>
 </div>
 

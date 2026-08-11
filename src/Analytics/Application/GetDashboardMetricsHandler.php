@@ -58,6 +58,17 @@ final class GetDashboardMetricsHandler
             'SELECT status, COUNT(*) AS c FROM boxes GROUP BY status'
         );
 
+        $recoPending = (int) $this->scalar(
+            "SELECT COUNT(*) FROM box_recommendations WHERE status = 'pending_review'"
+        );
+        $revenueCents = (int) $this->scalar(
+            "SELECT COALESCE(SUM(amount_cents), 0) FROM payments WHERE status = 'paid' AND COALESCE(paid_at, created_at) >= :since",
+            ['since' => $sinceSql]
+        );
+        $lowStock = (int) $this->scalar(
+            'SELECT COUNT(*) FROM products WHERE stock_qty <= stock_min'
+        );
+
         return [
             'range_days' => $rangeDays,
             'since' => $sinceSql,
@@ -75,10 +86,13 @@ final class GetDashboardMetricsHandler
                 'boxes_by_status' => $boxesByStatus,
                 'boxes_preparing' => (int) ($boxesByStatus['preparing'] ?? 0),
                 'boxes_shipped' => (int) ($boxesByStatus['shipped'] ?? 0),
+                'recommendations_pending' => $recoPending,
+                'low_stock' => $lowStock,
+                'revenue_cents' => $revenueCents,
                 'leads_period' => $this->leads->countSince($since),
                 'plans_active' => (int) $this->scalar('SELECT COUNT(*) FROM plans WHERE is_active = 1'),
             ],
-            'revenue_note' => 'Receita / pagos confirmados: aguardando webhook Kirvano',
+            'revenue_note' => null,
         ];
     }
 

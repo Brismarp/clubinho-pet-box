@@ -70,4 +70,61 @@ final class User
     {
         return $this->canAccessAdmin() && $this->role->can($permission);
     }
+
+    public function passwordHash(): string
+    {
+        return $this->passwordHash;
+    }
+
+    public function assignId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function rename(string $name): void
+    {
+        $name = trim($name);
+        if ($name === '') {
+            throw new \ClubinhoPet\Shared\Domain\DomainException('Name is required.');
+        }
+        $this->name = $name;
+    }
+
+    public function changeEmail(Email $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function changeRole(UserRole $role): void
+    {
+        $this->role = $role;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
+    public function setPasswordHash(string $hash): void
+    {
+        if ($hash === '') {
+            throw new \ClubinhoPet\Shared\Domain\DomainException('Password hash required.');
+        }
+        $this->passwordHash = $hash;
+    }
+
+    public static function create(
+        string $name,
+        Email $email,
+        string $passwordHash,
+        UserRole $role,
+        bool $active = true,
+    ): self {
+        $name = trim($name);
+        if ($name === '') {
+            throw new \ClubinhoPet\Shared\Domain\DomainException('Name is required.');
+        }
+
+        return new self(null, $name, $email, $passwordHash, $role, $active);
+    }
 }

@@ -11,6 +11,7 @@ enum UserRole: string
     case Montagem = 'montagem';
     case Atendimento = 'atendimento';
     case Estoque = 'estoque';
+    case Financeiro = 'financeiro';
 
     /** @return list<string> */
     public function permissions(): array
@@ -20,6 +21,7 @@ enum UserRole: string
                 'dashboard', 'customers', 'pets', 'quizzes', 'recommendations', 'recommendations.fulfill',
                 'products', 'products.write', 'stock', 'boxes', 'boxes.ship', 'subscriptions',
                 'contacts', 'leads', 'blog', 'content', 'payments', 'outbox', 'settings', 'audit', 'plans',
+                'users',
             ],
             self::Operacao => [
                 'dashboard', 'customers', 'pets', 'subscriptions', 'boxes', 'boxes.ship',
@@ -34,6 +36,9 @@ enum UserRole: string
             self::Estoque => [
                 'dashboard', 'products', 'products.write', 'stock',
             ],
+            self::Financeiro => [
+                'dashboard', 'payments', 'subscriptions', 'audit',
+            ],
         };
     }
 
@@ -46,5 +51,11 @@ enum UserRole: string
     public static function adminAccessRoles(): array
     {
         return self::cases();
+    }
+
+    /** @return list<string> */
+    public static function values(): array
+    {
+        return array_map(static fn (self $r): string => $r->value, self::cases());
     }
 }

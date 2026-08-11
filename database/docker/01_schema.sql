@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) UNIQUE NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `role` ENUM('admin', 'operacao', 'montagem', 'atendimento', 'estoque') DEFAULT 'atendimento',
+    `role` ENUM('admin', 'operacao', 'montagem', 'atendimento', 'estoque', 'financeiro') DEFAULT 'atendimento',
     `is_active` BOOLEAN DEFAULT TRUE,
     `last_login` DATETIME,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -421,7 +421,12 @@ SELECT * FROM (
 
 -- Admin User
 INSERT INTO `users` (`name`, `email`, `password`, `role`, `is_active`) VALUES
-('Administrador', 'admin@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'admin', TRUE);
+('Administrador', 'admin@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'admin', TRUE),
+('Operação', 'operacao@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'operacao', TRUE),
+('Montagem', 'montagem@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'montagem', TRUE),
+('Atendimento', 'atendimento@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'atendimento', TRUE),
+('Estoque', 'estoque@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'estoque', TRUE),
+('Financeiro', 'financeiro@clubinhopetbox.com.br', '$2y$12$4C7C.J3XAlENNEkznrqnj.GGXhOYqLVs1YUfgi4uCJqrJIU2sLGmW', 'financeiro', TRUE);
 
 -- Plans
 INSERT INTO `plans` (`name`, `slug`, `description`, `price`, `currency`, `billing_cycle`, `checkout_url`, `features`, `is_active`, `is_popular`, `display_order`) VALUES

@@ -34,7 +34,7 @@ final class Subscription
             $email,
             $customerName,
             $pet,
-            SubscriptionStatus::Active,
+            SubscriptionStatus::Pending,
             null,
             $notes,
         );

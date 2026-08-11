@@ -19,16 +19,18 @@ final class PdoSubscriptionRepository implements SubscriptionRepository
         $pet = $subscription->pet();
         $stmt = $this->pdo->prepare(
             'INSERT INTO subscriptions (plan_id, email, pet_name, pet_type, pet_age, status, notes, start_date)
-             VALUES (:plan_id, :email, :pet_name, :pet_type, :pet_age, :status, :notes, CURDATE())'
+             VALUES (:plan_id, :email, :pet_name, :pet_type, :pet_age, :status, :notes, :start_date)'
         );
+        $status = $subscription->status()->value;
         $stmt->execute([
             'plan_id' => $subscription->planId(),
             'email' => $subscription->email()->value(),
             'pet_name' => $pet?->name(),
             'pet_type' => $pet?->type(),
             'pet_age' => $pet?->age(),
-            'status' => $subscription->status()->value,
+            'status' => $status,
             'notes' => $subscription->notes(),
+            'start_date' => $status === 'active' ? date('Y-m-d') : null,
         ]);
 
         $id = (int) $this->pdo->lastInsertId();

@@ -66,6 +66,7 @@ final class HttpKernel
                 $method === 'POST' && $path === '/subscribe' => $this->subscribe(),
                 $method === 'POST' && $path === '/contact' => $this->contact(),
                 $method === 'POST' && $path === '/lead' => $this->lead(),
+                $method === 'POST' && $path === '/api/v1/payments/mock/confirm' => $this->confirmMockPayment(),
 
                 $method === 'GET' && $path === '/admin' => $this->adminRedirect('/admin/dashboard'),
                 $method === 'GET' && $path === '/admin/login' => $this->renderAdmin('login', [
@@ -85,6 +86,8 @@ final class HttpKernel
                 $method === 'GET' && $path === '/admin/boxes' => $this->adminBoxes(),
                 $method === 'POST' && $path === '/admin/boxes' => $this->adminCreateBox(),
                 $method === 'POST' && $path === '/admin/boxes/ship' => $this->adminShipBox(),
+                $method === 'POST' && $path === '/admin/boxes/advance' => $this->adminAdvanceShipment(),
+                $method === 'GET' && $path === '/admin/outbox' => $this->adminOutbox(),
                 $method === 'GET' && $path === '/admin/contacts' => $this->adminContacts(),
                 $method === 'POST' && $path === '/admin/contacts/read' => $this->adminMarkContactRead(),
                 $method === 'GET' && $path === '/admin/leads' => $this->adminLeads(),
@@ -155,6 +158,7 @@ final class HttpKernel
                 $method === 'GET' && $path === '/api/v1/admin/boxes' => $this->apiAuthJson(fn () => $this->app->listBoxes()->handle()),
                 $method === 'POST' && $path === '/api/v1/admin/boxes' => $this->apiCreateBox(),
                 $method === 'POST' && $path === '/api/v1/admin/boxes/ship' => $this->apiShipBox(),
+                $method === 'POST' && $path === '/api/v1/admin/boxes/advance' => $this->apiAdvanceShipment(),
                 $method === 'GET' && $path === '/api/v1/admin/contacts' => $this->apiAuthJson(fn () => $this->app->listContacts()->handle()),
                 $method === 'POST' && $path === '/api/v1/admin/contacts/read' => $this->apiMarkContactRead(),
                 $method === 'POST' && $path === '/api/v1/admin/plans/checkout-url' => $this->apiUpdatePlanUrl(),
@@ -333,13 +337,21 @@ final class HttpKernel
             'source' => 'server',
         ]);
 
+        $checkoutUrl = (string) $result['checkout_url'];
+        if (str_contains($checkoutUrl, 'mock_checkout=1')) {
+            $checkoutUrl = preg_replace('/([?&])billing=[^&]*/', '$1billing=' . rawurlencode($billing), $checkoutUrl) ?? $checkoutUrl;
+            $checkoutUrl .= (str_contains($checkoutUrl, '?') ? '&' : '?')
+                . 'subscription_id=' . (int) $result['subscription_id'];
+        }
+
         if ($this->wantsJson()) {
             $result['billing'] = $billing;
+            $result['checkout_url'] = $checkoutUrl;
             $this->json($result, 201);
             return;
         }
 
-        header('Location: /checkout?plan=' . urlencode($plan) . '&billing=' . urlencode($billing));
+        header('Location: ' . $checkoutUrl);
         exit;
     }
 
@@ -513,10 +525,20 @@ final class HttpKernel
     private function adminBoxes(): void
     {
         $this->requirePermission('boxes');
+        $boxes = $this->app->listBoxes()->handle();
+        $eventsByBox = [];
+        $shipments = $this->app->mockShipmentProvider();
+        foreach ($boxes as $box) {
+            $id = (int) ($box['id'] ?? 0);
+            if ($id > 0) {
+                $eventsByBox[$id] = $shipments->listEventsByBox($id);
+            }
+        }
         $this->renderAdmin('boxes', [
-            'boxes' => $this->app->listBoxes()->handle(),
+            'boxes' => $boxes,
             'subscriptions' => $this->app->listSubscriptions()->handle(),
             'status_counts' => $this->app->boxRepository()->countByStatus(),
+            'shipment_events_by_box' => $eventsByBox,
             'contacts_new' => $this->app->listContacts()->countNew(),
         ]);
     }
@@ -543,6 +565,40 @@ final class HttpKernel
         );
         header('Location: /admin/boxes?shipped=1');
         exit;
+    }
+
+    private function adminAdvanceShipment(): void
+    {
+        $this->requirePermission('boxes.ship');
+        $this->app->advanceShipment()->handle(
+            (int) ($_POST['box_id'] ?? 0),
+            $this->auth()->userId(),
+        );
+        header('Location: /admin/boxes?advanced=1');
+        exit;
+    }
+
+    private function adminOutbox(): void
+    {
+        $this->requirePermission('outbox');
+        $channel = isset($_GET['channel']) ? (string) $_GET['channel'] : 'all';
+        $this->renderAdmin('outbox', [
+            'items' => $this->app->listNotificationOutbox()->handle(150, $channel),
+            'channel' => $channel,
+            'contacts_new' => $this->app->listContacts()->countNew(),
+        ]);
+    }
+
+    private function confirmMockPayment(): void
+    {
+        $body = $this->jsonBody();
+        $subscriptionId = (int) ($body['subscription_id'] ?? $_POST['subscription_id'] ?? 0);
+        $method = (string) ($body['method'] ?? $_POST['method'] ?? 'pix');
+        $cardHolder = isset($body['card_holder'])
+            ? (string) $body['card_holder']
+            : (isset($_POST['card_holder']) ? (string) $_POST['card_holder'] : null);
+        $result = $this->app->confirmMockPayment()->handle($subscriptionId, $method, $cardHolder);
+        $this->json($result, 201);
     }
 
     private function adminContacts(): void
@@ -1060,6 +1116,16 @@ final class HttpKernel
         $this->json($this->app->shipBox()->handle(
             (int) ($body['box_id'] ?? 0),
             isset($body['tracking_number']) ? (string) $body['tracking_number'] : null,
+            $this->auth()->userId(),
+        ));
+    }
+
+    private function apiAdvanceShipment(): void
+    {
+        $this->requirePermission('boxes.ship');
+        $body = $this->jsonBody();
+        $this->json($this->app->advanceShipment()->handle(
+            (int) ($body['box_id'] ?? 0),
             $this->auth()->userId(),
         ));
     }

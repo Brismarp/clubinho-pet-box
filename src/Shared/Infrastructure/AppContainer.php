@@ -30,14 +30,17 @@ use ClubinhoPet\Quiz\Domain\AttributeMapper;
 use ClubinhoPet\Quiz\Domain\MockRecommendationEngine;
 use ClubinhoPet\Quiz\Infrastructure\Persistence\PdoQuizRepository;
 use ClubinhoPet\Integrations\Application\KirvanoWebhookHandler;
+use ClubinhoPet\Integrations\Application\ListNotificationOutboxHandler;
 use ClubinhoPet\Integrations\Domain\Notifier;
 use ClubinhoPet\Integrations\Domain\ShipmentProvider;
 use ClubinhoPet\Integrations\Infrastructure\KirvanoRedirectPaymentGateway;
 use ClubinhoPet\Integrations\Infrastructure\MockNotifier;
 use ClubinhoPet\Integrations\Infrastructure\MockPaymentGateway;
 use ClubinhoPet\Integrations\Infrastructure\MockShipmentProvider;
+use ClubinhoPet\Billing\Application\ConfirmMockPaymentHandler;
 use ClubinhoPet\Billing\Application\ListPaymentsHandler;
 use ClubinhoPet\Crm\Application\CustomerCrmHandlers;
+use ClubinhoPet\Fulfillment\Application\AdvanceShipmentHandler;
 use ClubinhoPet\Fulfillment\Application\CreateBoxHandler;
 use ClubinhoPet\Fulfillment\Application\FulfillRecommendationHandler;
 use ClubinhoPet\Fulfillment\Application\ListBoxesHandler;
@@ -152,12 +155,40 @@ final class AppContainer
 
     public function shipmentProvider(): ShipmentProvider
     {
-        return new MockShipmentProvider();
+        return new MockShipmentProvider($this->pdo);
+    }
+
+    public function mockShipmentProvider(): MockShipmentProvider
+    {
+        $provider = $this->shipmentProvider();
+        assert($provider instanceof MockShipmentProvider);
+
+        return $provider;
     }
 
     public function notifier(): Notifier
     {
         return new MockNotifier($this->pdo);
+    }
+
+    public function confirmMockPayment(): ConfirmMockPaymentHandler
+    {
+        return new ConfirmMockPaymentHandler($this->pdo, $this->activityLogRepository(), $this->notifier());
+    }
+
+    public function advanceShipment(): AdvanceShipmentHandler
+    {
+        return new AdvanceShipmentHandler(
+            $this->mockShipmentProvider(),
+            $this->pdo,
+            $this->activityLogRepository(),
+            $this->notifier(),
+        );
+    }
+
+    public function listNotificationOutbox(): ListNotificationOutboxHandler
+    {
+        return new ListNotificationOutboxHandler($this->pdo);
     }
 
     public function kirvanoWebhook(): KirvanoWebhookHandler

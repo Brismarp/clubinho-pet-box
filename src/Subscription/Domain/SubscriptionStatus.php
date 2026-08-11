@@ -6,6 +6,7 @@ namespace ClubinhoPet\Subscription\Domain;
 
 enum SubscriptionStatus: string
 {
+    case Pending = 'pending';
     case Active = 'active';
     case Paused = 'paused';
     case Cancelled = 'cancelled';

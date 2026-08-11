@@ -59,11 +59,21 @@
     return out;
   }
 
+  function csrfToken() {
+    try {
+      var meta = document.querySelector('meta[name="csrf-token"]');
+      return (meta && meta.getAttribute('content')) || window.__CSRF_TOKEN__ || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   function flush() {
     flushTimer = null;
     if (!QUEUE.length) return;
     var batch = QUEUE.splice(0, QUEUE.length);
     var body = JSON.stringify({
+      _csrf: csrfToken(),
       visitor_id: getVisitorId(),
       session_id: getSessionId(),
       events: batch,
@@ -77,7 +87,10 @@
     try {
       fetch(ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken(),
+        },
         body: body,
         keepalive: true,
         credentials: 'same-origin',

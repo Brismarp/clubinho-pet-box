@@ -12,6 +12,9 @@ use ClubinhoPet\Shared\Infrastructure\Env;
 
 final class HttpKernel
 {
+    /** @var array<string, mixed>|null */
+    private ?array $parsedJsonBody = null;
+
     public function __construct(private AppContainer $app)
     {
     }
@@ -24,8 +27,16 @@ final class HttpKernel
             return;
         }
 
+        if ($this->requiresCsrf($method, $path)) {
+            \ClubinhoPet\Shared\Infrastructure\Csrf::assertValid(
+                \ClubinhoPet\Shared\Infrastructure\Csrf::requestToken($this->jsonBody())
+            );
+        }
+
         try {
             match (true) {
+                $method === 'GET' && $path === '/api/v1/csrf'
+                    => $this->json(['token' => \ClubinhoPet\Shared\Infrastructure\Csrf::token()]),
                 $method === 'GET' && $path === '/api/v1/plans' => $this->json($this->app->listPlans()->handle()),
                 $method === 'GET' && preg_match('#^/api/v1/plans/([a-z0-9\-]+)$#', $path, $m) === 1
                     => $this->json($this->app->getPlanBySlug()->handle($m[1])),
@@ -1183,13 +1194,33 @@ final class HttpKernel
     /** @return array<string, mixed> */
     private function jsonBody(): array
     {
+        if ($this->parsedJsonBody !== null) {
+            return $this->parsedJsonBody;
+        }
         $raw = file_get_contents('php://input') ?: '';
         if ($raw === '') {
-            return $_POST;
+            $this->parsedJsonBody = is_array($_POST) ? $_POST : [];
+
+            return $this->parsedJsonBody;
         }
         $decoded = json_decode($raw, true);
+        $this->parsedJsonBody = is_array($decoded) ? $decoded : [];
 
-        return is_array($decoded) ? $decoded : [];
+        return $this->parsedJsonBody;
+    }
+
+    private function requiresCsrf(string $method, string $path): bool
+    {
+        $method = strtoupper($method);
+        if (!in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+            return false;
+        }
+        // External webhook uses shared secret, not session CSRF
+        if ($path === '/webhooks/kirvano') {
+            return false;
+        }
+
+        return true;
     }
 
     private function wantsJson(): bool

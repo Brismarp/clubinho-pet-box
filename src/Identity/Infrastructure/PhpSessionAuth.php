@@ -11,11 +11,16 @@ final class PhpSessionAuth implements AuthSession
 {
     public function login(User $user): void
     {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
         $_SESSION['user_id'] = $user->id();
         $_SESSION['user_name'] = $user->name();
         $_SESSION['user_email'] = $user->email()->value();
         $_SESSION['user_role'] = $user->role()->value;
         $_SESSION['admin_logged_in'] = true;
+        // Rotate CSRF after privilege change
+        unset($_SESSION['_csrf_token']);
     }
 
     public function logout(): void

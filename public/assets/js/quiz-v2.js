@@ -217,9 +217,17 @@
   }
 
   async function api(method, path, body) {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      || window.__CSRF_TOKEN__
+      || '';
     const res = await fetch(path, {
       method,
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+      },
       body: body ? JSON.stringify(body) : undefined,
     });
     const data = await res.json().catch(() => ({}));

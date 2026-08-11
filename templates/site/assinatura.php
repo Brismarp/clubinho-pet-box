@@ -185,7 +185,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const res = await fetch('/api/v1/payments/mock/confirm', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || window.__CSRF_TOKEN__
+            || '',
+        },
         body: JSON.stringify(body),
       });
       const data = await res.json().catch(() => ({}));

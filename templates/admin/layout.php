@@ -15,6 +15,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
+    <meta name="csrf-token" content="<?= htmlspecialchars(\ClubinhoPet\Shared\Infrastructure\Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -161,5 +162,23 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
 
 <?php require __DIR__ . '/' . $view . '.php'; ?>
 </div>
+<script>
+(function () {
+  var meta = document.querySelector('meta[name="csrf-token"]');
+  var token = meta && meta.getAttribute('content');
+  if (!token) return;
+  window.__CSRF_TOKEN__ = token;
+  document.querySelectorAll('form').forEach(function (form) {
+    if (form.querySelector('input[name="_csrf"]')) return;
+    var method = (form.getAttribute('method') || 'get').toLowerCase();
+    if (method !== 'post') return;
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = '_csrf';
+    input.value = token;
+    form.appendChild(input);
+  });
+})();
+</script>
 </body>
 </html>

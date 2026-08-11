@@ -38,5 +38,23 @@
     </footer>
     <script src="/assets/js/tracker.js" defer></script>
     <script src="/assets/js/motion.js" defer></script>
+    <script>
+    (function () {
+      var meta = document.querySelector('meta[name="csrf-token"]');
+      var token = meta && meta.getAttribute('content');
+      if (!token) return;
+      window.__CSRF_TOKEN__ = token;
+      document.querySelectorAll('form').forEach(function (form) {
+        if (form.querySelector('input[name="_csrf"]')) return;
+        var method = (form.getAttribute('method') || 'get').toLowerCase();
+        if (method !== 'post') return;
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = '_csrf';
+        input.value = token;
+        form.appendChild(input);
+      });
+    })();
+    </script>
 </body>
 </html>

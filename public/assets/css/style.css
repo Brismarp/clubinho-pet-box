@@ -1428,6 +1428,100 @@ textarea { min-height: 8rem; resize: vertical; }
   animation: heroIn var(--dur-slow) var(--ease-out-soft) 220ms forwards;
 }
 
+/* ─── Stats band ───────────────────────────────────────────── */
+
+.stats-band {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-sky) 70%, white), color-mix(in srgb, var(--color-mint) 55%, white));
+  padding-block: clamp(2.5rem, 5vw, 3.75rem);
+  border-block: 1px solid var(--color-line);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(var(--space-4), 3vw, var(--space-6));
+  text-align: center;
+}
+
+.stat-block__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.1;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-block__label {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ─── Mock checkout (assinatura) ───────────────────────────── */
+
+.mock-pay-panel {
+  margin-bottom: var(--space-6);
+}
+
+.mock-pay-methods {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.mock-pay-methods .btn.is-active {
+  background: var(--color-coral, #ff6b6b);
+  color: #fff;
+  border-color: transparent;
+}
+
+.mock-pix-code {
+  background: color-mix(in srgb, var(--color-mint, #2ec4b6) 12%, white);
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-md, 16px);
+  padding: 1rem;
+  font-size: 0.75rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.mock-pay-result {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-md, 16px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+}
+
+.mock-pay-result.is-success {
+  border-color: color-mix(in srgb, var(--color-mint, #2ec4b6) 55%, var(--color-line));
+  background: color-mix(in srgb, var(--color-mint, #2ec4b6) 14%, white);
+}
+
+.mock-pay-result.is-error {
+  border-color: color-mix(in srgb, var(--color-coral, #ff6b6b) 50%, var(--color-line));
+  background: color-mix(in srgb, var(--color-coral, #ff6b6b) 12%, white);
+}
+
+.eyebrow {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+}
+
 @keyframes heroIn {
   to {
     opacity: 1;

@@ -133,4 +133,61 @@
     closeNav();
     document.querySelectorAll(".modal.is-open").forEach((modal) => closeModal(modal));
   });
+
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const formatCount = (value, decimals) => {
+    if (decimals > 0) {
+      return value.toLocaleString("pt-BR", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+    }
+    return Math.round(value).toLocaleString("pt-BR");
+  };
+
+  const runCountUp = (el) => {
+    if (el.dataset.countDone === "1") return;
+    el.dataset.countDone = "1";
+    const target = parseFloat(el.getAttribute("data-target") || "0");
+    const duration = parseInt(el.getAttribute("data-duration") || "1600", 10);
+    const decimals = parseInt(el.getAttribute("data-decimals") || "0", 10);
+    const suffix = el.getAttribute("data-suffix") || "";
+    const prefix = el.getAttribute("data-prefix") || "";
+    if (reduce) {
+      el.textContent = prefix + formatCount(target, decimals) + suffix;
+      return;
+    }
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = easeInOutCubic(t);
+      const current = target * eased;
+      el.textContent = prefix + formatCount(current, decimals) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = prefix + formatCount(target, decimals) + suffix;
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const countEls = document.querySelectorAll("[data-count-up]");
+  if (countEls.length) {
+    if (!reduce && "IntersectionObserver" in window) {
+      const countObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              runCountUp(entry.target);
+              countObs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.35 }
+      );
+      countEls.forEach((el) => countObs.observe(el));
+    } else {
+      countEls.forEach((el) => runCountUp(el));
+    }
+  }
 })();

@@ -34,6 +34,29 @@ require BASE_PATH . '/templates/site/header.php';
     </div>
 </section>
 
+<section class="section stats-band" id="numeros" aria-label="Números Clubinho">
+    <div class="container">
+        <div class="stats-grid reveal-stagger">
+            <div class="stat-block reveal">
+                <p class="stat-block__value"><span data-count-up data-target="12480" data-duration="1800">0</span></p>
+                <p class="stat-block__label">Pets felizes na comunidade</p>
+            </div>
+            <div class="stat-block reveal">
+                <p class="stat-block__value"><span data-count-up data-target="48320" data-duration="2000">0</span></p>
+                <p class="stat-block__label">Boxes enviadas</p>
+            </div>
+            <div class="stat-block reveal">
+                <p class="stat-block__value"><span data-count-up data-target="98" data-suffix="%" data-duration="1600">0</span></p>
+                <p class="stat-block__label">Tutores satisfeitos</p>
+            </div>
+            <div class="stat-block reveal">
+                <p class="stat-block__value"><span data-count-up data-target="4.8" data-decimals="1" data-suffix="/5" data-duration="1400">0</span></p>
+                <p class="stat-block__label">Nota média dos depoimentos</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="section bg-white" id="como-funciona">
     <div class="container">
         <header class="section-head reveal">
